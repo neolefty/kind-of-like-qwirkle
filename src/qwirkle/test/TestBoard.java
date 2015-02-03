@@ -87,14 +87,17 @@ public class TestBoard {
 //                System.out.println(mgr);
             }
             // ensure that we're alternating between players
+            //noinspection AssertWithSideEffects
             assert mgr.getCurrentPlayer() == players[0];
             mgr.step();
 //            System.out.println(mgr);
             assert boardChanged[0];
             assert statusChanged[0];
+            //noinspection AssertWithSideEffects
             assert mgr.getCurrentPlayer() == players[1];
             mgr.step();
 //            System.out.println(mgr);
+            //noinspection AssertWithSideEffects
             assert mgr.getCurrentPlayer() == players[0];
         }
     }

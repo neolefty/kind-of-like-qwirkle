@@ -19,7 +19,6 @@ public class AnnotatedGame {
     private List<QwirkleTurn> turnsNoMod = null; // version of turns list that is unmodifiable
     private QwirkleTurn bestTurn = null; // the turn with the best score so far
     private boolean finished = false; // has the game already finished?
-    private String finishedMessage;
     private Map<QwirklePlayer, Integer> scores = new HashMap<>(); // scores
 
     public AnnotatedGame(final EventBus bus) {
@@ -29,7 +28,6 @@ public class AnnotatedGame {
                 // unregister when the game ends
                 if (pre.getEvent() instanceof GameOver) {
                     bus.unregister(this);
-                    finishedMessage = ((GameOver) pre.getEvent()).getMessage();
                     finished = true;
                 }
                 // log turns as they arrive
@@ -87,9 +85,6 @@ public class AnnotatedGame {
         return (turns.size() == 0) ? null : turns.get(turns.size() - 1);
     }
 
-    /** The message explaining how this game ended. Only non-null if isFinished(). */
-    public String getFinishedMessage() { return finishedMessage; }
-
     /** What is a player's score? 0 if not in the game. */
     public int getScore(QwirklePlayer player) {
         if (!scores.containsKey(player)) return 0;
@@ -105,6 +100,16 @@ public class AnnotatedGame {
 
     /** What is the turn with the best score so far? */
     public QwirkleTurn getBestTurn() { return bestTurn; }
+
+    /** What is the best move made so far by a particular player? */
+    public QwirkleTurn getBestTurn(QwirklePlayer player) {
+        QwirkleTurn best = null;
+        for (QwirkleTurn t : turns)
+            if (t.getPlayer() == player && t.getScore() > 0
+                    && (best == null || t.getScore() > best.getScore()))
+                best = t;
+        return best;
+    }
 
     /** The total of all scores. */
     public int getTotalScore() {

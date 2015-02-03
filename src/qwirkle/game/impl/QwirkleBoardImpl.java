@@ -316,10 +316,8 @@ public class QwirkleBoardImpl extends QwirkleGridImpl implements QwirkleBoard {
             }
         // remove single-length lines that are subsets of longer lines in the result
         if (containsSingles && containsBigs) {
-            List<QwirkleLine> resultList = new ArrayList<>(result);
-            Iterator<QwirkleLine> i = resultList.iterator();
-            while(i.hasNext()) {
-                QwirkleLine single = i.next();
+            List<QwirkleLine> resultCopy = new ArrayList<>(result);
+            for (QwirkleLine single : resultCopy) {
                 if (single.size() == 1) {
                     QwirklePlacement place = single.iterator().next();
                     for (QwirkleLine bigger : result) {

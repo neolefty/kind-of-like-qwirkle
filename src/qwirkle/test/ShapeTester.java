@@ -29,6 +29,7 @@ public class ShapeTester extends JPanel {
         inner2.add(new ShapeTester(QwirkleShape.square, Math.PI, 250));
         inner2.add(new ShapeTester(QwirkleShape.ay, Math.PI, 10));
 //        frame.setContentPane(new ShapeTester(QwirkleShape.smiley));
+        //noinspection MagicConstant
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setSize(900, 615);
@@ -45,6 +46,7 @@ public class ShapeTester extends JPanel {
 
         @Override
         public void run() {
+            //noinspection InfiniteLoopStatement
             while(true) {
                 angle += interval * speed / 1000;
                 if (angle > Math.PI * 2) {

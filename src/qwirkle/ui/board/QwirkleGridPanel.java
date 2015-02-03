@@ -14,8 +14,10 @@ public class QwirkleGridPanel extends JPanel {
     private QwirkleGridLayout layout;
     private boolean blankIncluded;
     private QwirkleTurn lastTurn;
+    private EventBus eventBus;
 
     public QwirkleGridPanel(EventBus bus) {
+        this.eventBus = bus;
         setOpaque(true);
         setBackground(Color.BLACK);
         layout = new QwirkleGridLayout();
@@ -43,8 +45,7 @@ public class QwirkleGridPanel extends JPanel {
         });
     }
 
-    /** Are blank spots included? Default true. */
-    public boolean isBlankIncluded() { return blankIncluded; }
+    public EventBus getEventBus() { return eventBus; }
 
     /** Are blank spots included? Default true. */
     public void setBlankIncluded(boolean blankIncluded) {
@@ -69,7 +70,7 @@ public class QwirkleGridPanel extends JPanel {
                 if (blankIncluded) {
                     for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
                         for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
-                            add(new QwirklePiecePanel(grid, x, y), lastTurn.containsLocation(x, y));
+                            add(new QwirklePiecePanel(grid, x, y, lastTurn.containsLocation(x, y)));
                 } else {
                     for (QwirklePlacement p : grid.getPlacements())
                         add(new QwirklePiecePanel(p, lastTurn.containsLocation(p.getLocation())));

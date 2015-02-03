@@ -1,144 +1,120 @@
 package qwirkle.ui;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
 import qwirkle.control.GameStarted;
-import qwirkle.game.*;
-import qwirkle.game.impl.QwirkleGridImpl;
-import qwirkle.ui.board.QwirkleGridPanel;
+import qwirkle.game.QwirklePlayer;
+import qwirkle.game.QwirkleTurn;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.*;
 
-/** Show a player's status. Uses a {@link QwirkleGridPanel} with
- *  hacked event updates to show the player's current hand, highlighting
- *  the most recently drawn pieces. */
+/** Show the current state of a player. Their hand, name, score, best play? */
 public class PlayerPanel extends JPanel {
-    private GameManager mgr;
-    private QwirklePlayer player;
-    // what pieces did the player draw last?
-    private List<QwirklePiece> lastDraw;
-    // what was our most recent turn?
-    private QwirkleTurn lastTurn;
-    // send events to the hand panel through this bus
-    private EventBus handBus;
-
+    private PlayerHandPanel handPanel;
+    // TODO adjust labels' font to fit? Maybe tie together sizes of all labels of same type (name & score, best move, etc)?
+    private JLabel nameLabel, scoreLabel, bestMoveLabel, scoreSeparatorLabel;
     private Boolean vertical = null;
 
-    private QwirkleGridPanel handPanel;
+    private Container labels = null;
 
-    public PlayerPanel(GameManager mgr, QwirklePlayer player) {
-        this.mgr = mgr;
-        this.player = player;
-        mgr.getEventBus().register(new GameListener());
-        handPanel = new QwirkleGridPanel(mgr.getEventBus());
-        handBus = new EventBus("Fake board events for " + player.getName());
+    public PlayerPanel(final GameManager mgr, final QwirklePlayer player) {
+        this.handPanel = new PlayerHandPanel(mgr, player);
 
-        handPanel = new QwirkleGridPanel(handBus);
-        handPanel.setBlankIncluded(false);
-//        handPanel.setMinimumSize(new Dimension(100, 100));
-        setVertical();
-    }
+        setLayout(new GridBagLayout());
+        nameLabel = new JLabel(player.getName());
+        scoreLabel = new JLabel("0");
+        scoreSeparatorLabel = new JLabel(": ");
+        // TODO highlight best move on mouseover
+        bestMoveLabel = new JLabel();
+        setVertical(true);
 
-    private void setOrientation(boolean vertical) {
-        if (this.vertical == null || !this.vertical.equals(vertical)) {
-            this.vertical = vertical;
-            if (handPanel.getParent() != null)
-                remove(handPanel);
-            setLayout(new BoxLayout(this, vertical ? BoxLayout.Y_AXIS : BoxLayout.X_AXIS));
-            add(handPanel);
-        }
-    }
-
-    public void setHorizontal() { setOrientation(false); }
-    public void setVertical() { setOrientation(true); }
-
-    private class GameListener {
-        // someone took a turn
-        @Subscribe public void turned(QwirkleTurn turn) {
-            try {
-                update(turn);
-            } catch(Exception e) {
-                e.printStackTrace();
+        mgr.getEventBus().register(new Object() {
+            @Subscribe public void turn(QwirkleTurn turn) {
+                scoreLabel.setText("" + turn.getStatus().getScore(player));
+                setBestMove(turn.getStatus().getAnnotatedGame().getBestTurn(player));
             }
-        }
-        // a game started
-        @Subscribe public void gameStart(GameStarted started) {
-            try {
+            @Subscribe public void gameStart(GameStarted started) {
                 clear();
-            } catch(Exception e) {
-                e.printStackTrace();
             }
-        }
-        // maybe hand changed
-        @Subscribe public void dealt(QwirkleDraw draw) {
-            try {
-                update(draw);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+        });
+    }
+
+    private void setBestMove(QwirkleTurn best) {
+        if (best == null)
+            bestMoveLabel.setText("");
+        else {
+            bestMoveLabel.setText("Best: " + best.getScore());
+//            bestMoveLabel.setText("Best: " + best.getScore() + " for " + best.getPlacements().size() + " pieces");
         }
     }
 
+    /** Clear state. */
     private void clear() {
-        lastDraw = null;
-        lastTurn = null;
-        update();
+        scoreLabel.setText("0");
+        setBestMove(null);
     }
 
-    private void update(QwirkleDraw draw) {
-        if (draw.getPlayer() == player)
-            lastDraw = draw.getDrawn();
-        // only highlight the most recent player's draw at a time
-        else
-            lastDraw = null;
-        update();
-    }
-
-    private void update(QwirkleTurn turn) {
-        if (turn.getPlayer() == player) {
-            lastTurn = turn;
-            // we just took a turn, so forget the previous pieces we drew -- we'll be getting new ones soon
-            lastDraw = null;
-            // force a UI update
-            update();
+    @Override
+    public void removeAll() {
+        // remove grandchildren that we manage, if we have any
+        if (labels != null) {
+            labels.removeAll();
+            labels = null;
         }
+        super.removeAll();
     }
 
-    /** Update the UI. */
-    private void update() {
-        QwirkleTurn fakeTurn = createFakeTurn();
-        handBus.post(fakeTurn);
-    }
+    public void setVertical(boolean vertical) {
+        if (this.vertical != null && this.vertical == vertical)
+            return; // nop
 
-    /** Create a fake {@link QwirkleTurn} to tell the {@link QwirkleGridPanel} what to draw. */
-    private QwirkleTurn createFakeTurn() {
-        List<QwirklePlacement> handPlaces = new ArrayList<>();
-        List<QwirklePiece> drawScratch = new ArrayList<>();
-        if (lastDraw != null) drawScratch.addAll(lastDraw);
-        List<QwirklePlacement> drawPlacements = new ArrayList<>();
+        if (this.vertical == null)
+            removeAll();
 
-        // make a board from our hand, along with the new pieces
-        List<QwirklePiece> hand = mgr.getHand(player);
-        if (hand != null) {
-            // build a board that represents the hand
-            for (int i = 0; i < hand.size(); ++i) {
-                QwirklePiece piece = hand.get(i);
-                QwirklePlacement place = new QwirklePlacement(piece, vertical ? 0 : i, vertical ? i : 0);
-                handPlaces.add(place);
-            }
-            // highlight the new pieces, starting at the bottom
-            for (int i = handPlaces.size() - 1; i >= 0; --i) {
-                QwirklePlacement place = handPlaces.get(i);
-                // make sure each draw is highlighted only once, but allow duplicate
-                if (drawScratch.remove(place.getPiece()))
-                    drawPlacements.add(place);
-            }
+        this.vertical = vertical;
+
+        GridBagConstraints constraints = new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0),
+                0, 0);
+        handPanel.setVertical(vertical);
+
+        // vertical: top to bottom: name, score, hand panel, best move
+        if (vertical) {
+            constraints.weighty = 0;
+            add(nameLabel, constraints);
+            constraints.gridy++;
+
+            constraints.weighty = 0;
+            add(scoreLabel, constraints);
+            constraints.gridy++;
+
+            constraints.weighty = 1;
+            add(handPanel, constraints);
+            constraints.gridy++;
+
+            constraints.weighty = 0;
+            add(bestMoveLabel, constraints);
+            constraints.gridy++;
         }
 
-        QwirkleGrid handGrid = new QwirkleGridImpl(handPlaces);
-        return QwirkleTurn.drawToHand(handGrid, drawPlacements, player);
+        // horizontal: hand on top, labels underneath
+        else {
+            // hand on top, wide
+            constraints.weighty = 1;
+            constraints.gridwidth = 4;
+            add(handPanel, constraints);
+            constraints.gridy++;
+
+            // labels underneath. Name: Score | best move
+            labels = new Box(BoxLayout.X_AXIS);
+            labels.add(nameLabel);
+            labels.add(scoreSeparatorLabel);
+            labels.add(scoreLabel);
+            labels.add(Box.createGlue());
+            labels.add(bestMoveLabel);
+            constraints.weighty = 0;
+            add(labels, constraints);
+        }
     }
 }

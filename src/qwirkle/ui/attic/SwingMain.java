@@ -46,6 +46,7 @@ public class SwingMain {
                 try {
                     //noinspection InfiniteLoopStatement
 //                    for (int i = 0; i < 10; ++i) {
+                    //noinspection InfiniteLoopStatement
                     while (true) {
                         long start = System.currentTimeMillis();
                         if (game.isFinished()) {

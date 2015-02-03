@@ -41,10 +41,9 @@ public class QwirkleGridLayout implements LayoutManager2 {
         Insets pInsets = parent.getInsets();
         Dimension pSize = parent.getSize();
         // subtract insets
-        Dimension result = new Dimension
+        return new Dimension
                 (pSize.width - pInsets.left - pInsets.right,
                 pSize.height - pInsets.top - pInsets.bottom);
-        return result;
     }
 
     /** Note: call layoutContainer separately. */
@@ -52,7 +51,6 @@ public class QwirkleGridLayout implements LayoutManager2 {
         this.grid = grid;
     }
 
-    // TODO remove unnecessary setMaxSize stuff starting in SwingDemo's component resize listener
     /** We're fine with whatever we're given, down to a minimum. */
     @Override
     public Dimension preferredLayoutSize(Container parent) {

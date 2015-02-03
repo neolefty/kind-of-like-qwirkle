@@ -18,7 +18,7 @@ public class PaintSquare implements QwirkleShapePainter {
     @Override
     public void paint(Graphics2D g) {
         double width = Math.sqrt(HEIGHT * WIDTH * FILL_FRACTION);
-        int left = (int) ((WIDTH - width) / 2);
-        g.fillRect(left, left, (int) width, (int) width);
+        int pos = (int) ((WIDTH - width) / 2);
+        g.fillRect(pos, pos, (int) width, (int) width);
     }
 }

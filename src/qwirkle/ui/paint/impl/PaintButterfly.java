@@ -16,8 +16,10 @@ public class PaintButterfly implements QwirkleShapePainter {
         int bodyW = 14, topDiam = 22, botDiam = 28;
 
         // top left
+        //noinspection SuspiciousNameCombination
         g.fillOval(48-topDiam, 25, topDiam, topDiam);
         // top right
+        //noinspection SuspiciousNameCombination
         g.fillOval(52, 25, topDiam, topDiam);
         // bottom left
         g.fillOval(50-botDiam, 42, botDiam, botDiam+3);
