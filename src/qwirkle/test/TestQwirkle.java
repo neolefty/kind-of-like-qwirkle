@@ -10,6 +10,7 @@ public class TestQwirkle {
 
         TestBoard.main(args);
         TestEvents.main(args);
+        PerfTest.main(args);
     }
 
     public static <T> void checkContentsMatch(Collection<T> a, Collection<T> b) {

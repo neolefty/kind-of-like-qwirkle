@@ -240,7 +240,6 @@ public class GameManager {
             // post the new turn before we broadcast any further changes
             post(turn);
             // announce the end only after we broadcast the last turn
-            // TODO: Improve game ending message -- summarize winner
             if (itsOver)
                 finished(cur.getName() + " played their last tile. Bonus " + bonus + " for other players' remaining tiles.");
             // did the game stall (broadcasts game finished events)
