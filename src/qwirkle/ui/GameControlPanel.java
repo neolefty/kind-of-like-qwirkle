@@ -5,6 +5,7 @@ import qwirkle.control.*;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleTurn;
+import qwirkle.ui.util.AutoSizeLabel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +17,7 @@ public class GameControlPanel extends JPanel {
         STEP = "Turn", NEW_GAME = "New Game", RESTART = "New Game";
 
     public GameControlPanel(final GameManager game) {
-        final JLabel remaining = new JLabel();
+        final JLabel remaining = new AutoSizeLabel(this, "", 0.05);
         // label: the number of remaining cards
         game.getEventBus().register(new Object() {
             @Subscribe
@@ -99,7 +100,7 @@ public class GameControlPanel extends JPanel {
 
         // score labels - update when score changes
         for (final QwirklePlayer player : game.getPlayers()) {
-            final JLabel score = new JLabel();
+            final JLabel score = new AutoSizeLabel(this, "", 0.05);
 //            setColors(score);
             game.getStatus().listen(new GameStatus.TurnListener() {
                 @Override

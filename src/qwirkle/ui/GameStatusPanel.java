@@ -5,6 +5,7 @@ import qwirkle.control.GameManager;
 import qwirkle.control.GameOver;
 import qwirkle.control.GameStatus;
 import qwirkle.game.QwirkleTurn;
+import qwirkle.ui.util.AutoSizeLabel;
 
 import javax.swing.*;
 
@@ -15,8 +16,8 @@ public class GameStatusPanel extends Box {
     JLabel turnLabel, gameLabel;
     public GameStatusPanel(GameManager mgr) {
         super(BoxLayout.X_AXIS);
-        turnLabel = new JLabel();
-        gameLabel = new JLabel();
+        turnLabel = new AutoSizeLabel(this, "", 0.025);
+        gameLabel = new AutoSizeLabel(this, "", 0.025);
         add(turnLabel, Box.LEFT_ALIGNMENT);
         add(Box.createGlue()); // fill space between labels
         add(gameLabel, Box.RIGHT_ALIGNMENT);
