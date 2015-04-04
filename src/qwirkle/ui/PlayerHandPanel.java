@@ -25,16 +25,19 @@ public class PlayerHandPanel extends QwirkleGridPanel {
     public PlayerHandPanel(GameManager mgr, QwirklePlayer player) {
         super(new EventBus("Fake board events for " + player.getName()));
         setBlankIncluded(false);
-        setVertical(true);
 
         this.mgr = mgr;
         this.player = player;
         mgr.getEventBus().register(new GameListener());
+        setVertical(true);
     }
 
     /** Vertical or horizontal? */
     public void setVertical(boolean vertical) {
-        this.vertical = vertical;
+        if (this.vertical != vertical) {
+            this.vertical = vertical;
+            update();
+        }
     }
 
     private class GameListener {

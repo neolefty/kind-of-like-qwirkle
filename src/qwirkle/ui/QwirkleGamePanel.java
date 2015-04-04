@@ -3,6 +3,7 @@ package qwirkle.ui;
 import qwirkle.control.GameManager;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.ui.board.QwirkleGridPanel;
+import qwirkle.ui.main.QwirkleGameLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,31 +11,19 @@ import java.awt.*;
 /** A JPanel that shows the state of a game, including players and status. */
 public class QwirkleGamePanel extends JPanel {
     public QwirkleGamePanel(GameManager mgr) {
-        setLayout(new GridBagLayout());
-        Insets zeroInsets = new Insets(0, 0, 0, 0);
-        GridBagConstraints constraints = new GridBagConstraints
-                (0,0, // (x,y) = (0,0)
-                 1,1, // grid height & width
-                 1,1, // weight x,y
-                 GridBagConstraints.CENTER, // maybe want NORTHWEST?
-                 GridBagConstraints.BOTH, // fill
-                 zeroInsets,
-                 0, 0); // padding x,y
+        super(new QwirkleGameLayout());
 
         // player panels
-        constraints.gridy = 0;
-        constraints.weightx = .25;
+        // TODO update when players are added / removed
         for (QwirklePlayer player : mgr.getPlayers()) {
-            add(new PlayerPanel(mgr, player), constraints);
-            constraints.gridx++;
+            PlayerPanel pp = new PlayerPanel(mgr, player);
+            pp.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            add(pp);
         }
-        constraints.weightx = 1; // put it back the way it was
 
-        // main panel: show the current game
-        final QwirkleGridPanel grid = new QwirkleGridPanel(mgr.getEventBus());
+        // board
+        QwirkleGridPanel grid = new QwirkleGridPanel(mgr.getEventBus());
         grid.setBlankIncluded(false);
-
-        constraints.gridx++; constraints.gridy = 0;
-        add(grid, constraints);
+        add(grid);
     }
 }
