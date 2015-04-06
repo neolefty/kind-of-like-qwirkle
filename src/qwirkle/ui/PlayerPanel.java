@@ -6,6 +6,7 @@ import qwirkle.control.GameStarted;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleTurn;
 import qwirkle.ui.util.AutoSizeLabel;
+import qwirkle.ui.util.FontAutosizer;
 import qwirkle.ui.util.HasAspectRatio;
 
 import javax.swing.*;
@@ -105,7 +106,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         // vertical: top to bottom: name, score, hand panel, best move
         if (vertical) {
             for (AutoSizeLabel asl : autoSizeLabels)
-                asl.setMetric(AutoSizeLabel.Metric.WIDTH);
+                asl.setMetric(FontAutosizer.Metric.WIDTH);
 
             constraints.weighty = 0;
             nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -130,7 +131,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         // horizontal: hand on top, labels underneath
         else {
             for (AutoSizeLabel asl : autoSizeLabels)
-                asl.setMetric(AutoSizeLabel.Metric.HEIGHT);
+                asl.setMetric(FontAutosizer.Metric.HEIGHT);
 
             // hand on top, wide
             constraints.weighty = 1;

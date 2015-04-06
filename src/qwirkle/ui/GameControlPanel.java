@@ -5,6 +5,7 @@ import qwirkle.control.*;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleTurn;
+import qwirkle.ui.util.AutoSizeButton;
 import qwirkle.ui.util.AutoSizeLabel;
 
 import javax.swing.*;
@@ -16,8 +17,10 @@ public class GameControlPanel extends JPanel {
     private static final String PAUSE = "  | |  ", PLAY = "  >>  ",
         STEP = "Turn", NEW_GAME = "New Game", RESTART = "New Game";
 
+    public static final double FONT_PROPORTION = 0.03;
+
     public GameControlPanel(final GameManager game) {
-        final JLabel remaining = new AutoSizeLabel(this, "", 0.05);
+        final JLabel remaining = new AutoSizeLabel(this, "", FONT_PROPORTION);
         // label: the number of remaining cards
         game.getEventBus().register(new Object() {
             @Subscribe
@@ -26,8 +29,11 @@ public class GameControlPanel extends JPanel {
             }
         });
 
+        // TODO consider putting score labels under buttons
+        // TODO auto resize buttons, like the labels
+
         // button: new game
-        final JButton newGame = new JButton(NEW_GAME);
+        final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -36,7 +42,7 @@ public class GameControlPanel extends JPanel {
         });
 
         // button: take a single turn
-        final JButton stepButton = new JButton(STEP);
+        final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
         stepButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -45,7 +51,7 @@ public class GameControlPanel extends JPanel {
         });
 
         // button: start/pause a game running
-        final JButton runButton = new JButton(PLAY);
+        final JButton runButton = new AutoSizeButton(this, PLAY, FONT_PROPORTION);
         final QwirkleThreads threads = new QwirkleThreads(game);
         runButton.addActionListener(new ActionListener() {
             @Override
