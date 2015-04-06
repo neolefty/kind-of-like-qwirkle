@@ -4,9 +4,9 @@ import qwirkle.control.GameManager;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.players.MaxPlayer;
-import qwirkle.ui.GameControlPanel;
-import qwirkle.ui.GameStatusPanel;
-import qwirkle.ui.QwirkleGamePanel;
+import qwirkle.ui.board.GameControlPanel;
+import qwirkle.ui.board.GameStatusPanel;
+import qwirkle.ui.board.QwirkleGamePanel;
 import qwirkle.ui.util.SwingSetup;
 
 import javax.swing.*;

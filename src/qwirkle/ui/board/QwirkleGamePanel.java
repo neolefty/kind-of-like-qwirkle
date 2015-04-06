@@ -1,8 +1,7 @@
-package qwirkle.ui;
+package qwirkle.ui.board;
 
 import qwirkle.control.GameManager;
 import qwirkle.game.QwirklePlayer;
-import qwirkle.ui.board.QwirkleGridPanel;
 import qwirkle.ui.main.QwirkleGameLayout;
 
 import javax.swing.*;

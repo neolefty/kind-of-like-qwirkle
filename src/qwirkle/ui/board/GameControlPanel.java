@@ -1,4 +1,4 @@
-package qwirkle.ui;
+package qwirkle.ui.board;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.*;

@@ -1,6 +1,6 @@
 package qwirkle.ui.main;
 
-import qwirkle.ui.PlayerPanel;
+import qwirkle.ui.board.PlayerPanel;
 import qwirkle.ui.board.QwirkleGridPanel;
 import qwirkle.ui.util.LayoutBase;
 
