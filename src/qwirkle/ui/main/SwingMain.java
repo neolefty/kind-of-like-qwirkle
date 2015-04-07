@@ -7,6 +7,7 @@ import qwirkle.players.MaxPlayer;
 import qwirkle.ui.board.GameControlPanel;
 import qwirkle.ui.board.GameStatusPanel;
 import qwirkle.ui.board.QwirkleGamePanel;
+import qwirkle.ui.util.SwingKitty;
 import qwirkle.ui.util.SwingSetup;
 
 import javax.swing.*;
@@ -58,26 +59,12 @@ public class SwingMain {
                 outer.add(status, BorderLayout.NORTH);
 
                 // set colors at the end (only need it once, after everything is added)
-                setColors(outer);
+                SwingKitty.setColors(outer);
 
                 // show the window
                 frame.setVisible(true);
                 game.start();
             }
         });
-    }
-
-    // Recursively set the colors & font of comp to match our scheme
-    public static void setColors(Component comp) {
-        comp.setForeground(Color.WHITE);
-        comp.setBackground(Color.BLACK);
-        comp.setFont(comp.getFont().deriveFont(30f));
-        if (comp instanceof Container) {
-            Container panel = (Container) comp;
-            synchronized (panel.getTreeLock()) {
-                for (Component child : panel.getComponents())
-                    setColors(child);
-            }
-        }
     }
 }

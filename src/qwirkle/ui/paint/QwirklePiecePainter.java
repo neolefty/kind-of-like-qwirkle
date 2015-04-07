@@ -17,6 +17,10 @@ public class QwirklePiecePainter {
     /** The amount of the square to fill with ink when we draw a shape (approximate). */
     public static double FILL_FRACTION = 0.3;
 
+    /** How transparent should the shapes be? 0 = not at all, 1 = invisible.
+     *  Default 0. */
+    private float transparency = 0;
+
     private Map<QwirkleShape, QwirkleShapePainter> shapePainters = new HashMap<>();
 
     public QwirklePiecePainter() {
@@ -49,7 +53,10 @@ public class QwirklePiecePainter {
         Stroke oldStroke = g.getStroke();
 
         // colored shape
-        g.setColor(piece.getColor().getColor());
+        Color c = piece.getColor().getColor();
+        if (transparency != 0)
+            c = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int) ((1-transparency) * 256));
+        g.setColor(c);
         pickPainter(piece.getShape()).paint(g);
 
         // paint coordinates
@@ -67,5 +74,14 @@ public class QwirklePiecePainter {
         if (result == null)
             result = new PaintToString(shape);
         return result;
+    }
+
+    public void setTransparency(double transparency) {
+        setTransparency((float) transparency);
+    }
+    public void setTransparency(float transparency) {
+        if (transparency < 0 || transparency > 1)
+            throw new IllegalArgumentException("Transparency must be 0 to 1 (" + transparency + ")");
+        this.transparency = transparency;
     }
 }
