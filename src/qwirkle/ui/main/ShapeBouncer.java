@@ -240,6 +240,7 @@ public class ShapeBouncer extends JPanel {
             AffineTransform before = g2.getTransform();
             Dimension dim = getSize();
 
+            // IDEA: bounce off edge of screen instead? Then color change would occur off-stage
             // translate piece location from 0-1 to 0-width (leaving a margin to show the piece)
             g2.translate(px * (dim.width-pieceSize), py * (dim.height-pieceSize));
             g2.scale(pieceSize/100, pieceSize/100);
