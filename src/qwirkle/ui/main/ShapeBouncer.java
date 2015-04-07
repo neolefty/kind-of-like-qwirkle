@@ -4,6 +4,8 @@ import qwirkle.game.QwirkleColor;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.QwirklePiecePainter;
+import qwirkle.ui.util.SwingKitty;
+import qwirkle.ui.util.SwingSetup;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +17,24 @@ import java.util.List;
 
 /** Bounce the shapes around inside. */
 public class ShapeBouncer extends JPanel {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("All The Shapes!");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        SwingSetup.addWindowSizer(frame);
+
+        int copies = 2;
+        List<QwirkleShape> shapes = new ArrayList<>();
+        for (int i = 0; i < copies; ++i)
+            shapes.addAll(Arrays.asList(QwirkleShape.values()));
+        QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
+        ShapeBouncer bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
+        frame.setContentPane(bouncer);
+        SwingKitty.setColors(bouncer);
+
+        frame.setVisible(true);
+    }
+
+
     public static final Random r = new Random();
 
     /** The pieces that are bouncing around. */
