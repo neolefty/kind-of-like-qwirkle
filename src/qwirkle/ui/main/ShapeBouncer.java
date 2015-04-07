@@ -36,6 +36,8 @@ public class ShapeBouncer extends JPanel {
 
     public static final Random r = new Random();
 
+    private QwirkleColor[] colors;
+
     /** The pieces that are bouncing around. */
     private List<QwirklePiece> pieces = new ArrayList<>();
     /** Map of the pieces to their locations & speeds in the window (x & y are between 0 and 1). */
@@ -48,7 +50,7 @@ public class ShapeBouncer extends JPanel {
     private UpdateThread updateThread;
 
     /** The area of this panel devoted to pieces. */
-    private double totalAreaOfPieces = 0.6;
+    private double totalAreaOfPieces = 0.8;
 
     /** How many seconds should a piece take (on average) to cross the window? */
     private double secondsToCross = 8; // 2.5;
@@ -65,6 +67,7 @@ public class ShapeBouncer extends JPanel {
     private long lastUpdate = System.currentTimeMillis();
 
     public ShapeBouncer(QwirkleShape[] shapes, QwirkleColor[] colors) {
+        this.colors = colors;
         int iColor = r.nextInt(colors.length);
         painter.setTransparency(0.5f);
         for (QwirkleShape shape : shapes)
@@ -126,7 +129,7 @@ public class ShapeBouncer extends JPanel {
         pieceSize = Math.sqrt(areaPerPiece);
     }
 
-    /** Scatter the pieces randomly. */
+    /** Scatter the pieces randomly to the edges of the screen. */
     private void scatter() {
         synchronized (pieceInfos) {
             pieceInfos.clear();
@@ -162,11 +165,23 @@ public class ShapeBouncer extends JPanel {
 
     private class PieceInfo {
         double px, py, vx, vy, pt, vt; // x, y, theta, all between 0 and 1
+        QwirkleColor color;
 
         PieceInfo() {
-            px = r.nextDouble();
-            py = r.nextDouble();
+            // start on an edge
+            if (r.nextBoolean()) { // on left or right edge
+                px = (r.nextBoolean() ? 0 : 1);
+                py = r.nextDouble();
+            } else { // top or bottom edge
+                px = r.nextDouble();
+                py = (r.nextBoolean() ? 0 : 1);
+            }
+
+            // with a random orientation
             pt = r.nextDouble();
+
+            // with a random color
+            changeColor();
 
             while (toSlow()) {
                 vx = (2 * r.nextDouble() - 1) / secondsToCross;
@@ -215,16 +230,18 @@ public class ShapeBouncer extends JPanel {
 
         private void reverseX() { vx *= -1; reverseT(); }
         private void reverseY() { vy *= -1; reverseT(); }
-        private void reverseT() { vt *= -1; }
+        private void reverseT() { vt *= -1; changeColor(); }
+        private void changeColor() { color = pick(colors); }
+
         private double vabs() { return Math.sqrt(vabs2()); }
         private double vabs2() { return vx * vx + vy * vy; }
 
         public void paint(Graphics2D g2, QwirklePiece piece) {
             AffineTransform before = g2.getTransform();
-            Dimension d = getSize();
+            Dimension dim = getSize();
 
             // translate piece location from 0-1 to 0-width (leaving a margin to show the piece)
-            g2.translate(px * (d.width-pieceSize), py * (d.height-pieceSize));
+            g2.translate(px * (dim.width-pieceSize), py * (dim.height-pieceSize));
             g2.scale(pieceSize/100, pieceSize/100);
 
             // rotation
@@ -232,9 +249,12 @@ public class ShapeBouncer extends JPanel {
             g2.rotate(pt * 2 * Math.PI);
             g2.translate(-50, -50);
 
+            // IDEA: start color change cycle at bounce? Bounce -> fade out -> change -> fade in
+
             // transparency: faint at edges
-            double d4 = distanceFromEdge() * 4;
-            double transparency = Math.max(0, 0.9 - d4);
+            double dist = distanceFromEdge() * 10;
+            // don't fade all the way -- bounce & switch colors at 95% transparency
+            double transparency = Math.max(0, 0.95 - dist);
             painter.setTransparency(transparency);
 
             // debug
@@ -242,6 +262,7 @@ public class ShapeBouncer extends JPanel {
 //            g2.drawString(shorten("d " + d3), -20, -10);
 //            g2.drawString(shorten("t " + transparency), -20, 90);
 
+            piece = new QwirklePiece(color, piece.getShape());
             painter.paint(g2, piece);
             g2.setTransform(before);
         }
