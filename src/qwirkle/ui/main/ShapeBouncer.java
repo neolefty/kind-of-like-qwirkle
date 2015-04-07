@@ -34,7 +34,6 @@ public class ShapeBouncer extends JPanel {
         frame.setVisible(true);
     }
 
-
     public static final Random r = new Random();
 
     /** The pieces that are bouncing around. */
@@ -43,10 +42,10 @@ public class ShapeBouncer extends JPanel {
     private final Map<QwirklePiece, PieceInfo> pieceInfos = new HashMap<>();
 
     /** How many millis between updates? */
-    long stepMillis = 20;
+    private long stepMillis = 20;
 
     /** The thread that powers updates. */
-    UpdateThread updateThread;
+    private UpdateThread updateThread;
 
     /** The area of this panel devoted to pieces. */
     private double totalAreaOfPieces = 0.6;
@@ -54,6 +53,7 @@ public class ShapeBouncer extends JPanel {
     /** How many seconds should a piece take (on average) to cross the window? */
     private double secondsToCross = 8; // 2.5;
 
+    /** How many seconds should it take for a piece to complete a rotation? */
     private double secondsToRotate = secondsToCross / 2;
 
     /** How big should the shapes be? Starts at 100, updates with size of frame,
@@ -246,13 +246,9 @@ public class ShapeBouncer extends JPanel {
             g2.setTransform(before);
         }
 
-        private String shorten(String s) {
-            return s.length() > 10 ? s.substring(0, 10) : s;
-        }
+//        private String shorten(String s) { return s.length() > 10 ? s.substring(0, 10) : s; }
+//        private double distanceFromCenter() { return Math.sqrt((px-.5)*(px-.5) + (py-.5)*(py-.5)); }
 
-        private double distanceFromCenter() {
-            return Math.sqrt((px-.5)*(px-.5) + (py-.5)*(py-.5));
-        }
         private double distanceFromEdge() {
             return Math.min(distanceFromEdgeX(), distanceFromEdgeY());
         }
