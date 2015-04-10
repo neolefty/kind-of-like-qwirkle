@@ -17,12 +17,27 @@ import java.util.List;
 
 /** Bounce the shapes around inside. */
 public class ShapeBouncer extends JPanel {
+    /** How many seconds should a piece take (on average) to cross the window? */
+    private double secondsToCross = 12; // 2.5;
+
+    /** How many seconds should it take for a piece to complete a rotation? */
+    private double secondsToRotate = secondsToCross / 2;
+
+    /** How many millis between updates? */
+    private long stepMillis = 16;
+
+    /** The thread that powers updates. */
+    private UpdateThread updateThread;
+
+    /** The area of this panel devoted to pieces. */
+    private double totalAreaOfPieces = 0.8;
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("All The Shapes!");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         SwingSetup.addWindowSizer(frame);
 
-        int copies = 2;
+        int copies = 3;
         List<QwirkleShape> shapes = new ArrayList<>();
         for (int i = 0; i < copies; ++i)
             shapes.addAll(Arrays.asList(QwirkleShape.values()));
@@ -34,29 +49,15 @@ public class ShapeBouncer extends JPanel {
         frame.setVisible(true);
     }
 
+    /** The pieces that are bouncing around. */
+    private List<QwirklePiece> pieces = new ArrayList<>();
+
     public static final Random r = new Random();
 
     private QwirkleColor[] colors;
 
-    /** The pieces that are bouncing around. */
-    private List<QwirklePiece> pieces = new ArrayList<>();
     /** Map of the pieces to their locations & speeds in the window (x & y are between 0 and 1). */
     private final Map<QwirklePiece, PieceInfo> pieceInfos = new HashMap<>();
-
-    /** How many millis between updates? */
-    private long stepMillis = 20;
-
-    /** The thread that powers updates. */
-    private UpdateThread updateThread;
-
-    /** The area of this panel devoted to pieces. */
-    private double totalAreaOfPieces = 0.8;
-
-    /** How many seconds should a piece take (on average) to cross the window? */
-    private double secondsToCross = 8; // 2.5;
-
-    /** How many seconds should it take for a piece to complete a rotation? */
-    private double secondsToRotate = secondsToCross / 2;
 
     /** How big should the shapes be? Starts at 100, updates with size of frame,
      *  based on totalAreaOfPieces. */

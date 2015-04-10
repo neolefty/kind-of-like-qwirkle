@@ -7,9 +7,9 @@ import qwirkle.ui.main.QwirkleGameLayout;
 import javax.swing.*;
 import java.awt.*;
 
-/** A JPanel that shows the state of a game, including players and status. */
-public class QwirkleGamePanel extends JPanel {
-    public QwirkleGamePanel(GameManager mgr) {
+/** A JPanel that shows the state of a game: players and status. */
+public class QwirkleGameStatePanel extends JPanel {
+    public QwirkleGameStatePanel(GameManager mgr) {
         super(new QwirkleGameLayout());
 
         // player panels
