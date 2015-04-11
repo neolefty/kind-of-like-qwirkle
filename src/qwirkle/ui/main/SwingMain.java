@@ -56,12 +56,12 @@ public class SwingMain {
                 screensaver.setSecondsToCross(8);
                 screensaver.setSecondsToRotate(4);
 
+                // manage the game & screensaver panels with a ScreenSaverPane
                 ScreenSaverPane ssp = new ScreenSaverPane(gamePanel, screensaver, SCREENSAVER_TIMEOUT);
                 frame.setContentPane(ssp);
 
                 // set colors (only need it once, after everything is added)
-                SwingKitty.setColors(gamePanel);
-                SwingKitty.setColors(screensaver);
+                SwingKitty.setColors(frame);
 
                 // show the window
                 frame.setVisible(true);
