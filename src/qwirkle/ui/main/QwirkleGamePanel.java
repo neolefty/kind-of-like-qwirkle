@@ -18,5 +18,7 @@ public class QwirkleGamePanel extends JPanel {
         add(new GameControlPanel(mgr), BorderLayout.SOUTH);
         // top: game status messages
         add(new GameStatusPanel(mgr), BorderLayout.NORTH);
+        // below bottom: scores
+//        add(new QwirkleScorePanel(mgr, 0.04), BorderLayout.SOUTH);
     }
 }

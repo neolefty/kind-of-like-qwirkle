@@ -8,7 +8,8 @@ public class SwingKitty {
     public static void setColors(Component comp) {
         comp.setForeground(Color.WHITE);
         comp.setBackground(Color.BLACK);
-        comp.setFont(comp.getFont().deriveFont(30f));
+        if (comp.getFont() != null)
+            comp.setFont(comp.getFont().deriveFont(30f));
         if (comp instanceof Container) {
             Container panel = (Container) comp;
             synchronized (panel.getTreeLock()) {

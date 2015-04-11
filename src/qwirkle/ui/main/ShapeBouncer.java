@@ -1,7 +1,9 @@
 package qwirkle.ui.main;
 
+import qwirkle.control.GameManager;
 import qwirkle.game.QwirkleColor;
 import qwirkle.game.QwirklePiece;
+import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.QwirklePiecePainter;
 import qwirkle.ui.util.SwingKitty;
@@ -32,17 +34,34 @@ public class ShapeBouncer extends JPanel {
     /** The area of this panel devoted to pieces. */
     private double totalAreaOfPieces = 0.8;
 
+    private boolean resetOnResume = false;
+
+    /** How close to the edge of the window do the pieces get before they turn transparent?
+     *  2 for always somewhat transparent, higher for closer to the edge. Default 10. */
+    private double transparency = 10;
+
+    private boolean changeColors = true;
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("All The Shapes!");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        SwingSetup.addWindowSizer(frame);
+        SwingSetup.addWindowSizer(frame, ShapeBouncer.class);
 
-        int copies = 3;
-        List<QwirkleShape> shapes = new ArrayList<>();
-        for (int i = 0; i < copies; ++i)
-            shapes.addAll(Arrays.asList(QwirkleShape.values()));
-        QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
-        ShapeBouncer bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
+        boolean allShapes = false;
+
+        ShapeBouncer bouncer;
+        if (allShapes) {
+            int copies = 3;
+            List<QwirkleShape> shapes = new ArrayList<>();
+            for (int i = 0; i < copies; ++i)
+                shapes.addAll(Arrays.asList(QwirkleShape.values()));
+            QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
+            bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
+        }
+        else {
+            bouncer = new ShapeBouncer(new GameManager(new QwirkleSettings()));
+            bouncer.changeColors = false;
+        }
         frame.setContentPane(bouncer);
         SwingKitty.setColors(bouncer);
 
@@ -67,12 +86,21 @@ public class ShapeBouncer extends JPanel {
 
     private long lastUpdate = System.currentTimeMillis();
 
+    public ShapeBouncer(GameManager game) {
+        // TODO: move this to scatter to keep it up to date with the game
+        this(generatePieces(game));
+    }
+
     public ShapeBouncer(QwirkleShape[] shapes, QwirkleColor[] colors) {
-        this.colors = colors;
-        int iColor = r.nextInt(colors.length);
+        this(generatePieces(shapes, colors));
+    }
+
+    public ShapeBouncer(Collection<QwirklePiece> pieces) {
+        Set<QwirkleColor> colorsScratch = new HashSet<>();
+        for (QwirklePiece piece : pieces) colorsScratch.add(piece.getColor());
+        this.colors = colorsScratch.toArray(new QwirkleColor[colorsScratch.size()]);
         painter.setTransparency(0.5f);
-        for (QwirkleShape shape : shapes)
-            pieces.add(new QwirklePiece(colors[iColor++ % colors.length], shape));
+        this.pieces.addAll(pieces);
         scatter();
         resume();
 
@@ -81,6 +109,20 @@ public class ShapeBouncer extends JPanel {
             @Override public void componentShown(ComponentEvent e) { resume(); }
             @Override public void componentHidden(ComponentEvent e) { pause(); }
         });
+    }
+
+    private static Collection<QwirklePiece> generatePieces(GameManager game) {
+        QwirkleSettings settings = game.getSettings();
+        QwirkleSettings oneDeck = new QwirkleSettings
+                (1, settings.getShapes(), settings.getColors(), settings.getPlayers());
+        return oneDeck.generate();
+    }
+    private static Collection<QwirklePiece> generatePieces(QwirkleShape[] shapes, QwirkleColor[] colors) {
+        int iColor = r.nextInt(colors.length);
+        List<QwirklePiece> pieces = new ArrayList<>();
+        for (QwirkleShape shape : shapes)
+            pieces.add(new QwirklePiece(colors[iColor++ % colors.length], shape));
+        return pieces;
     }
 
     @Override
@@ -141,6 +183,29 @@ public class ShapeBouncer extends JPanel {
         }
     }
 
+    /** How close to the edge of the window do the pieces get before they turn transparent?
+     *  2 for always somewhat transparent, higher for closer to the edge. Default 10. */
+    public void setTransparency(int transparency) {
+        this.transparency = transparency;
+    }
+
+    /** How many seconds does the fastest piece take to cross the screen?
+     *  The slowest piece will move no more slowly than half this velocity
+     *  (pythagorean sum of x and y speed). */
+    public void setSecondsToCross(int secondsToCross) {
+        this.secondsToCross = secondsToCross;
+    }
+
+    /** How many seconds does the fastest piece take to complete a rotation?
+     *  The slowest spinner will turn no less than 1/10 this rate. */
+    public void setSecondsToRotate(int secondsToRotate) {
+        this.secondsToRotate = secondsToRotate;
+    }
+
+    public void setResetOnResume(boolean resetOnResume) {
+        this.resetOnResume = resetOnResume;
+    }
+
     private class UpdateThread extends Thread {
         private boolean running = true;
         @Override
@@ -184,24 +249,24 @@ public class ShapeBouncer extends JPanel {
             // with a random color
             changeColor();
 
-            while (toSlow()) {
-                vx = (2 * r.nextDouble() - 1) / secondsToCross;
-                vy = (2 * r.nextDouble() - 1) / secondsToCross;
-                vt = (2 * r.nextDouble() - 1) / secondsToRotate;
+            while (tooSlow()) {
+                vx = (2 * r.nextDouble() - 1);
+                vy = (2 * r.nextDouble() - 1);
+                vt = (2 * r.nextDouble() - 1);
             }
         }
 
         // is the speed less than half the suggested speed
         // or the rotation less than a tenth?
-        private boolean toSlow() {
-            return vabs() < (0.5/secondsToCross)
-                    || Math.abs(vt) < 0.1/secondsToRotate;
+        private boolean tooSlow() {
+            return vabs() < (0.5)
+                    || Math.abs(vt) < 0.1;
         }
 
         public void step(long millis) {
-            px += vx * millis / 1000;
-            py += vy * millis / 1000;
-            pt += vt * millis / 1000;
+            px += vx * millis / secondsToCross / 1000;
+            py += vy * millis / secondsToCross / 1000;
+            pt += vt * millis / secondsToRotate / 1000;
             bounce();
         }
 
@@ -254,7 +319,7 @@ public class ShapeBouncer extends JPanel {
             // IDEA: start color change cycle at bounce? Bounce -> fade out -> change -> fade in
 
             // transparency: faint at edges
-            double dist = distanceFromEdge() * 10;
+            double dist = distanceFromEdge() * transparency;
             // don't fade all the way -- bounce & switch colors at 95% transparency
             double transparency = Math.max(0, 0.95 - dist);
             painter.setTransparency(transparency);
@@ -264,7 +329,8 @@ public class ShapeBouncer extends JPanel {
 //            g2.drawString(shorten("d " + d3), -20, -10);
 //            g2.drawString(shorten("t " + transparency), -20, 90);
 
-            piece = new QwirklePiece(color, piece.getShape());
+            if (changeColors)
+                piece = new QwirklePiece(color, piece.getShape());
             painter.paint(g2, piece);
             g2.setTransform(before);
         }

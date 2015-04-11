@@ -36,7 +36,7 @@ public class SwingOldMain {
         JFrame frame = new QwirkleFrame();
         frame.setContentPane(ui);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        SwingSetup.addWindowSizer(frame);
+        SwingSetup.addWindowSizer(frame, SwingOldMain.class);
         frame.setVisible(true);
 
         // go!

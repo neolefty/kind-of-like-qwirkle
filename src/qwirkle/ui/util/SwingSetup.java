@@ -13,30 +13,31 @@ import java.util.prefs.Preferences;
 
 public class SwingSetup {
     /** Automatically save & restore size of window from prefs. */
-    public static void addWindowSizer(final JFrame frame) {
+    public static void addWindowSizer(final JFrame frame, Class classForPrefs) {
         // dismiss move operations until we've established our position from prefs
         final boolean[] windowOpened = { false };
+        final Preferences prefs = getPrefs(classForPrefs);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
-                frame.setBounds(getStartingBounds());
+                frame.setBounds(getStartingBounds(prefs));
                 windowOpened[0] = true;
             }
             @Override
             public void windowClosing(WindowEvent e) {
-                saveWindowBounds(frame);
+                saveWindowBounds(frame, prefs);
             }
         });
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 if (windowOpened[0]) // we'll get this event before windowOpened
-                    saveWindowBounds(frame);
+                    saveWindowBounds(frame, prefs);
             }
             @Override
             public void componentMoved(ComponentEvent e) {
                 if (windowOpened[0]) // we'll get this event before windowOpened
-                    saveWindowBounds(frame);
+                    saveWindowBounds(frame, prefs);
             }
         });
     }
@@ -53,10 +54,9 @@ public class SwingSetup {
     }
 */
 
-    public static void saveWindowBounds(JFrame frame) {
+    public static void saveWindowBounds(JFrame frame, Preferences prefs) {
         if (frame.isVisible()) {
             Rectangle r = frame.getBounds();
-            Preferences prefs = getPrefs();
             prefs.putInt(SetupKit.PREFS_WINDOW_LEFT, r.x);
             prefs.putInt(SetupKit.PREFS_WINDOW_TOP, r.y);
             prefs.putInt(SetupKit.PREFS_WINDOW_WIDTH, r.width);
@@ -64,10 +64,8 @@ public class SwingSetup {
         }
     }
 
-    public static Rectangle getStartingBounds() {
+    public static Rectangle getStartingBounds(Preferences prefs) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-        Preferences prefs = getPrefs();
 
         int left = prefs.getInt(SetupKit.PREFS_WINDOW_LEFT, screenSize.width / 4);
         int top = prefs.getInt(SetupKit.PREFS_WINDOW_TOP, screenSize.height / 4);
@@ -94,7 +92,7 @@ public class SwingSetup {
         return ui;
     }
 
-    private static Preferences getPrefs() {
-        return Preferences.userNodeForPackage(SetupKit.class);
+    private static Preferences getPrefs(Class cls) {
+        return Preferences.userNodeForPackage(cls);
     }
 }

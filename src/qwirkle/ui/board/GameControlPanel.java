@@ -3,8 +3,6 @@ package qwirkle.ui.board;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.*;
 import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.QwirkleTurn;
 import qwirkle.ui.util.AutoSizeButton;
 import qwirkle.ui.util.AutoSizeLabel;
 
@@ -102,26 +100,5 @@ public class GameControlPanel extends JPanel {
         add(stepButton);
         add(Box.createHorizontalStrut(10));
         add(runButton);
-
-        // score labels - update when score changes
-        for (final QwirklePlayer player : game.getPlayers()) {
-            final JLabel score = new AutoSizeLabel(this, "", 0.05);
-//            setColors(score);
-            game.getStatus().listen(new GameStatus.TurnListener() {
-                @Override
-                public void turn(final QwirkleTurn turn) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            String summary = "  " + player.getName();
-                            if (turn != null && turn.getStatus() != null)
-                                summary += ": " + turn.getStatus().getScore(player);
-                            score.setText(summary);
-                        }
-                    });
-                }
-            });
-            add(score);
-        }
     }
 }
