@@ -22,8 +22,8 @@ public class SwingMain {
     // TODO enable designing your own shape / color
     // TODO test different numbers of shapes & colors
 
-//    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
-    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
+//    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
