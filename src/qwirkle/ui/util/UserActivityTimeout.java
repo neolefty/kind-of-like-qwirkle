@@ -44,7 +44,7 @@ public class UserActivityTimeout {
     public class TimeoutEvent {
         private long elapsedMillis;
         private TimeoutEvent(long elapsedMillis) { this.elapsedMillis = elapsedMillis; }
-
+        /** How long has it been since the last user activity? */
         public long getElapsedMillis() { return elapsedMillis; }
     }
 
@@ -68,7 +68,7 @@ public class UserActivityTimeout {
     /** Start paying attention (if not already doing it). */
     synchronized public boolean resume() {
         if (!running) {
-            resetActivity();
+            resetTimer();
             running = true;
             new Thread() {
                 private long lastCheck = System.currentTimeMillis();
@@ -147,11 +147,11 @@ public class UserActivityTimeout {
             bus.post(new ResumeEvent());
             firedTimeout = false;
         }
-        resetActivity();
+        resetTimer();
     }
 
     /** Reset the activity timer to now, and watch for a timeout. */
-    private void resetActivity() {
+    private void resetTimer() {
         firedTimeout = false;
         lastActivity = System.currentTimeMillis();
     }

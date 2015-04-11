@@ -5,6 +5,7 @@ import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
+import qwirkle.ui.util.ScreenSaverPane;
 import qwirkle.ui.util.SwingKitty;
 import qwirkle.ui.util.SwingSetup;
 
@@ -20,6 +21,9 @@ public class SwingMain {
     // TODO choose shapes & colors to use
     // TODO enable designing your own shape / color
     // TODO test different numbers of shapes & colors
+
+//    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
+    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -43,10 +47,21 @@ public class SwingMain {
 
                 // add a view of the game
                 QwirkleGamePanel gamePanel = new QwirkleGamePanel(game);
-                frame.setContentPane(gamePanel);
+
+                // with a screensaver
+                ShapeBouncer screensaver = new ShapeBouncer(game);
+                screensaver.setResetOnResume(true);
+                screensaver.setStepMillis(16);
+                screensaver.setTransparency(4);
+                screensaver.setSecondsToCross(8);
+                screensaver.setSecondsToRotate(4);
+
+                ScreenSaverPane ssp = new ScreenSaverPane(gamePanel, screensaver, SCREENSAVER_TIMEOUT);
+                frame.setContentPane(ssp);
 
                 // set colors (only need it once, after everything is added)
                 SwingKitty.setColors(gamePanel);
+                SwingKitty.setColors(screensaver);
 
                 // show the window
                 frame.setVisible(true);

@@ -1,11 +1,12 @@
-package qwirkle.ui.main;
+package qwirkle.ui.attic;
 
 import qwirkle.control.GameManager;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
-import qwirkle.ui.util.ScreenSaverPane;
+import qwirkle.ui.main.QwirkleFrame;
+import qwirkle.ui.main.QwirkleGamePanel;
 import qwirkle.ui.util.SwingKitty;
 import qwirkle.ui.util.SwingSetup;
 
@@ -13,7 +14,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SwingMain2 {
+public class SwingMainSimple {
 
     // TODO add human player
     // TODO add player panels
@@ -21,8 +22,6 @@ public class SwingMain2 {
     // TODO choose shapes & colors to use
     // TODO enable designing your own shape / color
     // TODO test different numbers of shapes & colors
-
-    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -42,17 +41,14 @@ public class SwingMain2 {
                 frame.setSize(900, 600); // default size for first time
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
                 // listen for movement & save it to prefs
-                SwingSetup.addWindowSizer(frame, SwingMain2.class);
+                SwingSetup.addWindowSizer(frame, SwingMainSimple.class);
 
                 // add a view of the game
-                ShapeBouncer screensaver = new ShapeBouncer(game);
                 QwirkleGamePanel gamePanel = new QwirkleGamePanel(game);
-                ScreenSaverPane ssp = new ScreenSaverPane(gamePanel, screensaver, SCREENSAVER_TIMEOUT);
-                frame.setContentPane(ssp);
+                frame.setContentPane(gamePanel);
 
                 // set colors (only need it once, after everything is added)
                 SwingKitty.setColors(gamePanel);
-                SwingKitty.setColors(screensaver);
 
                 // show the window
                 frame.setVisible(true);

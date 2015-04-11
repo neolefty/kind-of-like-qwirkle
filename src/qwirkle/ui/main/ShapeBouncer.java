@@ -42,32 +42,6 @@ public class ShapeBouncer extends JPanel {
 
     private boolean changeColors = true;
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("All The Shapes!");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        SwingSetup.addWindowSizer(frame, ShapeBouncer.class);
-
-        boolean allShapes = false;
-
-        ShapeBouncer bouncer;
-        if (allShapes) {
-            int copies = 3;
-            List<QwirkleShape> shapes = new ArrayList<>();
-            for (int i = 0; i < copies; ++i)
-                shapes.addAll(Arrays.asList(QwirkleShape.values()));
-            QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
-            bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
-        }
-        else {
-            bouncer = new ShapeBouncer(new GameManager(new QwirkleSettings()));
-            bouncer.changeColors = false;
-        }
-        frame.setContentPane(bouncer);
-        SwingKitty.setColors(bouncer);
-
-        frame.setVisible(true);
-    }
-
     /** The pieces that are bouncing around. */
     private List<QwirklePiece> pieces = new ArrayList<>();
 
@@ -105,10 +79,28 @@ public class ShapeBouncer extends JPanel {
         resume();
 
         addComponentListener(new ComponentAdapter() {
-            @Override public void componentResized(ComponentEvent e) { updateScale(); }
-            @Override public void componentShown(ComponentEvent e) { resume(); }
-            @Override public void componentHidden(ComponentEvent e) { pause(); }
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateScale();
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+//                System.out.println("Bouncer is shown.");
+                resume();
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+//                System.out.println("Hidden bouncer is.");
+                pause();
+            }
         });
+    }
+
+    /** How many millis between screen updates? */
+    public void setStepMillis(long stepMillis) {
+        this.stepMillis = stepMillis;
     }
 
     private static Collection<QwirklePiece> generatePieces(GameManager game) {
@@ -147,6 +139,8 @@ public class ShapeBouncer extends JPanel {
     private void resume() {
         pause();
         lastUpdate = System.currentTimeMillis();
+        if (resetOnResume)
+            scatter();
         updateThread = new UpdateThread();
         updateThread.start();
     }
@@ -343,6 +337,32 @@ public class ShapeBouncer extends JPanel {
         }
         private double distanceFromEdgeY() { return Math.min(py, 1-py); }
         private double distanceFromEdgeX() { return Math.min(px, 1-px); }
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("All The Shapes!");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        SwingSetup.addWindowSizer(frame, ShapeBouncer.class);
+
+        boolean allShapes = false;
+
+        ShapeBouncer bouncer;
+        if (allShapes) {
+            int copies = 3;
+            List<QwirkleShape> shapes = new ArrayList<>();
+            for (int i = 0; i < copies; ++i)
+                shapes.addAll(Arrays.asList(QwirkleShape.values()));
+            QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
+            bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
+        }
+        else {
+            bouncer = new ShapeBouncer(new GameManager(new QwirkleSettings()));
+            bouncer.changeColors = false;
+        }
+        frame.setContentPane(bouncer);
+        SwingKitty.setColors(bouncer);
+
+        frame.setVisible(true);
     }
 
     /** Pick one at random. */
