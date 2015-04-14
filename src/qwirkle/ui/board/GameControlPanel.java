@@ -9,6 +9,8 @@ import qwirkle.ui.util.AutoSizeLabel;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /** Start, stop, take a turn. */
 public class GameControlPanel extends JPanel {
@@ -38,12 +40,26 @@ public class GameControlPanel extends JPanel {
             }
         });
 
+        // take turns in their own thread, to avoid blocking the event queue
+        final ExecutorService turnTaker = Executors.newSingleThreadExecutor();
         // button: take a single turn
         final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
         stepButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                game.step();
+            @Override public void actionPerformed(ActionEvent actionEvent) {
+                stepButton.setEnabled(false);
+                // take a turn outside of the event thread, to avoid delays
+                turnTaker.submit(new Runnable() {
+                    @Override public void run() {
+                        game.step();
+                        // get back into the event loop to re-enable the button
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override public void run() {
+                                stepButton.setEnabled(true);
+                                stepButton.grabFocus();
+                            }
+                        });
+                    }
+                });
             }
         });
 
