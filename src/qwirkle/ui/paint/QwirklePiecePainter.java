@@ -4,20 +4,21 @@ import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.impl.*;
+import qwirkle.ui.util.HasTransparency;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Paint a qwirkle piece. */
-public class QwirklePiecePainter {
+public class QwirklePiecePainter implements HasTransparency {
     /** The dimensions of the area we're responsible to paint. */
     public static final int HEIGHT = 100, WIDTH = 100;
 
     /** The amount of the square to fill with ink when we draw a shape (approximate). */
     public static double FILL_FRACTION = 0.3;
 
-    /** How transparent should the shapes be? 0 = not at all, 1 = invisible.
+    /** How transparent should the shapes be? 0 = opaque, 1 = invisible.
      *  Default 0. */
     private float transparency = 0;
 

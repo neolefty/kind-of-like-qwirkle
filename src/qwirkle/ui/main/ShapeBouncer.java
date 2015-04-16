@@ -6,6 +6,7 @@ import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.QwirklePiecePainter;
+import qwirkle.ui.util.HasTransparency;
 import qwirkle.ui.util.SwingKitty;
 import qwirkle.ui.util.SwingSetup;
 
@@ -18,7 +19,7 @@ import java.util.*;
 import java.util.List;
 
 /** Bounce the shapes around inside. */
-public class ShapeBouncer extends JPanel {
+public class ShapeBouncer extends JPanel implements HasTransparency {
     /** How many seconds should a piece take (on average) to cross the window? */
     private double secondsToCross = 12; // 2.5;
 
@@ -38,7 +39,10 @@ public class ShapeBouncer extends JPanel {
 
     /** How close to the edge of the window do the pieces get before they turn transparent?
      *  2 for always somewhat transparent, higher for closer to the edge. Default 10. */
-    private double transparency = 10;
+    private double edgeTransparency = 10;
+
+    /** Is the whole thing being faded out? 0 no, 1 yes completely. */
+    private double overallTransparency = 0;
 
     private boolean changeColors = true;
 
@@ -98,6 +102,12 @@ public class ShapeBouncer extends JPanel {
         });
     }
 
+    /** Set overall transparency. 1 clear, 0 opaque. */
+    @Override
+    public void setTransparency(double transparency) {
+        this.overallTransparency = transparency;
+    }
+
     /** How many millis between screen updates? */
     public void setStepMillis(long stepMillis) {
         this.stepMillis = stepMillis;
@@ -120,12 +130,14 @@ public class ShapeBouncer extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        synchronized (pieceInfos) {
-            for (QwirklePiece piece : pieces) {
-                PieceInfo info = pieceInfos.get(piece);
-                info.paint(g2, piece);
+        if (hasFinishedResuming) { // don't do anything until we've finished resuming
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            synchronized (pieceInfos) {
+                for (QwirklePiece piece : pieces) {
+                    PieceInfo info = pieceInfos.get(piece);
+                    info.paint(g2, piece);
+                }
             }
         }
     }
@@ -134,8 +146,10 @@ public class ShapeBouncer extends JPanel {
         if (updateThread != null)
             updateThread.stopRunning();
         updateThread = null;
+        hasFinishedResuming = false;
     }
 
+    private boolean hasFinishedResuming = false;
     private void resume() {
         pause();
         lastUpdate = System.currentTimeMillis();
@@ -143,6 +157,7 @@ public class ShapeBouncer extends JPanel {
             scatter();
         updateThread = new UpdateThread();
         updateThread.start();
+        hasFinishedResuming = true;
     }
 
     private void step() {
@@ -179,8 +194,8 @@ public class ShapeBouncer extends JPanel {
 
     /** How close to the edge of the window do the pieces get before they turn transparent?
      *  2 for always somewhat transparent, higher for closer to the edge. Default 10. */
-    public void setTransparency(int transparency) {
-        this.transparency = transparency;
+    public void setEdgeTransparency(int transparency) {
+        this.edgeTransparency = transparency;
     }
 
     /** How many seconds does the fastest piece take to cross the screen?
@@ -198,6 +213,10 @@ public class ShapeBouncer extends JPanel {
 
     public void setResetOnResume(boolean resetOnResume) {
         this.resetOnResume = resetOnResume;
+    }
+
+    public long getStepMillis() {
+        return stepMillis;
     }
 
     private class UpdateThread extends Thread {
@@ -313,15 +332,16 @@ public class ShapeBouncer extends JPanel {
             // IDEA: start color change cycle at bounce? Bounce -> fade out -> change -> fade in
 
             // transparency: faint at edges
-            double dist = distanceFromEdge() * transparency;
+            double dist = distanceFromEdge() * edgeTransparency;
             // don't fade all the way -- bounce & switch colors at 95% transparency
             double transparency = Math.max(0, 0.95 - dist);
+            transparency = SwingKitty.combineTransparency(transparency, overallTransparency);
             painter.setTransparency(transparency);
 
             // debug
 //            g2.setColor(Color.GRAY);
 //            g2.drawString(shorten("d " + d3), -20, -10);
-//            g2.drawString(shorten("t " + transparency), -20, 90);
+//            g2.drawString(shorten("t " + edgeTransparency), -20, 90);
 
             if (changeColors)
                 piece = new QwirklePiece(color, piece.getShape());

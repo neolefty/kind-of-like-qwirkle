@@ -8,6 +8,7 @@ import qwirkle.players.StupidPlayer;
 import qwirkle.ui.util.ScreenSaverPane;
 import qwirkle.ui.util.SwingKitty;
 import qwirkle.ui.util.SwingSetup;
+import qwirkle.ui.util.TransparencyFader;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ public class SwingMain {
     // TODO enable designing your own shape / color
     // TODO test different numbers of shapes & colors
 
-    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
-//    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+//    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
+    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -52,12 +53,15 @@ public class SwingMain {
                 ShapeBouncer screensaver = new ShapeBouncer(game);
                 screensaver.setResetOnResume(true);
                 screensaver.setStepMillis(16);
-                screensaver.setTransparency(4);
+                screensaver.setEdgeTransparency(4);
                 screensaver.setSecondsToCross(8);
                 screensaver.setSecondsToRotate(4);
 
                 // manage the game & screensaver panels with a ScreenSaverPane
-                ScreenSaverPane ssp = new ScreenSaverPane(gamePanel, screensaver, SCREENSAVER_TIMEOUT);
+                ScreenSaverPane.Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
+                ScreenSaverPane ssp = new ScreenSaverPane
+                        (gamePanel, screensaver, fader, SCREENSAVER_TIMEOUT);
+//                ssp.setFadeMillis(5000);
                 frame.setContentPane(ssp);
 
                 // set colors (only need it once, after everything is added)

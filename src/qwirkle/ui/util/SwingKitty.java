@@ -18,4 +18,9 @@ public class SwingKitty {
             }
         }
     }
+
+    /** Combine two transparencies. */
+    public static double combineTransparency(double t1, double t2) {
+        return 1 - (1 - t1) * (1 - t2);
+    }
 }

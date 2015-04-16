@@ -29,8 +29,6 @@ public class GameControlPanel extends JPanel {
             }
         });
 
-        // TODO consider putting score labels under buttons
-
         // button: new game
         final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
         newGame.addActionListener(new ActionListener() {
