@@ -1,4 +1,6 @@
-package qwirkle.control;
+package qwirkle.control.event;
+
+import qwirkle.control.GameStatus;
 
 /** Event posted (by AnnotatedGame) when a game ends. */
 public class GameOver {

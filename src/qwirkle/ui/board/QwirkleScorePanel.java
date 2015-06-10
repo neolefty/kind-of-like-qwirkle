@@ -4,7 +4,7 @@ import qwirkle.control.GameManager;
 import qwirkle.control.GameStatus;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleTurn;
-import qwirkle.ui.util.AutoSizeLabel;
+import qwirkle.ui.swing.AutoSizeLabel;
 
 import javax.swing.*;
 

@@ -7,8 +7,8 @@ import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.main.QwirkleFrame;
 import qwirkle.ui.main.QwirkleGamePanel;
-import qwirkle.ui.util.SwingKitty;
-import qwirkle.ui.util.SwingSetup;
+import qwirkle.ui.swing.SwingKitty;
+import qwirkle.ui.swing.SwingSetup;
 
 import javax.swing.*;
 import java.util.ArrayList;

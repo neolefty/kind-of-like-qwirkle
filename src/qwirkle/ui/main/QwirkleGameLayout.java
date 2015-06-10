@@ -2,7 +2,7 @@ package qwirkle.ui.main;
 
 import qwirkle.ui.board.PlayerPanel;
 import qwirkle.ui.board.QwirkleGridPanel;
-import qwirkle.ui.util.LayoutBase;
+import qwirkle.ui.swing.LayoutBase;
 
 import java.awt.*;
 import java.util.LinkedHashSet;

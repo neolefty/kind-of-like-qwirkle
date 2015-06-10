@@ -1,4 +1,4 @@
-package qwirkle.ui.util;
+package qwirkle.ui.swing;
 
 /** Use HasTransparency to fade something. */
 public class TransparencyFader implements ScreenSaverPane.Fader {

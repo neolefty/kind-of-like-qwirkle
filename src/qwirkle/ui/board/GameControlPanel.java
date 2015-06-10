@@ -2,9 +2,11 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.*;
+import qwirkle.control.event.GameOver;
+import qwirkle.control.event.GameStarted;
 import qwirkle.game.QwirkleBoard;
-import qwirkle.ui.util.AutoSizeButton;
-import qwirkle.ui.util.AutoSizeLabel;
+import qwirkle.ui.swing.AutoSizeButton;
+import qwirkle.ui.swing.AutoSizeLabel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

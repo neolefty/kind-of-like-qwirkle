@@ -6,9 +6,9 @@ import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.QwirklePiecePainter;
-import qwirkle.ui.util.HasTransparency;
-import qwirkle.ui.util.SwingKitty;
-import qwirkle.ui.util.SwingSetup;
+import qwirkle.ui.swing.HasTransparency;
+import qwirkle.ui.swing.SwingKitty;
+import qwirkle.ui.swing.SwingSetup;
 
 import javax.swing.*;
 import java.awt.*;

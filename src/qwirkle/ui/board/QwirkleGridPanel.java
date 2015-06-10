@@ -2,13 +2,13 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameStarted;
+import qwirkle.control.event.GameStarted;
+import qwirkle.control.event.HighlightTurn;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirklePlacement;
 import qwirkle.game.QwirkleTurn;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class QwirkleGridPanel extends JPanel {
     private QwirkleGridLayout layout;
@@ -19,7 +19,7 @@ public class QwirkleGridPanel extends JPanel {
     public QwirkleGridPanel(EventBus bus) {
         this.eventBus = bus;
         setOpaque(true);
-        setBackground(Color.BLACK);
+//        setBackground(Color.BLACK);
         layout = new QwirkleGridLayout();
         setLayout(layout);
         setBlankIncluded(true);
@@ -38,11 +38,20 @@ public class QwirkleGridPanel extends JPanel {
                 refresh();
             }
 
+            @Subscribe
+            public void highlightTurn(HighlightTurn highlight) {
+                setHighlighted(highlight.getTurn());
+            }
+
 //            @Subscribe
 //            public void gameOver(GameOver go) {
 //                lastTurn = null;
 //            }
         });
+    }
+
+    public void setHighlighted(QwirkleTurn turn) {
+
     }
 
     public EventBus getEventBus() { return eventBus; }
@@ -70,10 +79,10 @@ public class QwirkleGridPanel extends JPanel {
                 if (blankIncluded) {
                     for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
                         for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
-                            add(new QwirklePiecePanel(grid, x, y, lastTurn.containsLocation(x, y)));
+                            add(new QwirklePiecePanel(eventBus, grid, x, y, lastTurn.containsLocation(x, y)));
                 } else {
                     for (QwirklePlacement p : grid.getPlacements())
-                        add(new QwirklePiecePanel(p, lastTurn.containsLocation(p.getLocation())));
+                        add(new QwirklePiecePanel(eventBus, p, lastTurn.containsLocation(p.getLocation())));
                 }
         }
         validate();

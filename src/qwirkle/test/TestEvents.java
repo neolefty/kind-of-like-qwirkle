@@ -2,8 +2,8 @@ package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.AnnotatedGame;
-import qwirkle.control.GameOver;
-import qwirkle.control.GameStarted;
+import qwirkle.control.event.GameOver;
+import qwirkle.control.event.GameStarted;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlayer;

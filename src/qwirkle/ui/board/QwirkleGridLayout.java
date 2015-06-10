@@ -3,7 +3,7 @@ package qwirkle.ui.board;
 import qwirkle.game.HasQwirkleLocation;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;
-import qwirkle.ui.util.LayoutBase;
+import qwirkle.ui.swing.LayoutBase;
 
 import java.awt.*;
 

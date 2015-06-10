@@ -5,10 +5,10 @@ import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
-import qwirkle.ui.util.ScreenSaverPane;
-import qwirkle.ui.util.SwingKitty;
-import qwirkle.ui.util.SwingSetup;
-import qwirkle.ui.util.TransparencyFader;
+import qwirkle.ui.swing.ScreenSaverPane;
+import qwirkle.ui.swing.SwingKitty;
+import qwirkle.ui.swing.SwingSetup;
+import qwirkle.ui.swing.TransparencyFader;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ public class SwingMain {
     // TODO enable designing your own shape / color
     // TODO test different numbers of shapes & colors
 
-//    public static final long SCREENSAVER_TIMEOUT = 3 * 60 * 1000; // 3 minutes
-    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+//    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

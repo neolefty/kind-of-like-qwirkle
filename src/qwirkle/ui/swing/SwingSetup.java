@@ -1,4 +1,4 @@
-package qwirkle.ui.util;
+package qwirkle.ui.swing;
 
 import qwirkle.ui.attic.BoardMonolithicPanel;
 import qwirkle.ui.attic.QwirkleGridLayoutPanel;

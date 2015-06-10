@@ -5,7 +5,7 @@ import qwirkle.game.QwirklePlayer;
 import qwirkle.players.MaxPlayer;
 import qwirkle.control.GameManager;
 import qwirkle.ui.main.QwirkleFrame;
-import qwirkle.ui.util.SwingSetup;
+import qwirkle.ui.swing.SwingSetup;
 
 import javax.swing.*;
 import java.util.ArrayList;

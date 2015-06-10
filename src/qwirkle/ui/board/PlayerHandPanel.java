@@ -3,10 +3,9 @@ package qwirkle.ui.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
-import qwirkle.control.GameStarted;
+import qwirkle.control.event.GameStarted;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleGridImpl;
-import qwirkle.ui.board.QwirkleGridPanel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,12 +2,12 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
-import qwirkle.control.GameStarted;
+import qwirkle.control.event.GameStarted;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleTurn;
-import qwirkle.ui.util.AutoSizeLabel;
-import qwirkle.ui.util.FontAutosizer;
-import qwirkle.ui.util.HasAspectRatio;
+import qwirkle.ui.swing.AutoSizeLabel;
+import qwirkle.ui.swing.FontAutosizer;
+import qwirkle.ui.swing.HasAspectRatio;
 
 import javax.swing.*;
 import java.awt.*;

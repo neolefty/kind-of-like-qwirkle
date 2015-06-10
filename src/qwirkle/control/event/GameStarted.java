@@ -1,4 +1,6 @@
-package qwirkle.control;
+package qwirkle.control.event;
+
+import qwirkle.control.GameStatus;
 
 /** Event posted (by GameStatus) when a game is started. */
 public class GameStarted {

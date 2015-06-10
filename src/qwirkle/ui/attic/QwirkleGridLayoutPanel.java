@@ -9,8 +9,11 @@ import java.awt.*;
 
 /** Chopped up into a grid of QwirklePiecePanels. */
 public class QwirkleGridLayoutPanel extends QwirkleGridSubscriberPanel {
+    private EventBus bus;
+
     public QwirkleGridLayoutPanel(EventBus bus) {
         super(bus);
+        this.bus = bus;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class QwirkleGridLayoutPanel extends QwirkleGridSubscriberPanel {
             int y = r + minY;
             for (int c = 0; c < w; ++c) {
                 int x = c + minX;
-                add(new QwirklePiecePanel(grid, x, y));
+                add(new QwirklePiecePanel(bus, grid, x, y));
             }
         }
         validate();

@@ -1,6 +1,9 @@
 package qwirkle.control;
 
 import com.google.common.eventbus.EventBus;
+import qwirkle.control.event.GameOver;
+import qwirkle.control.event.GameStarted;
+import qwirkle.control.event.PreEvent;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
 
@@ -13,15 +16,15 @@ import java.util.*;
  *  <p>Events:</p>
  *
  *  <ul>
- *      <li>Game starts: {@link GameStarted}</li>
+ *      <li>Game starts: {@link qwirkle.control.event.GameStarted}</li>
  *      <li>Turn is taken: {@link QwirkleTurn}</li>
  *      <li>A player drew some pieces at the end of their turn: {@link QwirkleDraw}</li>
  *      <li>Board changes: {@link QwirkleBoard}</li>
- *      <li>Game ends: {@link GameOver}</li>
+ *      <li>Game ends: {@link qwirkle.control.event.GameOver}</li>
  *  </ul>
  *
  *  <p>Events are posted to the {@link EventBus} in two stages.
- *  First, wrapped in a {@link PreEvent} to allow setup by internal objects
+ *  First, wrapped in a {@link qwirkle.control.event.PreEvent} to allow setup by internal objects
  *  such as AnnotatedGame and second, normally, for GUI etc.</p>*/
 public class GameManager {
     private static final int[] eventBusSerial = { 0 }; // serial number for event bus

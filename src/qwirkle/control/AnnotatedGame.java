@@ -2,6 +2,8 @@ package qwirkle.control;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import qwirkle.control.event.GameOver;
+import qwirkle.control.event.PreEvent;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirklePlayer;
