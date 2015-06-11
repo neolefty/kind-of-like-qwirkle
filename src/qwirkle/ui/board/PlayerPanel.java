@@ -22,7 +22,6 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     public static final double HORIZONTAL_ASPECT_RATIO = 5;
 
     private PlayerHandPanel handPanel;
-    // TODO adjust labels' font to fit? Maybe tie together sizes of all labels of same type (name & score, best move, etc)?
     private AutoSizeLabel nameLabel, scoreLabel, bestMoveLabel, scoreSeparatorLabel;
     private Boolean vertical = null;
 
@@ -40,7 +39,6 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         autoSizeLabels.add(scoreLabel);
         scoreSeparatorLabel = new AutoSizeLabel(this, ": ", fraction);
         autoSizeLabels.add(scoreSeparatorLabel);
-        // TODO highlight best move on mouseover
         bestMoveLabel = new AutoSizeLabel(this, "", fraction * 0.7);
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);

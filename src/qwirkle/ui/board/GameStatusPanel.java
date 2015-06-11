@@ -15,7 +15,6 @@ import javax.swing.*;
 
 /** Show the status messages from a game. */
 public class GameStatusPanel extends Box {
-    // TODO show scrolling messages "joe plays 3 pieces for 6 points ... bob wins with 192 points ... repeat"
     // Show the status of the current turn and the overall game
     private HighlightLabel turnLabel, bestTurnLabel;
     private QwirkleTurn bestTurn, lastTurn;
@@ -30,7 +29,6 @@ public class GameStatusPanel extends Box {
         TurnHighlighter lastHL = new TurnHighlighter(new TurnGetter() {
             @Override public QwirkleTurn getTurn() { return lastTurn; }
         });
-        // TODO reorganize color constants into their own place, and refer to them there from everywhere
         turnLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,
                 lastHL.createHighlighter(true), lastHL.createHighlighter(false));
         bestTurnLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,

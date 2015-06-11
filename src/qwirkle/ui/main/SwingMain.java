@@ -16,15 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SwingMain {
-
     // TODO add human player
-    // TODO add player panels
     // TODO add taunts
+    // TODO add designing your own shape / color
     // TODO choose shapes & colors to use
-    // TODO enable designing your own shape / color
-    // TODO test different numbers of shapes & colors
-    // TODO start new game automatically if continuing
-    // TODO debug board not resetting when new game starts
+    // TODO start new game automatically if playing continuously
+    // TODO disable screensaver if playing continuously
 
     public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 //    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds

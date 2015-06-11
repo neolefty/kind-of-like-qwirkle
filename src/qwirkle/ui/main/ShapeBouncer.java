@@ -65,7 +65,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
     private long lastUpdate = System.currentTimeMillis();
 
     public ShapeBouncer(GameManager game) {
-        // TODO: move this to scatter to keep it up to date with the game
+        // idea: move this to scatter to keep it up to date with the game
         this(generatePieces(game));
     }
 

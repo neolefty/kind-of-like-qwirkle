@@ -16,12 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SwingMainSimple {
-
-    // TODO add human player
-    // TODO add taunts
-    // TODO choose shapes & colors to use
-    // TODO add designing your own shape / color
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
