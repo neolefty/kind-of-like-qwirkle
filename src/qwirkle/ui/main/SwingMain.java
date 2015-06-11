@@ -26,8 +26,8 @@ public class SwingMain {
     // TODO start new game automatically if continuing
     // TODO debug board not resetting when new game starts
 
-//    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
-    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+//    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static class Colors {
         public static final Color FG = Color.WHITE;

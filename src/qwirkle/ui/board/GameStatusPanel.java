@@ -17,7 +17,7 @@ import javax.swing.*;
 public class GameStatusPanel extends Box {
     // TODO show scrolling messages "joe plays 3 pieces for 6 points ... bob wins with 192 points ... repeat"
     // Show the status of the current turn and the overall game
-    private HighlightLabel turnLabel, gameLabel;
+    private HighlightLabel turnLabel, bestTurnLabel;
     private QwirkleTurn bestTurn, lastTurn;
     private EventBus bus;
 
@@ -33,11 +33,13 @@ public class GameStatusPanel extends Box {
         // TODO reorganize color constants into their own place, and refer to them there from everywhere
         turnLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,
                 lastHL.createHighlighter(true), lastHL.createHighlighter(false));
-        gameLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,
+        bestTurnLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,
                 bestHL.createHighlighter(true), bestHL.createHighlighter(false));
+//        add(Box.createHorizontalStrut(5), Box.LEFT_ALIGNMENT);
         add(turnLabel, Box.LEFT_ALIGNMENT);
         add(Box.createGlue()); // fill space between labels
-        add(gameLabel, Box.RIGHT_ALIGNMENT);
+        add(bestTurnLabel, Box.RIGHT_ALIGNMENT);
+//        add(Box.createHorizontalStrut(5), Box.RIGHT_ALIGNMENT);
         mgr.getEventBus().register(new Object() {
             @Subscribe
             public void gameOver(GameOver gameOver) {
@@ -46,7 +48,7 @@ public class GameStatusPanel extends Box {
             @Subscribe public void gameStarted(GameStarted started) {
                 bestTurn = null;
                 lastTurn = null;
-//                gameLabel.setText("");
+//                bestTurnLabel.setText("");
             }
             @Subscribe public void status(GameStatus status) {
                 if (status.isFinished()) {
@@ -55,12 +57,14 @@ public class GameStatusPanel extends Box {
                 else if (status.getAnnotatedGame() != null
                         && status.getAnnotatedGame().getBestTurn() != null) {
                     bestTurn = status.getAnnotatedGame().getBestTurn();
-                    gameLabel.setText("Best so far: " + bestTurn.getSummary());
+                    bestTurnLabel.setText(" Best: " + bestTurn.getSummary(true) + " ");
+                    bestTurnLabel.setToolTipText("Best turn so far in this game: " + bestTurn.getSummary(false));
                 }
             }
             @Subscribe public void turn(QwirkleTurn turn) {
                 lastTurn = turn;
-                turnLabel.setText(turn.getSummary());
+                turnLabel.setText(" Last: " + turn.getSummary(true) + " ");
+                turnLabel.setToolTipText("Last turn: " + turn.getSummary(false));
             }
         });
     }
@@ -111,6 +115,8 @@ public class GameStatusPanel extends Box {
     }
 
     private void finished(GameStatus status) {
-        gameLabel.setText("Game Over: " + status.getFinishedMessage());
+        // TODO add a label that only pops up when the game ends. Maybe below the two turn labels?
+        turnLabel.setText(" Game Over: " + status.getFinishedMessage() + " ");
+        turnLabel.setToolTipText("Game Over: " + status.getFinishedMessage());
     }
 }

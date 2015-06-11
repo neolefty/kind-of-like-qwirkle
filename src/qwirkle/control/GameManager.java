@@ -106,9 +106,9 @@ public class GameManager {
     private void checkStalled() {
         if (!isFinished()) {
             if (nPasses >= playerHands.size() * 3)
-                finished("All players have passed 3 in a row. Game ends from stalling.");
+                finished("All players passed 3 times in a row. Game is stalled.");
             else if (deck.isEmpty() && nPasses == playerHands.size())
-                finished("No more tiles to draw, and all players have passed. Game ends.");
+                finished("No more tiles to draw, and all players have passed.");
         }
     }
 
@@ -252,7 +252,7 @@ public class GameManager {
             post(turn);
             // announce the end only after we broadcast the last turn
             if (itsOver)
-                finished(cur.getName() + " played their last tile. Bonus " + bonus + " for other players' remaining tiles.");
+                finished(cur.getName() + " went out. Bonus " + bonus + " for other players' tiles.");
             // did the game stall (broadcasts game finished events)
             checkStalled();
 

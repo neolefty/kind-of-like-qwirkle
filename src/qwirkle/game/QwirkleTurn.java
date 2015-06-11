@@ -129,13 +129,19 @@ public class QwirkleTurn {
     }
 
     public String getSummary() {
+        return getSummary(false);
+    }
+    public String getSummary(boolean extraShort) {
         if (isDiscard())
-            return player.getName() + (getDiscardCount() == 0 ? " passes." : " discards " + getDiscardCount() + " pieces.");
+            return player.getName() + (getDiscardCount() == 0 ? " passes."
+                    : " discards " + getDiscardCount() + (extraShort ? "" : " pieces."));
         else if (isDrawToHand())
-            return player.getName() + " draws " + placements.size() + " pieces.";
+            return player.getName() + " draws " + placements.size() + (extraShort ? "" : " pieces.");
         else
-            return player.getName() + " plays " + placements.size() + " pieces for " + getScore() + " points"
-                    + (bonus == 0 ? "" : " (bonus + " + bonus + ")") + ".";
+            return player.getName() + " plays " + placements.size() + (extraShort ? " " : " pieces ")
+                    + "for " + getScore() + (extraShort ? "" : " points")
+                    + (bonus == 0 ? "" : " (bonus + " + bonus + ")")
+                    + (extraShort ? "" : ".");
     }
 
     /** Does this turn include a placement at <tt>location</tt>? */
