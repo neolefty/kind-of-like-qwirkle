@@ -31,8 +31,6 @@ public class SwingOldMain {
 
         // display
         JPanel ui = SwingSetup.createUI(game);
-//        ui.setOpaque(true);
-//        ui.setBackground(new Color(40, 60, 80));
         JFrame frame = new QwirkleFrame();
         frame.setContentPane(ui);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

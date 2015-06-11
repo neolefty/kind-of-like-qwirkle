@@ -16,6 +16,7 @@ public class HighlightLabel extends AutoSizeLabel {
                           Color highlightBg, Runnable highlightAction, Runnable unhighlightAction)
     {
         super(parent, "", fraction);
+        setOpaque(true);
         this.highlightBg = highlightBg;
         this.highlightAction = highlightAction;
         this.unhighlightAction = unhighlightAction;

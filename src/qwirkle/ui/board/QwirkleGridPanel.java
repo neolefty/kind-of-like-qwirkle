@@ -18,8 +18,6 @@ public class QwirkleGridPanel extends JPanel {
 
     public QwirkleGridPanel(EventBus bus) {
         this.eventBus = bus;
-        setOpaque(true);
-//        setBackground(Color.BLACK);
         layout = new QwirkleGridLayout();
         setLayout(layout);
         setBlankIncluded(true);
