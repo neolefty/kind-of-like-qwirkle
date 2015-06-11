@@ -380,7 +380,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
             bouncer.changeColors = false;
         }
         frame.setContentPane(bouncer);
-        SwingKitty.setColors(bouncer);
+        SwingKitty.setColors(bouncer, SwingMain.Colors.FG, SwingMain.Colors.BG);
 
         frame.setVisible(true);
     }

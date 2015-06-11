@@ -6,6 +6,7 @@ import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 import qwirkle.ui.board.QwirkleGridSubscriberPanel;
+import qwirkle.ui.main.SwingMain;
 import qwirkle.ui.paint.QwirklePiecePainter;
 
 import java.awt.*;
@@ -29,7 +30,7 @@ public class BoardMonolithicPanel extends QwirkleGridSubscriberPanel {
         AffineTransform oldTransform = g2.getTransform();
 
         // background - black
-        g.setColor(Color.BLACK);
+        g.setColor(SwingMain.Colors.BG);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         // transform

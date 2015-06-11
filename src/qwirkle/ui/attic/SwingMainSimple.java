@@ -17,11 +17,9 @@ import java.util.List;
 public class SwingMainSimple {
 
     // TODO add human player
-    // TODO add player panels
     // TODO add taunts
     // TODO choose shapes & colors to use
-    // TODO enable designing your own shape / color
-    // TODO test different numbers of shapes & colors
+    // TODO add designing your own shape / color
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

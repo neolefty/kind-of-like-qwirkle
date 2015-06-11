@@ -8,6 +8,7 @@ import qwirkle.control.event.GameOver;
 import qwirkle.control.event.GameStarted;
 import qwirkle.control.event.HighlightTurn;
 import qwirkle.game.QwirkleTurn;
+import qwirkle.ui.main.SwingMain;
 import qwirkle.ui.swing.HighlightLabel;
 
 import javax.swing.*;
@@ -23,19 +24,16 @@ public class GameStatusPanel extends Box {
     public GameStatusPanel(final GameManager mgr) {
         super(BoxLayout.X_AXIS);
         this.bus = mgr.getEventBus();
-
         TurnHighlighter bestHL = new TurnHighlighter(new TurnGetter() {
             @Override public QwirkleTurn getTurn() { return bestTurn; }
         });
         TurnHighlighter lastHL = new TurnHighlighter(new TurnGetter() {
             @Override public QwirkleTurn getTurn() { return lastTurn; }
         });
-
         // TODO reorganize color constants into their own place, and refer to them there from everywhere
-        // TODO debug label highlighting on mouseover
-        turnLabel = new HighlightLabel(this, 0.025, QwirklePiecePanel.MOUSE_HL,
+        turnLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,
                 lastHL.createHighlighter(true), lastHL.createHighlighter(false));
-        gameLabel = new HighlightLabel(this, 0.025, QwirklePiecePanel.MOUSE_HL,
+        gameLabel = new HighlightLabel(this, 0.025, SwingMain.Colors.MOUSE_HL,
                 bestHL.createHighlighter(true), bestHL.createHighlighter(false));
         add(turnLabel, Box.LEFT_ALIGNMENT);
         add(Box.createGlue()); // fill space between labels
@@ -72,7 +70,7 @@ public class GameStatusPanel extends Box {
         QwirkleTurn getTurn();
     }
 
-    /** Creates runnables to highlight turns. */
+    /** Creates TurnGetters to highlight turns. */
     private class TurnHighlighter {
         private QwirkleTurn lastHighlight = null;
         private TurnGetter getter;

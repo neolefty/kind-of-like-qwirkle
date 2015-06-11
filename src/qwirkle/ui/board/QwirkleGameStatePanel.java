@@ -3,6 +3,7 @@ package qwirkle.ui.board;
 import qwirkle.control.GameManager;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.ui.main.QwirkleGameLayout;
+import qwirkle.ui.main.SwingMain;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +17,7 @@ public class QwirkleGameStatePanel extends JPanel {
         // TODO update when players are added / removed
         for (QwirklePlayer player : mgr.getPlayers()) {
             PlayerPanel pp = new PlayerPanel(mgr, player);
-            pp.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            pp.setBorder(BorderFactory.createLineBorder(SwingMain.Colors.DEBUG));
             add(pp);
         }
 

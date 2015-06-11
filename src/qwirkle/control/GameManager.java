@@ -55,7 +55,6 @@ public class GameManager {
     public GameManager(QwirkleSettings settings) {
         this.settings = settings;
         synchronized (eventBusSerial) {
-//            bus = new EventBus(getClass().getSimpleName() + eventBusSerial[0]++);
             bus = new EventBus(new SubscriberExceptionHandler() {
                 @Override
                 public void handleException(Throwable exception, SubscriberExceptionContext context) {

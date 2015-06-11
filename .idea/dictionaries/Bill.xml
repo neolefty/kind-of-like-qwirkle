@@ -2,10 +2,12 @@
   <dictionary name="Bill">
     <words>
       <w>accessors</w>
+      <w>deregister</w>
       <w>fader</w>
       <w>prestarter</w>
       <w>recurse</w>
       <w>screensaver</w>
+      <w>unsubscribe</w>
     </words>
   </dictionary>
 </component>

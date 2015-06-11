@@ -12,14 +12,10 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
+import static qwirkle.ui.main.SwingMain.Colors.*;
+
 public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkleLocation {
     private static final QwirklePiecePainter painter = new QwirklePiecePainter();
-    public static final Color BG = Color.black,
-            MOUSE = Color.GRAY.darker(), // Color.BLUE.darker(),
-            CLICK = Color.GRAY; // Color.CYAN.darker();
-    public static final Color BG_HL = Color.darkGray,
-            MOUSE_HL = Color.GRAY, // Color.GREEN.darker(),
-            CLICK_HL = Color.GRAY.brighter(); // Color.YELLOW.darker();
 
     private QwirklePiece piece;
     private QwirkleLocation location;
@@ -32,10 +28,6 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
         this(bus, grid, new QwirkleLocation(x, y), highlight);
     }
 
-    public QwirklePiecePanel(EventBus bus, QwirkleGrid grid, QwirkleLocation location) {
-        this(bus, grid, location, false);
-    }
-
     public QwirklePiecePanel(final EventBus bus, QwirkleGrid grid, QwirkleLocation location, boolean highlight) {
         this(bus, location, highlight);
         piece = grid.get(location);
@@ -43,15 +35,11 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
             setToolTipText(new QwirklePlacement(piece, location).toString());
     }
 
-    public QwirklePiecePanel(EventBus bus, QwirklePlacement place) { this(bus, place, false); }
-
     public QwirklePiecePanel(EventBus bus, QwirklePlacement place, boolean highlight) {
         this(bus, place.getLocation(), highlight);
         this.piece = place.getPiece();
         setToolTipText(piece.toString());
     }
-
-    public QwirklePiecePanel(EventBus bus, QwirkleLocation location) { this(bus, location, false); }
 
     /** The real constructor (all others call it). */
     public QwirklePiecePanel(EventBus bus, QwirkleLocation location, boolean highlight) {

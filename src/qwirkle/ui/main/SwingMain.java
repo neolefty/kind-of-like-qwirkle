@@ -11,6 +11,7 @@ import qwirkle.ui.swing.SwingSetup;
 import qwirkle.ui.swing.TransparencyFader;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,21 @@ public class SwingMain {
 
 //    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
     public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+
+    public static class Colors {
+        public static final Color FG = Color.WHITE;
+        public static final Color BG = Color.BLACK;
+        public static final Color MOUSE = Color.GRAY.darker();
+        public static final Color CLICK = Color.GRAY;
+        public static final Color MOUSE_HL = Color.GRAY;
+        public static final Color BG_HL = Color.DARK_GRAY;
+        public static final Color CLICK_HL = Color.GRAY.brighter();
+        public static final Color DEBUG = Color.GREEN;
+        // Color.CYAN.darker();
+        // Color.YELLOW.darker();
+        // Color.BLUE.darker(),
+        // Color.GREEN.darker(),
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -67,7 +83,7 @@ public class SwingMain {
                 frame.setContentPane(ssp);
 
                 // set colors (only need it once, after everything is added)
-                SwingKitty.setColors(frame);
+                SwingKitty.setColors(frame, Colors.FG, Colors.BG);
 
                 // show the window
                 frame.setVisible(true);
