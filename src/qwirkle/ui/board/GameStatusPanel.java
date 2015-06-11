@@ -32,6 +32,7 @@ public class GameStatusPanel extends Box {
         });
 
         // TODO reorganize color constants into their own place, and refer to them there from everywhere
+        // TODO debug label highlighting on mouseover
         turnLabel = new HighlightLabel(this, 0.025, QwirklePiecePanel.MOUSE_HL,
                 lastHL.createHighlighter(true), lastHL.createHighlighter(false));
         gameLabel = new HighlightLabel(this, 0.025, QwirklePiecePanel.MOUSE_HL,

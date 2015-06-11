@@ -2,6 +2,8 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.GameManager;
 import qwirkle.control.event.GameStarted;
 import qwirkle.game.*;
@@ -22,7 +24,14 @@ public class PlayerHandPanel extends QwirkleGridPanel {
     private boolean vertical;
 
     public PlayerHandPanel(GameManager mgr, QwirklePlayer player) {
-        super(new EventBus("Fake board events for " + player.getName()));
+//        super(new EventBus("Fake board events for " + player.getName()));
+        super(new EventBus(new SubscriberExceptionHandler() {
+            @Override
+            public void handleException(Throwable exception, SubscriberExceptionContext context) {
+                System.out.println("Player hand panel event bus: " + context);
+                exception.printStackTrace(System.out);
+            }
+        }));
         setBlankIncluded(false);
 
         this.mgr = mgr;

@@ -1,6 +1,8 @@
 package qwirkle.control;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.event.GameOver;
 import qwirkle.control.event.GameStarted;
 import qwirkle.control.event.PreEvent;
@@ -53,7 +55,14 @@ public class GameManager {
     public GameManager(QwirkleSettings settings) {
         this.settings = settings;
         synchronized (eventBusSerial) {
-            bus = new EventBus(getClass().getSimpleName() + eventBusSerial[0]++);
+//            bus = new EventBus(getClass().getSimpleName() + eventBusSerial[0]++);
+            bus = new EventBus(new SubscriberExceptionHandler() {
+                @Override
+                public void handleException(Throwable exception, SubscriberExceptionContext context) {
+                    System.out.println(context);
+                    exception.printStackTrace(System.out);
+                }
+            });
         }
         status = new GameStatus(this);
         deck = new ArrayList<>();

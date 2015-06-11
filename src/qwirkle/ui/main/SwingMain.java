@@ -22,9 +22,11 @@ public class SwingMain {
     // TODO choose shapes & colors to use
     // TODO enable designing your own shape / color
     // TODO test different numbers of shapes & colors
+    // TODO start new game automatically if continuing
+    // TODO debug board not resetting when new game starts
 
-    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
-//    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+//    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

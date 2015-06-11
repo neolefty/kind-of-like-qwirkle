@@ -63,15 +63,24 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
 
     private void initEvents(final EventBus bus) {
         if (bus != null) {
-            bus.register(this);
+            // question: why do we register and deregister when hidden and shown?
+            // answer: it's a hack, but it's the best I could figure out. The only
+            // event I can find that you receive when you are removed from a container
+            // is also fired when you are hidden from view (like, when the idle screen activates).
+            // Plus, it works.
             addAncestorListener(new AncestorListener() {
                 // be sure to unsubscribe when we're discarded
                 @Override
                 public void ancestorRemoved(AncestorEvent event) {
-                    bus.unregister(QwirklePiecePanel.this);
+                    try {
+                        bus.unregister(QwirklePiecePanel.this);
+                    } catch(IllegalArgumentException ignored) {} // sometimes double-removed because of events
                 }
 
-                @Override public void ancestorAdded(AncestorEvent event) { }
+                @Override public void ancestorAdded(AncestorEvent event) {
+                    bus.register(QwirklePiecePanel.this);
+                }
+
                 @Override public void ancestorMoved(AncestorEvent event) { }
             });
         }
