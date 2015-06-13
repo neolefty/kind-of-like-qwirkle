@@ -23,26 +23,22 @@ public class QwirkleGridPanel extends JPanel {
         setBlankIncluded(true);
         bus.register(new Object() {
             /** Receive new turn notifications from the event bus. */
-            @Subscribe
-            public void nextTurn(QwirkleTurn turn) {
+            @Subscribe public void nextTurn(QwirkleTurn turn) {
                 lastTurn = turn;
                 refresh();
             }
 
             /** Need this to catch new games, since a turn isn't posted right away. */
-            @Subscribe
-            public void gameStarted(GameStarted started) {
+            @Subscribe public void gameStarted(GameStarted started) {
                 lastTurn = null;
                 refresh();
             }
 
-            @Subscribe
-            public void highlightTurn(HighlightTurn highlight) {
+            @Subscribe public void highlightTurn(HighlightTurn highlight) {
                 setHighlighted(highlight.getTurn());
             }
 
-//            @Subscribe
-//            public void gameOver(GameOver go) {
+//            @Subscribe public void gameOver(GameOver go) {
 //                lastTurn = null;
 //            }
         });

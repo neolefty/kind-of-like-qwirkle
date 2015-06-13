@@ -54,12 +54,8 @@ public class TestEvents {
                 if (firstAnnotated[0] == null) // only grab it the first time
                     firstAnnotated[0] = started.getStatus().getAnnotatedGame();
             }
-            @Subscribe public void gameOver(GameOver over) {
-                receivedGameOver[0]++;
-            }
-            @Subscribe public void turnPassed(QwirkleTurn turn) {
-                ++turnCount[0];
-            }
+            @Subscribe public void gameOver(GameOver over) { receivedGameOver[0]++; }
+            @Subscribe public void turnPassed(QwirkleTurn turn) { ++turnCount[0]; }
         });
 
         assert firstAnnotated[0] == null;

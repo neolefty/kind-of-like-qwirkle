@@ -36,13 +36,11 @@ public class ScreenSaverPane extends JPanel {
         watchControls(screensaver);
 
         bus.register(new Object() {
-            @Subscribe
-            public void timeout(UserActivityTimeout.TimeoutEvent event) {
+            @Subscribe public void timeout(UserActivityTimeout.TimeoutEvent event) {
                 layout.show(ScreenSaverPane.this, KEY_SS);
             }
 
-            @Subscribe
-            public void resume(UserActivityTimeout.ResumeEvent event) {
+            @Subscribe public void resume(UserActivityTimeout.ResumeEvent event) {
                 if (fader != null) {
                     fader.fade(fadeMillis, new Runnable() {
                         @Override public void run() { showMain(); }

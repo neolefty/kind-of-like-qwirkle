@@ -4,10 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.control.event.GameOver;
 import qwirkle.control.event.GameStarted;
 import qwirkle.control.event.PreEvent;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.QwirkleTurn;
+import qwirkle.game.*;
 
 import java.util.List;
 
@@ -51,6 +48,9 @@ public class GameStatus {
     /** What is a player's score? */
     public int getScore(QwirklePlayer player) { return annotatedGame.getScore(player); }
 
+    /** What are the current settings for this game? */
+    public QwirkleSettings getSettings() { return game.getSettings(); }
+
     /** Is the game finished? */
     public boolean isFinished() { return game.isFinished(); }
 
@@ -67,9 +67,5 @@ public class GameStatus {
 
     public interface TurnListener {
         @Subscribe void turn(QwirkleTurn turn);
-    }
-
-    public void post() {
-        game.getEventBus().post(this);
     }
 }

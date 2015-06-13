@@ -74,8 +74,7 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
         }
     }
 
-    @Subscribe
-    public void highlight(HighlightTurn hl) {
+    @Subscribe public void highlight(HighlightTurn hl) {
         if (hl.getTurn().containsLocation(location))
             setHighlighted(hl.isHighlighted());
     }

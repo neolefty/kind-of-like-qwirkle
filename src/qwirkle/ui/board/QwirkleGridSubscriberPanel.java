@@ -11,8 +11,7 @@ import javax.swing.*;
 public abstract class QwirkleGridSubscriberPanel extends JPanel {
     private QwirkleGrid grid;
 
-    @Subscribe
-    public void update(QwirkleGrid grid) {
+    @Subscribe public void update(QwirkleGrid grid) {
         if (this.grid != grid) {
             this.grid = grid;
             onUpdate(grid);

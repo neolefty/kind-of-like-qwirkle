@@ -15,16 +15,23 @@ public class HighlightLabel extends AutoSizeLabel {
     public HighlightLabel(Component parent, double fraction,
                           Color highlightBg, Runnable highlightAction, Runnable unhighlightAction)
     {
+        this(parent, fraction, highlightBg);
+        setHighlightAction(highlightAction);
+        setUnhighlightAction(unhighlightAction);
+    }
+
+    public HighlightLabel(Component parent, double fraction, Color highlightBg) {
         super(parent, "", fraction);
         setOpaque(true);
         this.highlightBg = highlightBg;
-        this.highlightAction = highlightAction;
-        this.unhighlightAction = unhighlightAction;
         addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) { highlight(); }
             @Override public void mouseExited(MouseEvent e) { unhighlight(); }
         });
     }
+
+    public void setHighlightAction(Runnable highlightAction) { this.highlightAction = highlightAction; }
+    public void setUnhighlightAction(Runnable unhighlightAction) { this.unhighlightAction = unhighlightAction; }
 
     private void highlight() {
         regularBg = getBackground();

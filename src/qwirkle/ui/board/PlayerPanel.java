@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /** Show the current state of a player. Their hand, name, score, best play? */
 public class PlayerPanel extends JPanel implements HasAspectRatio {
@@ -22,8 +23,10 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     public static final double HORIZONTAL_ASPECT_RATIO = 5;
 
     private PlayerHandPanel handPanel;
-    private AutoSizeLabel nameLabel, scoreLabel, bestMoveLabel, scoreSeparatorLabel;
+    private AutoSizeLabel nameLabel, scoreLabel, scoreSeparatorLabel;
+    private TurnHighlightingLabel bestMoveLabel;
     private Boolean vertical = null;
+    private QwirkleTurn bestMove = null;
 
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
@@ -39,7 +42,9 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         autoSizeLabels.add(scoreLabel);
         scoreSeparatorLabel = new AutoSizeLabel(this, ": ", fraction);
         autoSizeLabels.add(scoreSeparatorLabel);
-        bestMoveLabel = new AutoSizeLabel(this, "", fraction * 0.7);
+        bestMoveLabel = new TurnHighlightingLabel(mgr.getEventBus(), this, fraction * 0.7,
+                new Callable<QwirkleTurn>() { @Override public QwirkleTurn call() { return bestMove; } });
+        bestMoveLabel.setOpaque(false);
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);
 
@@ -60,11 +65,14 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     }
 
     private void setBestMove(QwirkleTurn best) {
-        if (best == null)
+        this.bestMove = best;
+        if (best == null) {
             bestMoveLabel.setText(" ");
+            bestMoveLabel.setToolTipText("");
+        }
         else {
             bestMoveLabel.setText("Best: " + best.getScore());
-//            bestMoveLabel.setText("Best: " + best.getScore() + " for " + best.getPlacements().size() + " pieces");
+            bestMoveLabel.setToolTipText("Best turn in this game: " + best.getSummary());
         }
     }
 

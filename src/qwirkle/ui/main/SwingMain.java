@@ -52,7 +52,6 @@ public class SwingMain {
                 players.add(new StupidPlayer("1"));
                 QwirkleSettings settings = new QwirkleSettings(players);
                 final GameManager game = new GameManager(settings);
-                game.start();
 
                 // make a window frame
                 QwirkleFrame frame = new QwirkleFrame();
@@ -83,6 +82,7 @@ public class SwingMain {
                 SwingKitty.setColors(frame, Colors.FG, Colors.BG);
 
                 // show the window
+                game.start();
                 frame.setVisible(true);
             }
         });

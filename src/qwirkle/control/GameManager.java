@@ -6,6 +6,7 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.event.GameOver;
 import qwirkle.control.event.GameStarted;
 import qwirkle.control.event.PreEvent;
+import qwirkle.control.event.TurnStarting;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
 
@@ -18,11 +19,12 @@ import java.util.*;
  *  <p>Events:</p>
  *
  *  <ul>
- *      <li>Game starts: {@link qwirkle.control.event.GameStarted}</li>
+ *      <li>Game starts: {@link GameStarted}</li>
  *      <li>Turn is taken: {@link QwirkleTurn}</li>
  *      <li>A player drew some pieces at the end of their turn: {@link QwirkleDraw}</li>
  *      <li>Board changes: {@link QwirkleBoard}</li>
- *      <li>Game ends: {@link qwirkle.control.event.GameOver}</li>
+ *      <li>Ready to start next turn: {@link TurnStarting}</li>
+ *      <li>Game ends: {@link GameOver}</li>
  *  </ul>
  *
  *  <p>Events are posted to the {@link EventBus} in two stages.
@@ -39,6 +41,7 @@ public class GameManager {
     private QwirkleSettings settings = new QwirkleSettings();
 
     // Map of players to their hands. Current player is always the first one in the map.
+    // note that this is also the official list of players
     private final LinkedHashMap<QwirklePlayer, List<QwirklePiece>> playerHands = new LinkedHashMap<>();
 
     // References to board, current player, finished message
@@ -168,6 +171,9 @@ public class GameManager {
         // deal first cards -- propagated as a QwirkleTurn
         deal();
         chooseFirstPlayer();
+
+        // signal that the first turn is starting
+        bus.post(new TurnStarting(status));
     }
 
     /** Has this game started? True if any pieces have been dealt to players or if anything is played on the board. */
@@ -261,9 +267,6 @@ public class GameManager {
 
             // 5. advance to the next player
             advance();
-
-            // 6. make sure the game status is posted after all updates (messy, but not causing problems ... yet)
-            status.post();
         } catch(IllegalStateException e) {
             e.printStackTrace();
             System.err.println(board);
@@ -282,7 +285,8 @@ public class GameManager {
                             + " because their hand only has " + getHand(cur));
     }
 
-    /** Add a player and return a changer that will monitor its hand. */
+    /** Add a player and return a changer that will monitor its hand.
+     *  Players are actually controlled via QwirkleSettings. */
     private void addPlayer(QwirklePlayer player) {
         playerHands.put(player, new ArrayList<QwirklePiece>());
     }
@@ -337,6 +341,8 @@ public class GameManager {
             playerHands.put(cur, playerHands.remove(cur));
             // update the reference to the current player
             curPlayer = findCurrentPlayer();
+            // notify everyone that we're ready for a new turn
+            bus.post(new TurnStarting(status));
         }
     }
 

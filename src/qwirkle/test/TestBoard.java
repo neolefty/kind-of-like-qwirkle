@@ -2,7 +2,7 @@ package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
-import qwirkle.control.GameStatus;
+import qwirkle.control.event.TurnStarting;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
 import qwirkle.players.MaxPlayer;
@@ -66,7 +66,7 @@ public class TestBoard {
         for (int n = 0; n < trials; ++n) {
             // play a few rounds of a game
             GameManager mgr = new GameManager(settings);
-            final boolean[] boardChanged = { false }, statusChanged = { false };
+            final boolean[] boardChanged = { false }, turnStarted = { false };
             mgr.getEventBus().register(new Object() {
                 @Subscribe
                 public void board(QwirkleBoard board) {
@@ -74,12 +74,12 @@ public class TestBoard {
                 }
 
                 @Subscribe
-                public void status(GameStatus status) {
-                    statusChanged[0] = true;
+                public void status(TurnStarting turn) {
+                    turnStarted[0] = true;
                 }
             });
             assert !boardChanged[0];
-            assert !statusChanged[0];
+            assert !turnStarted[0];
             mgr.start();
             // advance to player #0
             if (mgr.getCurrentPlayer() == players[1]) {
@@ -92,7 +92,7 @@ public class TestBoard {
             mgr.step();
 //            System.out.println(mgr);
             assert boardChanged[0];
-            assert statusChanged[0];
+            assert turnStarted[0];
             //noinspection AssertWithSideEffects
             assert mgr.getCurrentPlayer() == players[1];
             mgr.step();
