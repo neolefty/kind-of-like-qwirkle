@@ -2,6 +2,7 @@ package qwirkle.test;
 
 import com.google.common.base.Splitter;
 import qwirkle.control.GameManager;
+import qwirkle.control.SingleThreaded;
 import qwirkle.game.*;
 import qwirkle.players.MaxPlayer;
 
@@ -74,7 +75,7 @@ public class ScriptedPlayer implements QwirklePlayer {
         /** When you use this, make sure that the first player actually deserves to go first
          *  (has the best first play) by the rules of the game.
          *  @param config a list of pieces, for example "gs,oc,gd,os,..." */
-        public ScriptedSettings(Collection<QwirklePlayer> players, String config) {
+        public ScriptedSettings(Collection<AsyncPlayer> players, String config) {
             super(players, 1);
             this.config = config;
         }
@@ -93,6 +94,7 @@ public class ScriptedPlayer implements QwirklePlayer {
 
     public static class ScriptedGameManager extends GameManager {
         public ScriptedGameManager() {
+            super(new SingleThreaded());
             setRandomDealing(false);
         }
     }

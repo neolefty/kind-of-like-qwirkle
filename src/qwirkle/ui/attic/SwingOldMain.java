@@ -1,7 +1,9 @@
 package qwirkle.ui.attic;
 
+import qwirkle.control.NewThreadEachTime;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirklePlayer;
+import qwirkle.players.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.control.GameManager;
 import qwirkle.ui.main.QwirkleFrame;
@@ -25,8 +27,8 @@ public class SwingOldMain {
         players.add(new MaxPlayer());
         players.add(new MaxPlayer());
         players.add(new MaxPlayer());
-        QwirkleSettings settings = new QwirkleSettings(players);
-        final GameManager game = new GameManager(settings);
+        QwirkleSettings settings = new QwirkleSettings(AsyncPlayerWrapper.wrap(players));
+        final GameManager game = new GameManager(settings, new NewThreadEachTime());
         game.start();
 
         // display

@@ -1,5 +1,6 @@
 package qwirkle.game;
 
+import qwirkle.players.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 
 import java.util.*;
@@ -18,18 +19,18 @@ public class QwirkleSettings {
             QwirkleColor.blue, QwirkleColor.green, QwirkleColor.yellow,
             QwirkleColor.orange, QwirkleColor.red, QwirkleColor.purple));
 
-    static public final List<QwirklePlayer> DEFAULT_PLAYERS
-            = Collections.unmodifiableList(Arrays.asList(
-            (QwirklePlayer) new MaxPlayer(), new MaxPlayer()));
+    static public final List<AsyncPlayer> DEFAULT_PLAYERS
+            = Collections.unmodifiableList(AsyncPlayerWrapper.wrap(Arrays.asList(
+            (QwirklePlayer) new MaxPlayer(), new MaxPlayer())));
 
     private final int nDecks;
     private final List<QwirkleShape> shapes;
     private final List<QwirkleColor> colors;
-    private final List<QwirklePlayer> players;
+    private final List<AsyncPlayer> players;
 
     public QwirkleSettings
             (int nDecks, Collection<QwirkleShape> shapes,
-             Collection<QwirkleColor> colors, Collection<QwirklePlayer> players)
+             Collection<QwirkleColor> colors, Collection<AsyncPlayer> players)
     {
         this.nDecks = nDecks;
         this.shapes = Collections.unmodifiableList(new ArrayList<>(shapes));
@@ -44,11 +45,11 @@ public class QwirkleSettings {
     /** A game with all default settings. */
     public QwirkleSettings() { this(DEFAULT_DECK_COUNT); }
 
-    public QwirkleSettings(Collection<QwirklePlayer> players) {
+    public QwirkleSettings(Collection<AsyncPlayer> players) {
         this(players, DEFAULT_DECK_COUNT);
     }
 
-    public QwirkleSettings(Collection<QwirklePlayer> players, int deckCount) {
+    public QwirkleSettings(Collection<AsyncPlayer> players, int deckCount) {
         this(deckCount, DEFAULT_SHAPES, DEFAULT_COLORS, players);
     }
 
@@ -63,7 +64,7 @@ public class QwirkleSettings {
     public List<QwirkleColor> getColors() { return colors; }
 
     /** Who is playing? */
-    public List<QwirklePlayer> getPlayers() { return players; }
+    public List<AsyncPlayer> getPlayers() { return players; }
 
     /** How many tiles should players hold at a time? Average of the number of colors & shapes, rounded up.
      *  For example, if we're playing with 7 colors and 4 shapes, hand size is 6. (7 + 4) / 2 = 5.5, round up to 6. */

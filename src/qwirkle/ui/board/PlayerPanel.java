@@ -3,7 +3,7 @@ package qwirkle.ui.board;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
 import qwirkle.control.event.GameStarted;
-import qwirkle.game.QwirklePlayer;
+import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleTurn;
 import qwirkle.ui.swing.AutoSizeLabel;
 import qwirkle.ui.swing.FontAutosizer;
@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-/** Show the current state of a player. Their hand, name, score, best play? */
+/** Show the current state of a player. Their hand, name, score, best play so far in the game. */
 public class PlayerPanel extends JPanel implements HasAspectRatio {
     /** If vertical, this is the ideal width-to-height ratio. */
     public static final double VERTICAL_ASPECT_RATIO = 1 / 7.5;
@@ -31,7 +31,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
 
-    public PlayerPanel(final GameManager mgr, final QwirklePlayer player) {
+    public PlayerPanel(final GameManager mgr, final AsyncPlayer player) {
         this.handPanel = new PlayerHandPanel(mgr, player);
 
         setLayout(new GridBagLayout());

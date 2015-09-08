@@ -1,7 +1,7 @@
 package qwirkle.ui.attic;
 
 import qwirkle.control.GameManager;
-import qwirkle.game.QwirklePlayer;
+import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.board.PlayerPanel;
 import qwirkle.ui.board.QwirkleGridPanel;
 
@@ -26,7 +26,7 @@ public class QwirkleGamePanelGBL extends JPanel {
         // player panels
         constraints.gridy = 0;
         constraints.weightx = .25;
-        for (QwirklePlayer player : mgr.getPlayers()) {
+        for (AsyncPlayer player : mgr.getPlayers()) {
             add(new PlayerPanel(mgr, player), constraints);
             constraints.gridx++;
         }

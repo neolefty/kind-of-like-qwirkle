@@ -1,8 +1,10 @@
 package qwirkle.ui.attic;
 
 import qwirkle.control.GameManager;
-import qwirkle.game.QwirklePlayer;
+import qwirkle.control.NewThreadEachTime;
+import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleSettings;
+import qwirkle.players.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.main.QwirkleFrame;
@@ -21,12 +23,12 @@ public class SwingMainSimple {
             @Override
             public void run() {
                 // set up a game
-                List<QwirklePlayer> players = new ArrayList<>();
-                players.add(new MaxPlayer("Sam"));
-                players.add(new MaxPlayer("Gilly"));
-                players.add(new StupidPlayer("1"));
+                List<AsyncPlayer> players = new ArrayList<>();
+                players.add(new AsyncPlayerWrapper(new MaxPlayer("Sam")));
+                players.add(new AsyncPlayerWrapper(new MaxPlayer("Gilly")));
+                players.add(new AsyncPlayerWrapper(new StupidPlayer("1")));
                 QwirkleSettings settings = new QwirkleSettings(players);
-                final GameManager game = new GameManager(settings);
+                final GameManager game = new GameManager(settings, new NewThreadEachTime());
                 game.start();
 
                 // make a window frame

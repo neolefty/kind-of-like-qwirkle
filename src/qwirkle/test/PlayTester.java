@@ -1,8 +1,11 @@
 package qwirkle.test;
 
 import qwirkle.control.GameManager;
+import qwirkle.control.SingleThreaded;
+import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirklePlayer;
+import qwirkle.players.AsyncPlayerWrapper;
 
 import java.util.Collection;
 
@@ -10,15 +13,15 @@ public class PlayTester {
     private final GameManager game;
 
     public PlayTester(QwirkleSettings settings) {
-        this.game = new GameManager(settings);
+        this.game = new GameManager(settings, new SingleThreaded());
     }
 
     public PlayTester(Collection<QwirklePlayer> players) {
-        this(new QwirkleSettings(players));
+        this(new QwirkleSettings(AsyncPlayerWrapper.wrap(players)));
     }
 
     /** Play once and return the winner. */
-    public QwirklePlayer play() {
+    public AsyncPlayer play() {
         return play(3);
     }
 
@@ -28,9 +31,10 @@ public class PlayTester {
 
     /** Play once and return the winner.
      *  @param nDecks the number of sets of tiles to use (default 3). */
-    public QwirklePlayer play(int nDecks) {
+    public AsyncPlayer play(int nDecks) {
         QwirkleSettings settings = game.getSettings();
-        settings = new QwirkleSettings(nDecks, settings.getShapes(), settings.getColors(), settings.getPlayers());
+        settings = new QwirkleSettings(nDecks, settings.getShapes(),
+                settings.getColors(), settings.getPlayers());
         play(settings);
         return game.getStatus().getLeader();
     }
@@ -42,7 +46,8 @@ public class PlayTester {
 //            QwirklePlayer cur = game.getCurrentPlayer().get();
 //            List<QwirklePlacement> play = game.step();
 //            QwirkleBoard board = game.getBoard().get();
-//            System.out.println("Player \"" + cur.getName() + "\" plays: " + play + " for " + board.getLastScore() + " points:");
+//            System.out.println("Player \"" + cur.getName() + "\" plays: " + play
+//                    + " for " + board.getLastScore() + " points:");
 //            System.out.println(board);
         }
     }

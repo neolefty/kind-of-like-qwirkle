@@ -40,13 +40,13 @@ public class GameStatus {
     public String getFinishedMessage() { return game.getFinishedMessage(); }
 
     /** Who is the current player? */
-    public QwirklePlayer getCurPlayer() { return game.getCurrentPlayer(); }
+    public AsyncPlayer getCurPlayer() { return game.getCurrentPlayer(); }
 
     /** What pieces remain to be drawn? */
     public List<QwirklePiece> getDeck() { return game.getDeck(); }
 
     /** What is a player's score? */
-    public int getScore(QwirklePlayer player) { return annotatedGame.getScore(player); }
+    public int getScore(AsyncPlayer player) { return annotatedGame.getScore(player); }
 
     /** What are the current settings for this game? */
     public QwirkleSettings getSettings() { return game.getSettings(); }
@@ -58,7 +58,7 @@ public class GameStatus {
     public AnnotatedGame getAnnotatedGame() { return annotatedGame; }
 
     /** The current leader. */
-    public QwirklePlayer getLeader() { return annotatedGame.getLeader(); }
+    public AsyncPlayer getLeader() { return annotatedGame.getLeader(); }
 
     public interface StatusListener {
         @Subscribe void gameStarted(GameStarted started);

@@ -1,7 +1,7 @@
 package qwirkle.control.event;
 
 import qwirkle.control.GameStatus;
-import qwirkle.game.QwirklePlayer;
+import qwirkle.game.AsyncPlayer;
 
 /** It's time for a new turn to start. */
 public class TurnStarting {
@@ -11,5 +11,5 @@ public class TurnStarting {
 
     public GameStatus getStatus() { return status; }
 
-    public QwirklePlayer getCurPlayer() { return status.getCurPlayer(); }
+    public AsyncPlayer getCurPlayer() { return status.getCurPlayer(); }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 /** A single turn in Qwirkle. Pieces placed on a grid by a player.
  *  Immutable except for getStatus(), which points to a long-lived object that tracks changes to the game. */
 public class QwirkleTurn {
-    private QwirklePlayer player;
+    private AsyncPlayer player;
     private GameStatus status;
     private int score;
     private List<QwirklePlacement> placements;
@@ -23,7 +23,7 @@ public class QwirkleTurn {
     /** <tt>player</tt> played <tt>placements</tt> for <tt>score</tt> points. */
     public static QwirkleTurn play
             (GameStatus status, Collection<QwirklePlacement> placements,
-             QwirklePlayer player, int score)
+             AsyncPlayer player, int score)
     {
         if (placements == null)
             throw new NullPointerException("placements collection is null");
@@ -36,7 +36,7 @@ public class QwirkleTurn {
     }
 
     /** <tt>player</tt> discarded <tt>discardCount</tt> pieces. */
-    public static QwirkleTurn discard(GameStatus status, QwirklePlayer player, int discardCount) {
+    public static QwirkleTurn discard(GameStatus status, AsyncPlayer player, int discardCount) {
         if (discardCount < 0)
             throw new IllegalArgumentException("Discard count is " + discardCount);
         return new QwirkleTurn(status, null, null, player, 0, discardCount); // 0 score, null placements
@@ -47,7 +47,7 @@ public class QwirkleTurn {
      *  and the placements are the new pieces (to highlight).
      *  The orientation of the board etc. is left up to the caller. */
     public static QwirkleTurn drawToHand
-            (QwirkleGrid hand, Collection<QwirklePlacement> draw, QwirklePlayer player)
+            (QwirkleGrid hand, Collection<QwirklePlacement> draw, AsyncPlayer player)
     {
         List<QwirklePlacement> drawList = Collections.unmodifiableList(new ArrayList<>(draw));
         return new QwirkleTurn(null, hand, drawList, player, 0, 0);
@@ -74,7 +74,7 @@ public class QwirkleTurn {
      *  @param score the score for the play. */
     private QwirkleTurn
             (GameStatus status, QwirkleGrid board, List<QwirklePlacement> placements,
-             QwirklePlayer player, int score, int discardCount)
+             AsyncPlayer player, int score, int discardCount)
     {
         if (board == null && status == null)
             throw new NullPointerException("Status and board are both null.");
@@ -100,7 +100,7 @@ public class QwirkleTurn {
     public GameStatus getStatus() { return status; }
 
     /** The player who made the play. Never null. */
-    public QwirklePlayer getPlayer() { return player; }
+    public AsyncPlayer getPlayer() { return player; }
 
     /** The total score for this play. Zero if a discard or pass. Greater than zero otherwise. */
     public int getScore() { return score + bonus; }

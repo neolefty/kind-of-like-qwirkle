@@ -4,10 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.event.GameOver;
 import qwirkle.control.event.PreEvent;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.QwirkleTurn;
+import qwirkle.game.*;
 
 import java.util.*;
 
@@ -21,7 +18,7 @@ public class AnnotatedGame {
     private List<QwirkleTurn> turnsNoMod = null; // version of turns list that is unmodifiable
     private QwirkleTurn bestTurn = null; // the turn with the best score so far
     private boolean finished = false; // has the game already finished?
-    private Map<QwirklePlayer, Integer> scores = new HashMap<>(); // scores
+    private Map<AsyncPlayer, Integer> scores = new HashMap<>(); // scores
 
     public AnnotatedGame(final EventBus bus) {
         bus.register(new Object() {
@@ -88,7 +85,7 @@ public class AnnotatedGame {
     }
 
     /** What is a player's score? 0 if not in the game. */
-    public int getScore(QwirklePlayer player) {
+    public int getScore(AsyncPlayer player) {
         if (!scores.containsKey(player)) return 0;
         else return scores.get(player);
     }
@@ -104,7 +101,7 @@ public class AnnotatedGame {
     public QwirkleTurn getBestTurn() { return bestTurn; }
 
     /** What is the best move made so far by a particular player? */
-    public QwirkleTurn getBestTurn(QwirklePlayer player) {
+    public QwirkleTurn getBestTurn(AsyncPlayer player) {
         QwirkleTurn best = null;
         for (QwirkleTurn t : turns)
             if (t.getPlayer() == player && t.getScore() > 0
@@ -122,10 +119,10 @@ public class AnnotatedGame {
     }
 
     /** The player with the highest score. */
-    public QwirklePlayer getLeader() {
+    public AsyncPlayer getLeader() {
         int max = -1;
-        QwirklePlayer result = null;
-        for (QwirklePlayer player : scores.keySet()) {
+        AsyncPlayer result = null;
+        for (AsyncPlayer player : scores.keySet()) {
             int score = scores.get(player);
             if (score > max) {
                 result = player;

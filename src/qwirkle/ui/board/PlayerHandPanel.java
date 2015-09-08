@@ -17,13 +17,13 @@ import java.util.List;
  *  the most recently drawn pieces. */
 public class PlayerHandPanel extends QwirkleGridPanel {
     private GameManager mgr;
-    private QwirklePlayer player;
+    private AsyncPlayer player;
     // what pieces did the player draw last?
     private List<QwirklePiece> lastDraw;
 
     private boolean vertical;
 
-    public PlayerHandPanel(GameManager mgr, QwirklePlayer player) {
+    public PlayerHandPanel(GameManager mgr, AsyncPlayer player) {
 //        super(new EventBus("Fake board events for " + player.getName()));
         super(new EventBus(new SubscriberExceptionHandler() {
             @Override

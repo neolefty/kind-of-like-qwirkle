@@ -8,14 +8,14 @@ import java.util.List;
 /** Event: A player drew some pieces at the end of their turn. */
 public class QwirkleDraw {
     private List<QwirklePiece> pieces;
-    private QwirklePlayer player;
-    public QwirkleDraw(QwirklePlayer player, Collection<QwirklePiece> pieces) {
+    private AsyncPlayer player;
+    public QwirkleDraw(AsyncPlayer player, Collection<QwirklePiece> pieces) {
         this.player = player;
         this.pieces = Collections.unmodifiableList(new ArrayList<>(pieces));
     }
 
     public List<QwirklePiece> getDrawn() { return pieces; }
-    public QwirklePlayer getPlayer() { return player; }
+    public AsyncPlayer getPlayer() { return player; }
 
     @Override
     public String toString() {

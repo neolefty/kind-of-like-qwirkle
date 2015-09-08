@@ -4,10 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.control.AnnotatedGame;
 import qwirkle.control.event.GameOver;
 import qwirkle.control.event.GameStarted;
-import qwirkle.game.QwirkleLocation;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.QwirkleTurn;
+import qwirkle.game.*;
+import qwirkle.players.AsyncPlayerWrapper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,9 +26,9 @@ public class TestEvents {
         h1 += "d:p4,p8;"; // p1 discards 2
         h2 += "rh,2,1,rd,2,2;"; // p2 plays 2
 
-        ScriptedPlayer p1 = new ScriptedPlayer("p1", h1);
-        ScriptedPlayer p2 = new ScriptedPlayer("p2", h2);
-        List<QwirklePlayer> players = Arrays.asList((QwirklePlayer) p1, p2);
+        AsyncPlayer p1 = new AsyncPlayerWrapper(new ScriptedPlayer("p1", h1));
+        AsyncPlayer p2 = new AsyncPlayerWrapper(new ScriptedPlayer("p2", h2));
+        List<AsyncPlayer> players = Arrays.asList(p1, p2);
         ScriptedPlayer.ScriptedSettings settings = new ScriptedPlayer.ScriptedSettings(players,
                 "pc,ph,pd,p4,od,oh," // p1 initial
                         + "oc,rc,gc,os,rs,gs," // p2 initial

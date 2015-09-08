@@ -2,9 +2,11 @@ package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
+import qwirkle.control.SingleThreaded;
 import qwirkle.control.event.TurnStarting;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
+import qwirkle.players.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 
@@ -33,11 +35,13 @@ public class TestBoard {
         int trials = 50; // run N times to make sure nothing random is going wrong
         QwirkleShape[] shapes = {QwirkleShape.heart, QwirkleShape.star8, QwirkleShape.diamond};
         QwirkleColor[] colors = {QwirkleColor.blue, QwirkleColor.purple};
-        QwirklePlayer[] players = { new MaxPlayer(), new StupidPlayer("duh") };
+        QwirklePlayer[] rawPlayers = { new MaxPlayer(), new StupidPlayer("duh") };
+        List<AsyncPlayer> players = AsyncPlayerWrapper.wrap(Arrays.asList(rawPlayers));
 
         // a deck should include one of each card
         for (int i = 0; i < trials; ++i) {
-            QwirkleSettings settings = new QwirkleSettings(1, Arrays.asList(shapes), Arrays.asList(colors), Arrays.asList(players));
+            QwirkleSettings settings = new QwirkleSettings(1, Arrays.asList(shapes),
+                    Arrays.asList(colors), players);
             assert settings.getHandSize() == 3;
             List<QwirklePiece> deck = settings.generate();
             assert deck.size() == shapes.length * colors.length;
@@ -51,7 +55,7 @@ public class TestBoard {
         // make sure a multi-deck deal works
         int nDecks = 5;
         QwirkleSettings settings = new QwirkleSettings(nDecks, Arrays.asList(shapes),
-                QwirkleSettings.DEFAULT_COLORS, Arrays.asList(players));
+                QwirkleSettings.DEFAULT_COLORS, players);
         List<QwirklePiece> deck = settings.generate();
         assert deck.size() == QwirkleSettings.DEFAULT_COLORS.size() * shapes.length * nDecks;
         QwirklePiece piece = new QwirklePiece(QwirkleSettings.DEFAULT_COLORS.get(0), shapes[0]);
@@ -65,7 +69,7 @@ public class TestBoard {
         // try a few times to make sure game works every time
         for (int n = 0; n < trials; ++n) {
             // play a few rounds of a game
-            GameManager mgr = new GameManager(settings);
+            GameManager mgr = new GameManager(settings, new SingleThreaded());
             final boolean[] boardChanged = { false }, turnStarted = { false };
             mgr.getEventBus().register(new Object() {
                 @Subscribe
@@ -82,23 +86,23 @@ public class TestBoard {
             assert !turnStarted[0];
             mgr.start();
             // advance to player #0
-            if (mgr.getCurrentPlayer() == players[1]) {
+            if (mgr.getCurrentPlayer() == players.get(1)) {
                 mgr.step();
 //                System.out.println(mgr);
             }
             // ensure that we're alternating between players
             //noinspection AssertWithSideEffects
-            assert mgr.getCurrentPlayer() == players[0];
+            assert mgr.getCurrentPlayer() == players.get(0);
             mgr.step();
 //            System.out.println(mgr);
             assert boardChanged[0];
             assert turnStarted[0];
             //noinspection AssertWithSideEffects
-            assert mgr.getCurrentPlayer() == players[1];
+            assert mgr.getCurrentPlayer() == players.get(1);
             mgr.step();
 //            System.out.println(mgr);
             //noinspection AssertWithSideEffects
-            assert mgr.getCurrentPlayer() == players[0];
+            assert mgr.getCurrentPlayer() == players.get(0);
         }
     }
 
