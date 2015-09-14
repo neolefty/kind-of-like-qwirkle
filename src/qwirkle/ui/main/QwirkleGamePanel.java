@@ -17,7 +17,7 @@ public class QwirkleGamePanel extends JPanel {
         add(new QwirkleGameStatePanel(mgr), BorderLayout.CENTER);
         // bottom: controls
         add(new GameControlPanel(mgr), BorderLayout.SOUTH);
-        // TODO move these to the bottom of the board, just above the controls, so they aren't next to the first player?
+        // TODO move controls to the bottom of the board, just above the controls, so they aren't next to the first player?
         // TODO consider shortening visible "Best" message to "Gilly, for 16 points" instead of "Gilly plays 2 for 16"
         // TODO add visible barrier or space between board and last player (especially in horizontal layout)
         // top: game status messages

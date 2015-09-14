@@ -33,16 +33,27 @@ public class HighlightLabel extends AutoSizeLabel {
     public void setHighlightAction(Runnable highlightAction) { this.highlightAction = highlightAction; }
     public void setUnhighlightAction(Runnable unhighlightAction) { this.unhighlightAction = unhighlightAction; }
 
+    private boolean shouldBeTransparent = true;
+
+    @Override
+    public void setOpaque(boolean opaque) {
+        super.setOpaque(opaque);
+        shouldBeTransparent = !opaque;
+    }
+
     private void highlight() {
         regularBg = getBackground();
+        super.setOpaque(true);
         setBackground(highlightBg);
         if (highlightAction != null)
             highlightAction.run();
     }
 
     private void unhighlight() {
-        if (regularBg != null)
+        if (regularBg != null) {
             setBackground(regularBg);
+            super.setOpaque(!shouldBeTransparent);
+        }
         if (unhighlightAction != null)
             unhighlightAction.run();
     }

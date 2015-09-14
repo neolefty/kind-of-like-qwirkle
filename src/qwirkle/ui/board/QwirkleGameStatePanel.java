@@ -36,7 +36,7 @@ public class QwirkleGameStatePanel extends JPanel {
 
         // board
         QwirkleGridPanel grid = new QwirkleGridPanel(mgr.getEventBus());
-        grid.setBlankIncluded(false);
+        grid.setBlankIncluded(true);
         add(grid);
     }
 

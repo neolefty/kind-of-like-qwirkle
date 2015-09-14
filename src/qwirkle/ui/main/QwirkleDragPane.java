@@ -67,11 +67,11 @@ public class QwirkleDragPane extends JComponent {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 AffineTransform t = g2.getTransform();
-
-                g2.translate(mouse.x - 50, mouse.y - 50);
                 double size = Math.sqrt(getHeight() * getWidth()) / 10;
+                g2.translate(mouse.x, mouse.y);
                 double scale = size / 100;
                 g2.scale(scale, scale);
+                g2.translate(-50, -50); // mouse at center of shape
                 new QwirklePiecePainter().paint(g2, pickup.getPlacement());
                 g2.setTransform(t);
             }

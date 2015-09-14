@@ -49,7 +49,7 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
         if (piece != null)
             setToolTipText(new QwirklePlacement(piece, location).toString());
         else
-            setToolTipText(location.toString());
+            setToolTipText("Empty space at " + location.toString());
     }
 
     private void initEvents() {
