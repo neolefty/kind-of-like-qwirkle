@@ -2,7 +2,7 @@ package qwirkle.test;
 
 import com.google.common.base.Splitter;
 import qwirkle.control.GameManager;
-import qwirkle.control.SingleThreaded;
+import qwirkle.control.SingleThreadedStrict;
 import qwirkle.game.*;
 import qwirkle.players.MaxPlayer;
 
@@ -94,7 +94,7 @@ public class ScriptedPlayer implements QwirklePlayer {
 
     public static class ScriptedGameManager extends GameManager {
         public ScriptedGameManager() {
-            super(new SingleThreaded());
+            super(new SingleThreadedStrict());
             setRandomDealing(false);
         }
     }

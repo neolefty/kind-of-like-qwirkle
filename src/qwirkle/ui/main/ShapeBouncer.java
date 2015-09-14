@@ -1,7 +1,7 @@
 package qwirkle.ui.main;
 
 import qwirkle.control.GameManager;
-import qwirkle.control.SingleThreaded;
+import qwirkle.control.SingleThreadedStrict;
 import qwirkle.game.QwirkleColor;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleSettings;
@@ -377,7 +377,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
             bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
         }
         else {
-            GameManager justForDeck = new GameManager(new QwirkleSettings(), new SingleThreaded());
+            GameManager justForDeck = new GameManager(new QwirkleSettings(), new SingleThreadedStrict());
             bouncer = new ShapeBouncer(justForDeck);
             bouncer.changeColors = false;
         }

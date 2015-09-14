@@ -1,7 +1,7 @@
 package qwirkle.test;
 
 import qwirkle.control.GameManager;
-import qwirkle.control.SingleThreaded;
+import qwirkle.control.SingleThreadedStrict;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.players.AsyncPlayerWrapper;
@@ -36,7 +36,7 @@ public class PerfTest {
         for (int i = 0; i < nPlayers; ++i)
             players.add(new MaxPlayer("Player " + i));
         QwirkleSettings settings = new QwirkleSettings(AsyncPlayerWrapper.wrap(players), nDecks);
-        GameManager mgr = new GameManager(settings, new SingleThreaded());
+        GameManager mgr = new GameManager(settings, new SingleThreadedStrict());
         System.out.println("Playing " + nGames + " games:");
         long start = System.currentTimeMillis();
         long lap = start;

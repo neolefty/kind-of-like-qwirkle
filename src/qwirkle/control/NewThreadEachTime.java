@@ -7,9 +7,12 @@ public class NewThreadEachTime implements ThreadingStrategy {
         new Thread() {
             @Override
             public void run() {
-                // TODO deal with unhandled exceptions, especially IllegalStateException
-                r.run();
+                try {
+                    r.run();
+                } catch(Throwable t) {
+                    t.printStackTrace();
+                }
             }
-        }.run();
+        }.start();
     }
 }

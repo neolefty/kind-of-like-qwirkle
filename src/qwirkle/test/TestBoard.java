@@ -2,7 +2,7 @@ package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
-import qwirkle.control.SingleThreaded;
+import qwirkle.control.SingleThreadedStrict;
 import qwirkle.control.event.TurnStarting;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
@@ -69,7 +69,7 @@ public class TestBoard {
         // try a few times to make sure game works every time
         for (int n = 0; n < trials; ++n) {
             // play a few rounds of a game
-            GameManager mgr = new GameManager(settings, new SingleThreaded());
+            GameManager mgr = new GameManager(settings, new SingleThreadedStrict());
             final boolean[] boardChanged = { false }, turnStarted = { false };
             mgr.getEventBus().register(new Object() {
                 @Subscribe
