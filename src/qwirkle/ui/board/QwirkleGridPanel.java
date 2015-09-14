@@ -3,18 +3,21 @@ package qwirkle.ui.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.event.GameStarted;
-import qwirkle.control.event.HighlightTurn;
 import qwirkle.game.QwirkleGrid;
+import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePlacement;
 import qwirkle.game.QwirkleTurn;
 
 import javax.swing.*;
+import java.awt.*;
 
-public class QwirkleGridPanel extends JPanel {
+public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGridLayout layout;
     private boolean blankIncluded;
     private QwirkleTurn lastTurn;
     private EventBus eventBus;
+
+    private boolean draggable = false;
 
     public QwirkleGridPanel(EventBus bus) {
         this.eventBus = bus;
@@ -28,24 +31,12 @@ public class QwirkleGridPanel extends JPanel {
                 refresh();
             }
 
-            /** Need this to catch new games, since a turn isn't posted right away. */
+            /** Clear the board when a new game starts. */
             @Subscribe public void gameStarted(GameStarted started) {
                 lastTurn = null;
                 refresh();
             }
-
-            @Subscribe public void highlightTurn(HighlightTurn highlight) {
-                setHighlighted(highlight.getTurn());
-            }
-
-//            @Subscribe public void gameOver(GameOver go) {
-//                lastTurn = null;
-//            }
         });
-    }
-
-    public void setHighlighted(QwirkleTurn turn) {
-
     }
 
     public EventBus getEventBus() { return eventBus; }
@@ -60,10 +51,6 @@ public class QwirkleGridPanel extends JPanel {
         }
     }
 
-    private QwirkleGrid getGrid() {
-        return lastTurn == null ? null : lastTurn.getGrid();
-    }
-
     public void refresh() {
         synchronized (getTreeLock()) {
             QwirkleGrid grid = getGrid();
@@ -73,13 +60,53 @@ public class QwirkleGridPanel extends JPanel {
                 if (blankIncluded) {
                     for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
                         for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
-                            add(new QwirklePiecePanel(eventBus, grid, x, y, lastTurn.containsLocation(x, y)));
+                            addPiecePanel(new QwirklePiecePanel(eventBus, grid, x, y, lastTurn.containsLocation(x, y)));
                 } else {
-                    for (QwirklePlacement p : grid.getPlacements())
-                        add(new QwirklePiecePanel(eventBus, p, lastTurn.containsLocation(p.getLocation())));
+                    for (QwirklePlacement p : grid.getPlacements()) {
+                        QwirkleLocation loc = p.getLocation();
+                        addPiecePanel(new QwirklePiecePanel(eventBus, grid, loc, lastTurn.containsLocation(loc)));
+                    }
                 }
         }
         validate();
         repaint();
+    }
+
+    private void addPiecePanel(QwirklePiecePanel pp) {
+        if (draggable && pp.getPiece() != null)
+            pp.setDraggable(true);
+        add(pp);
+    }
+
+    /** Can drag-and-drop operations start from this grid? */
+    public void setDraggable(boolean draggable) {
+        synchronized (getTreeLock()) {
+            this.draggable = draggable;
+            for (Component c : getComponents()) {
+                if (c instanceof QwirklePiecePanel)
+                    ((QwirklePiecePanel) c).setDraggable(draggable);
+            }
+        }
+    }
+
+    // QwirkleGridDisplay impl
+    @Override
+    public QwirkleGrid getGrid() {
+        return lastTurn == null ? null : lastTurn.getGrid();
+    }
+
+    @Override
+    public Dimension getPieceSize() {
+        int square = layout.getPieceSize();
+        return new Dimension(square, square);
+    }
+
+    @Override
+    public QwirklePieceDisplay getPieceDisplay(int x, int y) {
+        Component c = findComponentAt(x, y);
+        if (c instanceof QwirklePieceDisplay)
+            return (QwirklePieceDisplay) c;
+        else
+            return null;
     }
 }

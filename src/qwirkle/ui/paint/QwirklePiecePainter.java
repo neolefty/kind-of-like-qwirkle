@@ -56,7 +56,7 @@ public class QwirklePiecePainter implements HasTransparency {
         // colored shape
         Color c = piece.getColor().getColor();
         if (transparency != 0)
-            c = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int) ((1-transparency) * 256));
+            c = new Color(c.getRed(), c.getGreen(), c.getBlue(), getAlpha());
         g.setColor(c);
         pickPainter(piece.getShape()).paint(g);
 
@@ -68,6 +68,10 @@ public class QwirklePiecePainter implements HasTransparency {
 
         g.setStroke(oldStroke);
         g.setColor(oldColor);
+    }
+
+    private int getAlpha() {
+        return Math.max(0, Math.min(255, (int) ((1-transparency) * 256)));
     }
 
     public QwirkleShapePainter pickPainter(QwirkleShape shape) {

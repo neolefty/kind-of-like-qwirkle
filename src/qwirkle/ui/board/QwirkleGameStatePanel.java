@@ -40,13 +40,19 @@ public class QwirkleGameStatePanel extends JPanel {
         add(grid);
     }
 
+    // TODO move this to PlayerPanel -- they can listen for events too
+    // TODO abstract it a bit -- "setCurrent(curPlayer == player)" and leave the styling up to the PlayerPanel
     private void updateHighlight(AsyncPlayer curPlayer) {
         for (AsyncPlayer player : playerPanelMap.keySet()) {
-            Color bg = (curPlayer == player) ? SwingMain.Colors.BG_HL : SwingMain.Colors.BG;
+            boolean cur = curPlayer == player;
+
+            Color bg = (cur) ? SwingMain.Colors.BG_HL : SwingMain.Colors.BG;
 //            SwingKitty.setColors(playerPanelMap.get(player), SwingMain.Colors.FG, bg);
-            playerPanelMap.get(player).setBackground(bg);
-            Color borderColor = (curPlayer == player) ? SwingMain.Colors.FG : SwingMain.Colors.BG;
-            playerPanelMap.get(player).setBorder(BorderFactory.createLineBorder(borderColor));
+            PlayerPanel pp = playerPanelMap.get(player);
+            pp.setBackground(bg);
+            Color borderColor = (cur) ? SwingMain.Colors.FG : SwingMain.Colors.BG;
+            pp.setBorder(BorderFactory.createLineBorder(borderColor));
+            pp.setDraggable(cur);
         }
     }
 

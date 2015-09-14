@@ -6,6 +6,7 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.GameManager;
 import qwirkle.control.event.GameStarted;
+import qwirkle.control.event.PieceDrag;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleGridImpl;
 
@@ -23,8 +24,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
 
     private boolean vertical;
 
-    public PlayerHandPanel(GameManager mgr, AsyncPlayer player) {
-//        super(new EventBus("Fake board events for " + player.getName()));
+    public PlayerHandPanel(final GameManager mgr, AsyncPlayer player) {
         super(new EventBus(new SubscriberExceptionHandler() {
             @Override
             public void handleException(Throwable exception, SubscriberExceptionContext context) {
@@ -37,6 +37,10 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         this.mgr = mgr;
         this.player = player;
         mgr.getEventBus().register(new GameListener());
+        // forward drag events from the local bus to the parent bus
+        getEventBus().register(new Object() {
+            @Subscribe public void dragPosted(PieceDrag p) { mgr.getEventBus().post(p); }
+        });
         setVertical(true);
     }
 

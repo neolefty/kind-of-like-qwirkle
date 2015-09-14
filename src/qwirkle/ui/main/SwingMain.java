@@ -56,7 +56,7 @@ public class SwingMain {
                 final GameManager game = new GameManager(settings, new NewThreadEachTime());
 
                 // make a window frame
-                QwirkleFrame frame = new QwirkleFrame();
+                final QwirkleFrame frame = new QwirkleFrame();
                 frame.setSize(900, 600); // default size for first time
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
                 // listen for movement & save it to prefs
@@ -64,6 +64,10 @@ public class SwingMain {
 
                 // add a view of the game
                 QwirkleGamePanel gamePanel = new QwirkleGamePanel(game);
+
+                // add an overlay for dragging pieces
+                frame.setGlassPane(new QwirkleDragPane(game.getEventBus(), gamePanel));
+//                frame.getGlassPane().setVisible(true);
 
                 // with a screensaver
                 ShapeBouncer screensaver = new ShapeBouncer(game);

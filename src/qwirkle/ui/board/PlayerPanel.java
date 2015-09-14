@@ -22,6 +22,8 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     /** If horizontal, this is the ideal width-to-height ratio. */
     public static final double HORIZONTAL_ASPECT_RATIO = 5;
 
+    private AsyncPlayer player;
+
     private PlayerHandPanel handPanel;
     private AutoSizeLabel nameLabel, scoreLabel, scoreSeparatorLabel;
     private TurnHighlightingLabel bestMoveLabel;
@@ -32,11 +34,12 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
 
     public PlayerPanel(final GameManager mgr, final AsyncPlayer player) {
+        this.player = player;
         this.handPanel = new PlayerHandPanel(mgr, player);
 
         setLayout(new GridBagLayout());
         double fraction = 0.25;
-        nameLabel = new AutoSizeLabel(this, player.getName(), fraction);
+        nameLabel = new AutoSizeLabel(this, " -- ", fraction); // text is set later
         autoSizeLabels.add(nameLabel);
         scoreLabel = new AutoSizeLabel(this, "0", fraction);
         autoSizeLabels.add(scoreLabel);
@@ -71,7 +74,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             bestMoveLabel.setToolTipText("");
         }
         else {
-            bestMoveLabel.setText("Best: " + best.getScore());
+            bestMoveLabel.setText("Best: " + best.getScore() + " ");
             bestMoveLabel.setToolTipText("Best turn in this game: " + best.getSummary());
         }
     }
@@ -115,19 +118,25 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
                 asl.setMetric(FontAutosizer.Metric.WIDTH);
 
             constraints.weighty = 0;
+            nameLabel.setText(player.getName());
             nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(nameLabel, constraints);
-            constraints.gridy++;
 
+            constraints.gridy++;
             constraints.weighty = 0;
             scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(scoreLabel, constraints);
-            constraints.gridy++;
+            // add score separator so that it is included in child processing (set background etc)
+            constraints.gridx++;
+            add(scoreSeparatorLabel, constraints);
+            scoreSeparatorLabel.setVisible(false);
+            constraints.gridx = 0;
 
+            constraints.gridy++;
             constraints.weighty = 1;
             add(handPanel, constraints);
-            constraints.gridy++;
 
+            constraints.gridy++;
             constraints.weighty = 0;
             bestMoveLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(bestMoveLabel, constraints);
@@ -148,8 +157,10 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             // labels underneath. Name: Score | best move
             labels = new Box(BoxLayout.X_AXIS);
             nameLabel.setHorizontalAlignment(SwingConstants.LEADING);
+            nameLabel.setText(" " + player.getName());
             labels.add(nameLabel);
             labels.add(scoreSeparatorLabel);
+            scoreSeparatorLabel.setVisible(true); // was hidden in vertical
             scoreLabel.setHorizontalAlignment(SwingConstants.LEADING);
             labels.add(scoreLabel);
             labels.add(Box.createGlue());
@@ -158,5 +169,10 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             constraints.weighty = 0;
             add(labels, constraints);
         }
+    }
+
+    // TODO maybe remove this once we've moved the current player event processing into this panel?
+    public void setDraggable(boolean draggable) {
+        handPanel.setDraggable(draggable);
     }
 }
