@@ -18,10 +18,8 @@ import java.awt.geom.AffineTransform;
 public class QwirkleDragPane extends JComponent {
     private Component under;
     private PieceDrag pickup;
-    private EventBus bus;
 
     public QwirkleDragPane(EventBus bus, Component under) {
-        this.bus = bus;
         this.under = under;
         bus.register(this);
         setOpaque(false);
@@ -71,6 +69,7 @@ public class QwirkleDragPane extends JComponent {
                 g2.translate(mouse.x, mouse.y);
                 double scale = size / 100;
                 g2.scale(scale, scale);
+                // TODO preserve relative click position within piece?
                 g2.translate(-50, -50); // mouse at center of shape
                 new QwirklePiecePainter().paint(g2, pickup.getPlacement());
                 g2.setTransform(t);

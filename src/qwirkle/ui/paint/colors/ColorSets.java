@@ -9,4 +9,6 @@ public class ColorSets {
     public static final ColorSet BG_HIGHLIGHT
             = new StaticColorSet(Colors.BG_HL, Colors.MOUSE_HL, Colors.CLICK_HL);
 
+    public static final ColorSet BG_PLAYABLE
+            = new StaticColorSet(Colors.PLAY_BG, Colors.PLAY_MOUSE, Colors.PLAY_HL);
 }

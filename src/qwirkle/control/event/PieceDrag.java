@@ -2,6 +2,7 @@ package qwirkle.control.event;
 
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;
+import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 
 /** A piece is being dragged -- picked up or put down or cancelled. */
@@ -10,7 +11,6 @@ public class PieceDrag {
         PICKUP, SUSTAIN, DROP, CANCEL
     }
 
-    // TODO preserve relative click position within piece
     private QwirkleGrid grid;
     private QwirkleLocation location;
     private Action action;
@@ -46,7 +46,7 @@ public class PieceDrag {
         return new PieceDrag(grid, location, Action.CANCEL);
     }
 
-    /** The grid this piece is being picked up from or dropped into. */
+    /** The grid this piece is being picked up from. */
     public QwirkleGrid getGrid() { return grid; }
 
     /** The location being picked up or dropped. */
@@ -55,9 +55,12 @@ public class PieceDrag {
     /** The placement being picked up or dropped. */
     public QwirklePlacement getPlacement() { return grid.getPlacement(location); }
 
+    /** The piece being picked up or dropped. */
+    public QwirklePiece getPiece() { return grid.get(location); }
+
     /** Is this a pickup (true) or drop (false)? */
     public Action getAction() { return action; }
-    
+
     public boolean isPickup() { return action == Action.PICKUP; }
     public boolean isSustain() { return action == Action.SUSTAIN; }
     public boolean isDrop() { return action == Action.DROP; }

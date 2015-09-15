@@ -6,19 +6,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 // TODO make background change fade in & out -- make a background manager thread ...
 /** Manages a compoment's background color based on mouse movements. */
 public class BackgroundManager {
     private JComponent comp;
-    private ColorSet bg;
+    private java.util.List<ColorSet> bgStack = new ArrayList<>();
     private boolean pressed = false, mouseOver = false, highlighted = false;
 
     public BackgroundManager(JComponent comp, ColorSet bg) {
         this.comp = comp;
         comp.setOpaque(true);
         comp.addMouseListener(new Mouser());
-        this.bg = bg;
+        pushColors(bg);
         update();
     }
 
@@ -47,6 +48,31 @@ public class BackgroundManager {
      *  <p>Note: Will be <tt>false</tt> even if the mouse is currently over this,
      *  if {@link #setHighlighted} was called externally.</p> */
     public boolean isMouseOver() { return mouseOver; }
+
+    /** Undo previous {@link #pushColors}.
+     *  <em>Note:</em> No effect if this would empty the stack -- at least one {@link ColorSet} is kept. */
+    public void popColors() {
+        if (bgStack.size() > 1)
+            bgStack.remove(bgStack.size() - 1);
+        update();
+    }
+
+    /** Change the current colors, with the option to undo this change later. */
+    public void pushColors(ColorSet colors) {
+        if (colors == null)
+            throw new NullPointerException("ColorSet is null");
+        bgStack.add(colors);
+        update();
+    }
+
+    public void setColors(ColorSet colors) {
+        popColors();
+        pushColors(colors);
+    }
+
+    public ColorSet getColors() {
+        return bgStack.get(bgStack.size() - 1);
+    }
 
     private class Mouser extends MouseAdapter {
         @Override
@@ -79,7 +105,8 @@ public class BackgroundManager {
     }
 
     private Color getCurrentColor() {
-        return isPressed() ? bg.getActivated() : (isHighlighted() ? bg.getHighlight() : bg.getNormal());
+        ColorSet cs = getColors();
+        return isPressed() ? cs.getActivated() : (isHighlighted() ? cs.getHighlight() : cs.getNormal());
     }
 
     private void update() {

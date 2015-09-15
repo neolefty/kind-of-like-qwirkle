@@ -10,6 +10,8 @@ import qwirkle.game.QwirkleTurn;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGridLayout layout;
@@ -83,9 +85,20 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         return isInLastTurn(loc.getX(), loc.getY());
     }
 
+    private Map<QwirkleLocation, QwirklePiecePanel> panelMap = new HashMap<>();
+
+    @Override
+    public void removeAll() {
+        synchronized (getTreeLock()) {
+            panelMap.clear();
+            super.removeAll();
+        }
+    }
+
     private void addPiecePanel(QwirklePiecePanel pp) {
         if (draggable && pp.getPiece() != null)
             pp.setDraggable(true);
+        panelMap.put(pp.getQwirkleLocation(), pp);
         add(pp);
     }
 
@@ -107,6 +120,10 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     public Dimension getPieceSize() {
         int square = layout.getPieceSize();
         return new Dimension(square, square);
+    }
+
+    public QwirklePiecePanel getPiecePanel(QwirkleLocation loc) {
+        return panelMap.get(loc);
     }
 
     @Override

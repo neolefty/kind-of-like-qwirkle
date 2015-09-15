@@ -6,6 +6,7 @@ import qwirkle.control.event.GameStarted;
 import qwirkle.control.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.main.QwirkleGameLayout;
+import qwirkle.ui.paint.colors.ColorSets;
 import qwirkle.ui.paint.colors.Colors;
 import qwirkle.ui.swing.SwingKitty;
 
@@ -15,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** A JPanel that shows the state of a game: players and status. */
+/** A JPanel that shows the state of a game: players and board. */
 public class QwirkleGameStatePanel extends JPanel {
     // synchronize on this before making any changes
     private final Map<AsyncPlayer, PlayerPanel> playerPanelMap = new LinkedHashMap<>();
@@ -36,6 +37,7 @@ public class QwirkleGameStatePanel extends JPanel {
 
         // board
         QwirkleGridPanel grid = new QwirkleGridPanel(mgr.getEventBus());
+        new PlayableHighlighter(mgr.getEventBus(), grid, ColorSets.BG_PLAYABLE);
         grid.setBlankIncluded(true);
         add(grid);
     }

@@ -13,7 +13,7 @@ public class QwirkleGamePanel extends JPanel {
     public QwirkleGamePanel(GameManager mgr) {
         super(new BorderLayout());
 
-        // center: game & players
+        // center: board & players
         add(new QwirkleGameStatePanel(mgr), BorderLayout.CENTER);
         // bottom: controls
         add(new GameControlPanel(mgr), BorderLayout.SOUTH);

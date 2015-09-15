@@ -26,7 +26,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     private DragHelper dragHelper;
     private QwirkleGrid grid;
 
-    private BackgroundManager bg;
+    private BackgroundManager bgMgr;
 
     public QwirklePiecePanel(EventBus bus, QwirkleGrid grid, int x, int y) {
         this(bus, grid, x, y, false);
@@ -39,7 +39,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     /** Create a QwirklePiecePanel.
      *  @param bus The EventBus to post drag events to. Can be null if this won't post drag events. */
     public QwirklePiecePanel(final EventBus bus, final QwirkleGrid grid, final QwirkleLocation location, boolean highlight) {
-        bg = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
+        bgMgr = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
 
         this.location = location;
         this.piece = grid.get(location);
@@ -79,11 +79,13 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
         }
     }
 
+    public BackgroundManager getBackgroundManager() { return bgMgr; }
+
     /** Highlight this piece if it is part of the {@link HighlightTurn}. */
     @Subscribe public void highlight(HighlightTurn hl) {
         // we can tell based on location
         if (hl.getTurn().containsLocation(location))
-            bg.setHighlighted(hl.isHighlighted());
+            bgMgr.setHighlighted(hl.isHighlighted());
     }
 
     @Override
