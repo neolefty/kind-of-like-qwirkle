@@ -1,7 +1,8 @@
-package qwirkle.ui.swing;
+package qwirkle.ui.main;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import qwirkle.ui.swing.UserActivityTimeout;
 
 import javax.swing.*;
 import java.awt.*;

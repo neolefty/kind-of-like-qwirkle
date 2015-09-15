@@ -8,10 +8,8 @@ import qwirkle.players.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.paint.colors.Colors;
-import qwirkle.ui.swing.ScreenSaverPane;
 import qwirkle.ui.swing.SwingKitty;
 import qwirkle.ui.swing.SwingSetup;
-import qwirkle.ui.swing.TransparencyFader;
 
 import javax.swing.*;
 import java.util.ArrayList;
