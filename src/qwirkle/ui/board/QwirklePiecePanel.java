@@ -6,18 +6,18 @@ import qwirkle.control.event.HighlightTurn;
 import qwirkle.control.event.PieceDrag;
 import qwirkle.game.*;
 import qwirkle.ui.paint.QwirklePiecePainter;
+import qwirkle.ui.paint.colors.ColorSets;
+import qwirkle.ui.swing.BackgroundManager;
 import qwirkle.ui.swing.DragHelper;
-import qwirkle.ui.swing.MouseSensitivePanel;
 
+import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
-import static qwirkle.ui.main.SwingMain.Colors.*;
-
-public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkleLocation, QwirklePieceDisplay {
+public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, QwirklePieceDisplay {
     private static final QwirklePiecePainter painter = new QwirklePiecePainter();
 
     private QwirklePiece piece;
@@ -25,6 +25,8 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
     private EventBus bus;
     private DragHelper dragHelper;
     private QwirkleGrid grid;
+
+    private BackgroundManager bg;
 
     public QwirklePiecePanel(EventBus bus, QwirkleGrid grid, int x, int y) {
         this(bus, grid, x, y, false);
@@ -37,7 +39,7 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
     /** Create a QwirklePiecePanel.
      *  @param bus The EventBus to post drag events to. Can be null if this won't post drag events. */
     public QwirklePiecePanel(final EventBus bus, final QwirkleGrid grid, final QwirkleLocation location, boolean highlight) {
-        super(highlight ? BG_HL : BG, highlight ? MOUSE_HL : MOUSE, highlight ? CLICK_HL : CLICK);
+        bg = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
 
         this.location = location;
         this.piece = grid.get(location);
@@ -81,7 +83,7 @@ public class QwirklePiecePanel extends MouseSensitivePanel implements HasQwirkle
     @Subscribe public void highlight(HighlightTurn hl) {
         // we can tell based on location
         if (hl.getTurn().containsLocation(location))
-            setHighlighted(hl.isHighlighted());
+            bg.setHighlighted(hl.isHighlighted());
     }
 
     @Override

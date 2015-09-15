@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.ui.board.QwirkleGridSubscriberPanel;
 import qwirkle.ui.board.QwirklePiecePanel;
-import qwirkle.ui.main.SwingMain;
+import qwirkle.ui.paint.colors.Colors;
 
 import java.awt.*;
 
@@ -38,7 +38,7 @@ public class QwirkleGridLayoutPanel extends QwirkleGridSubscriberPanel {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(SwingMain.Colors.BG);
+        g.setColor(Colors.BG);
         g.fillRect(0, 0, getWidth(), getHeight());
         super.paint(g);
     }

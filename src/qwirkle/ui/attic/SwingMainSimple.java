@@ -9,7 +9,7 @@ import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.main.QwirkleFrame;
 import qwirkle.ui.main.QwirkleGamePanel;
-import qwirkle.ui.main.SwingMain;
+import qwirkle.ui.paint.colors.Colors;
 import qwirkle.ui.swing.SwingKitty;
 import qwirkle.ui.swing.SwingSetup;
 
@@ -43,7 +43,7 @@ public class SwingMainSimple {
                 frame.setContentPane(gamePanel);
 
                 // set colors (only need it once, after everything is added)
-                SwingKitty.setColors(gamePanel, SwingMain.Colors.FG, SwingMain.Colors.BG);
+                SwingKitty.setColors(gamePanel, Colors.FG, Colors.BG);
 
                 // show the window
                 frame.setVisible(true);

@@ -6,7 +6,7 @@ import qwirkle.control.event.GameStarted;
 import qwirkle.control.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.main.QwirkleGameLayout;
-import qwirkle.ui.main.SwingMain;
+import qwirkle.ui.paint.colors.Colors;
 import qwirkle.ui.swing.SwingKitty;
 
 import javax.swing.*;
@@ -46,11 +46,11 @@ public class QwirkleGameStatePanel extends JPanel {
         for (AsyncPlayer player : playerPanelMap.keySet()) {
             boolean cur = curPlayer == player;
 
-            Color bg = (cur) ? SwingMain.Colors.BG_HL : SwingMain.Colors.BG;
+            Color bg = (cur) ? Colors.BG_HL : Colors.BG;
 //            SwingKitty.setColors(playerPanelMap.get(player), SwingMain.Colors.FG, bg);
             PlayerPanel pp = playerPanelMap.get(player);
             pp.setBackground(bg);
-            Color borderColor = (cur) ? SwingMain.Colors.FG : SwingMain.Colors.BG;
+            Color borderColor = (cur) ? Colors.FG : Colors.BG;
             pp.setBorder(BorderFactory.createLineBorder(borderColor));
             pp.setDraggable(cur);
         }
@@ -67,8 +67,8 @@ public class QwirkleGameStatePanel extends JPanel {
                 PlayerPanel pp = new PlayerPanel(mgr, player);
                 playerPanelMap.put(player, pp);
                 // set an invisible border now to take up the space so the size doesn't change later
-                pp.setBorder(BorderFactory.createLineBorder(SwingMain.Colors.BG));
-                SwingKitty.setColors(pp, SwingMain.Colors.FG, SwingMain.Colors.BG);
+                pp.setBorder(BorderFactory.createLineBorder(Colors.BG));
+                SwingKitty.setColors(pp, Colors.FG, Colors.BG);
                 add(pp);
             }
         }

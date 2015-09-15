@@ -6,7 +6,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 // TODO make this into a listener instead
-// TODO make background change fade in & out -- make a background manager thread ...
 /** A panel that highlights itself based on mouse movements. */
 public class MouseSensitivePanel extends JPanel {
     // colors

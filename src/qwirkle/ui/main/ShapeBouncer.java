@@ -7,6 +7,7 @@ import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.QwirklePiecePainter;
+import qwirkle.ui.paint.colors.Colors;
 import qwirkle.ui.swing.HasTransparency;
 import qwirkle.ui.swing.SwingKitty;
 import qwirkle.ui.swing.SwingSetup;
@@ -382,7 +383,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
             bouncer.changeColors = false;
         }
         frame.setContentPane(bouncer);
-        SwingKitty.setColors(bouncer, SwingMain.Colors.FG, SwingMain.Colors.BG);
+        SwingKitty.setColors(bouncer, Colors.FG, Colors.BG);
 
         frame.setVisible(true);
     }
