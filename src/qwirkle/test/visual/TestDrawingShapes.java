@@ -1,4 +1,4 @@
-package qwirkle.test;
+package qwirkle.test.visual;
 
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.paint.QwirklePiecePainter;
@@ -7,7 +7,7 @@ import qwirkle.ui.paint.colors.Colors;
 import javax.swing.*;
 import java.awt.*;
 
-public class ShapeTester extends JPanel {
+public class TestDrawingShapes extends JPanel {
     private QwirkleShape shape;
     private double angle;
 
@@ -18,12 +18,12 @@ public class ShapeTester extends JPanel {
         Box inner2 = Box.createHorizontalBox();
         outer.add(inner1); outer.add(inner2);
         frame.setContentPane(outer);
-        inner1.add(new ShapeTester(QwirkleShape.flower, Math.PI, 20));
-        inner1.add(new ShapeTester(QwirkleShape.smiley, Math.PI, 1000));
-        inner1.add(new ShapeTester(QwirkleShape.flower, -Math.PI, 100));
-        inner2.add(new ShapeTester(QwirkleShape.ay, -Math.PI, 200));
-        inner2.add(new ShapeTester(QwirkleShape.square, Math.PI, 250));
-        inner2.add(new ShapeTester(QwirkleShape.ay, Math.PI, 10));
+        inner1.add(new TestDrawingShapes(QwirkleShape.flower, Math.PI, 20));
+        inner1.add(new TestDrawingShapes(QwirkleShape.smiley, Math.PI, 1000));
+        inner1.add(new TestDrawingShapes(QwirkleShape.flower, -Math.PI, 100));
+        inner2.add(new TestDrawingShapes(QwirkleShape.ay, -Math.PI, 200));
+        inner2.add(new TestDrawingShapes(QwirkleShape.square, Math.PI, 250));
+        inner2.add(new TestDrawingShapes(QwirkleShape.ay, Math.PI, 10));
 //        frame.setContentPane(new ShapeTester(QwirkleShape.smiley));
         //noinspection MagicConstant
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,7 +56,7 @@ public class ShapeTester extends JPanel {
         }
     }
 
-    public ShapeTester(QwirkleShape shape, double speed, int interval) {
+    public TestDrawingShapes(QwirkleShape shape, double speed, int interval) {
         this.shape = shape;
         new Rotator(speed, interval).start();
     }

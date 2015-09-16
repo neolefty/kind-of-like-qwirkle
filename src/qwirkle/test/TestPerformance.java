@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /** Performance tests. */
-public class PerfTest {
+public class TestPerformance {
     public static void main(String[] args) {
-        TestQwirkle.checkAssert();
+        TestMain.checkAssert();
         timeMaxPlayer();
     }
 
@@ -89,6 +89,6 @@ public class PerfTest {
     }
 
     private static Preferences getPrefs() {
-        return Preferences.userNodeForPackage(PerfTest.class);
+        return Preferences.userNodeForPackage(TestPerformance.class);
     }
 }

@@ -323,18 +323,27 @@ public class GameManager {
      * there are enough tiles, starting with the current player (the first in the map). */
     public void deal() {
         for (AsyncPlayer player : playerHands.keySet()) {
-            List<QwirklePiece> hand = playerHands.get(player);
-            if (deck.size() > 0 && hand.size() < settings.getHandSize()) {
-                List<QwirklePiece> dealt = new ArrayList<>();
-                while (deck.size() > 0 && hand.size() < settings.getHandSize()) {
-                    int i = randomDeal ? r.nextInt(deck.size()) : 0;
-                    QwirklePiece piece = deck.remove(i);
-                    hand.add(piece);
-                    dealt.add(piece);
-                }
+            List<QwirklePiece> dealt = deal(player, getHand(player));
+            if (dealt.size() > 0) {
+                playerHands.get(player).addAll(dealt);
                 post(new QwirkleDraw(player, dealt));
             }
         }
+    }
+
+    /** Deal as many new tiles as needed to <tt>player</tt>.
+     *  @param hand the player's current hand.
+     *  @return the cards to be dealt, empty if none. */
+    public List<QwirklePiece> deal(AsyncPlayer player, Collection<QwirklePiece> hand) {
+        List<QwirklePiece> dealt = new ArrayList<>();
+        if (deck.size() > 0 && hand.size() < settings.getHandSize()) {
+            int nToDeal = settings.getHandSize() - hand.size();
+            for (int i = 0; i < nToDeal && deck.size() > 0; ++i) {
+                int x = randomDeal ? r.nextInt(deck.size()) : 0;
+                dealt.add(deck.remove(x));
+            }
+        }
+        return Collections.unmodifiableList(dealt);
     }
 
     private void post(Object event) {

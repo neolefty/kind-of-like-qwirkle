@@ -5,6 +5,7 @@ import qwirkle.control.*;
 import qwirkle.control.event.GameOver;
 import qwirkle.control.event.GameStarted;
 import qwirkle.game.QwirkleBoard;
+import qwirkle.game.QwirkleTurn;
 import qwirkle.ui.swing.AutoSizeButton;
 import qwirkle.ui.swing.AutoSizeLabel;
 
@@ -22,17 +23,32 @@ public class GameControlPanel extends JPanel {
     public static final double FONT_PROPORTION = 0.03;
 
     public GameControlPanel(final GameManager game) {
-        final JLabel remaining = new AutoSizeLabel(this, "", FONT_PROPORTION);
         // label: the number of remaining cards
+        final JLabel remaining = new AutoSizeLabel(this, "", FONT_PROPORTION);
+        // button: new game
+        final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
+        // button: take a single turn
+        final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
+
         game.getEventBus().register(new Object() {
             @Subscribe
-            void update(QwirkleBoard board) {
+            public void update(QwirkleBoard board) {
                 remaining.setText(game.getDeck().size() + "");
+            }
+
+            @Subscribe
+            public void turn(QwirkleTurn turn) { // when a turn has been taken, enable the take-a-turn button
+                // get back into the event loop to re-enable the button
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        stepButton.setEnabled(true);
+                        stepButton.grabFocus();
+                    }
+                });
             }
         });
 
-        // button: new game
-        final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -42,22 +58,13 @@ public class GameControlPanel extends JPanel {
 
         // take turns in their own thread, to avoid blocking the event queue
         final ExecutorService turnTaker = Executors.newSingleThreadExecutor();
-        // button: take a single turn
-        final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
         stepButton.addActionListener(new ActionListener() {
             @Override public void actionPerformed(ActionEvent actionEvent) {
-                stepButton.setEnabled(false);
+                stepButton.setEnabled(false); // button will be re-enabled once the turn has been taken
                 // take a turn outside of the event thread, to avoid delays
                 turnTaker.submit(new Runnable() {
                     @Override public void run() {
                         game.step();
-                        // get back into the event loop to re-enable the button
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override public void run() {
-                                stepButton.setEnabled(true);
-                                stepButton.grabFocus();
-                            }
-                        });
                     }
                 });
             }

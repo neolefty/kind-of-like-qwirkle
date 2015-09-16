@@ -6,6 +6,7 @@ import qwirkle.players.MaxPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Run some games ({@link #N_GAMES}). May take a long time if it's a lot of games. */
 public class PlayTest {
     public static final int N_GAMES = 100;
 

@@ -1,5 +1,9 @@
 package qwirkle.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public enum QwirkleShape {
     square("s"),
     circle("c"),
@@ -17,7 +21,7 @@ public enum QwirkleShape {
     anotherStar("n");
 
     private String abbrev;
-    private QwirkleShape(String abbrev) {
+    QwirkleShape(String abbrev) {
         this.abbrev = abbrev;
     }
 
@@ -30,5 +34,13 @@ public enum QwirkleShape {
                 return s;
         throw new IllegalArgumentException
                 ("no match for " + abbrev);
+    }
+
+    /** Parse a sequence of single-character shape abbreviations. */
+    public static List<QwirkleShape> parseShapes(String shapes) {
+        List<QwirkleShape> result = new ArrayList<>();
+        for (int i = 0; i < shapes.length(); ++i)
+            result.add(pick(shapes.substring(i, i+1)));
+        return Collections.unmodifiableList(result);
     }
 }

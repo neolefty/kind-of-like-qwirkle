@@ -55,8 +55,9 @@ public class QwirkleLine implements Collection<QwirklePlacement> {
      *  Bonus if it has all shapes or all colors. */
     public int getScore() {
         return size() + (isComplete()
-                ? (isSameColor() ? settings.getColors().size()
-                                : settings.getShapes().size())
+                // if it's the same color, then you have all the shapes, and vice-versa
+                ? (isSameColor() ? settings.getShapes().size()
+                                : settings.getColors().size())
                 : 0);
     }
 
@@ -84,8 +85,8 @@ public class QwirkleLine implements Collection<QwirklePlacement> {
     }
 
     public boolean isComplete() {
-        return (isSameColor() && size() == settings.getColors().size())
-                || (isSameShape() && size() == settings.getShapes().size());
+        return (isSameColor() && size() == settings.getShapes().size())
+                || (isSameShape() && size() == settings.getColors().size());
     }
 
     /** Add a placement to this line, if it is legal.

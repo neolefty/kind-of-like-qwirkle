@@ -1,6 +1,9 @@
 package qwirkle.game;
 
-import java.awt.Color;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public enum QwirkleColor {
     red (new Color(225, 20, 20), "r"),
@@ -16,7 +19,7 @@ public enum QwirkleColor {
     private final Color color;
     private String abbrev;
 
-    private QwirkleColor(Color color, String abbrev) {
+    QwirkleColor(Color color, String abbrev) {
         this.color = color;
         this.abbrev = abbrev;
     }
@@ -30,5 +33,13 @@ public enum QwirkleColor {
             if (c.getAbbrev().equals(abbrev))
                 return c;
         throw new IllegalArgumentException("no match for " + abbrev);
+    }
+
+    /** Parse a sequence of single-character color abbreviations. */
+    public static List<QwirkleColor> parseColors(String colors) {
+        List<QwirkleColor> result = new ArrayList<>();
+        for (int i = 0; i < colors.length(); ++i)
+            result.add(pick(colors.substring(i, i+1)));
+        return Collections.unmodifiableList(result);
     }
 }

@@ -17,7 +17,7 @@ public class TestBoard {
     private static final Random r = new Random();
 
     public static void main(String[] args) {
-        TestQwirkle.checkAssert();
+        TestMain.checkAssert();
 
         TestBoard.testInit();
         TestBoard.testLegal();
@@ -147,7 +147,7 @@ public class TestBoard {
         qpl.add(qp);
         board = board.play(qp);
         System.out.println(board);
-        TestQwirkle.checkContentsMatch(qpl, board.getLastPlay());
+        TestMain.checkContentsMatch(qpl, board.getLastPlay());
         assert afterFourth == board.getUndo();
 
         // now a crossing play that completes colors

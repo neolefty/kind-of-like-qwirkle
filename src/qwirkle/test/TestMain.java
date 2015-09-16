@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestQwirkle {
+public class TestMain {
     public static void main(String[] args) {
         checkAssert();
 
         TestBoard.main(args);
-        TestEvents.main(args);
-        PerfTest.main(args);
+        TestScripted.main(args);
+        TestPerformance.main(args);
     }
 
     public static <T> void checkContentsMatch(Collection<T> a, Collection<T> b) {

@@ -46,4 +46,6 @@ public class AsyncPlayerWrapper extends AsyncPlayer {
                 result.add(new AsyncPlayerWrapper(player));
         return result;
     }
+
+    public QwirklePlayer getPlayer() { return player; }
 }

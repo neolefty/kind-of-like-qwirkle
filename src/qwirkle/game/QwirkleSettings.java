@@ -29,6 +29,12 @@ public class QwirkleSettings {
     private final List<AsyncPlayer> players;
 
     public QwirkleSettings
+            (int nDecks, String shapes, String colors, Collection<AsyncPlayer> players)
+    {
+        this(nDecks, QwirkleShape.parseShapes(shapes), QwirkleColor.parseColors(colors), players);
+    }
+
+    public QwirkleSettings
             (int nDecks, Collection<QwirkleShape> shapes,
              Collection<QwirkleColor> colors, Collection<AsyncPlayer> players)
     {
