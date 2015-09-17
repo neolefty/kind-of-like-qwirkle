@@ -49,7 +49,7 @@ public class SwingMain {
                 QwirkleGamePanel gamePanel = new QwirkleGamePanel(game);
 
                 // add an overlay for dragging pieces
-                frame.setGlassPane(new QwirkleDragPane(game.getEventBus(), gamePanel));
+                frame.setGlassPane(new QwirkleDragPane(game.getEventBus()));
 //                frame.getGlassPane().setVisible(true);
 
                 // with a screensaver

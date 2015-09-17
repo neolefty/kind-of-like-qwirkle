@@ -6,12 +6,15 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.GameManager;
 import qwirkle.control.event.GameStarted;
+import qwirkle.control.event.PassOver;
 import qwirkle.control.event.PieceDrag;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleGridImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+// TODO allow dragging to reorder pieces
 
 /** Show a player's status. Uses a {@link QwirkleGridPanel} with
  *  hacked event updates to show the player's current hand, highlighting
@@ -37,9 +40,10 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         this.mgr = mgr;
         this.player = player;
         mgr.getEventBus().register(new GameListener());
-        // forward drag events from the local bus to the parent bus
+        // forward mouse events from the local bus to the parent bus
         getEventBus().register(new Object() {
-            @Subscribe public void dragPosted(PieceDrag p) { mgr.getEventBus().post(p); }
+            @Subscribe public void dragPosted(PieceDrag event) { mgr.getEventBus().post(event); }
+            @Subscribe public void passedOver(PassOver event) { mgr.getEventBus().post(event); }
         });
         setVertical(true);
     }

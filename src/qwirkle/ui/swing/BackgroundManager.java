@@ -1,5 +1,6 @@
 package qwirkle.ui.swing;
 
+import qwirkle.control.event.PassOver;
 import qwirkle.ui.paint.colors.ColorSet;
 
 import javax.swing.*;
@@ -9,7 +10,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 // TODO make background change fade in & out -- make a background manager thread ...
-/** Manages a compoment's background color based on mouse movements. */
+/** Manages a compoment's background color based on mouse movements.
+ *  Also posts {@link PassOver} events. */
 public class BackgroundManager {
     private JComponent comp;
     private java.util.List<ColorSet> bgStack = new ArrayList<>();

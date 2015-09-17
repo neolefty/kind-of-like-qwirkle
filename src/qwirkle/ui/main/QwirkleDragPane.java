@@ -2,25 +2,21 @@ package qwirkle.ui.main;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import qwirkle.control.event.PassOver;
 import qwirkle.control.event.PieceDrag;
 import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
-import qwirkle.ui.board.QwirkleGridDisplay;
-import qwirkle.ui.board.QwirklePieceDisplay;
 import qwirkle.ui.paint.QwirklePiecePainter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
 /** Supports dragging {@link QwirklePiece}s around a UI. */
 public class QwirkleDragPane extends JComponent {
-    private Component under;
     private PieceDrag pickup;
+    private PassOver passOver;
 
-    public QwirkleDragPane(EventBus bus, Component under) {
-        this.under = under;
+    public QwirkleDragPane(EventBus bus) {
         bus.register(this);
         setOpaque(false);
     }
@@ -46,6 +42,11 @@ public class QwirkleDragPane extends JComponent {
             throw new IllegalStateException("Unknown drag event: " + event);
     }
 
+    @Subscribe
+    public void passOver(PassOver event) {
+        this.passOver = event;
+    }
+
     private static final boolean DEBUG = false;
     private void debug(String s) { if (DEBUG) System.out.print(s); }
     private void debugln(String s) { if (DEBUG) System.out.println(getClass().getSimpleName() + ": " + s); }
@@ -62,52 +63,35 @@ public class QwirkleDragPane extends JComponent {
                 lastMouse = mouse;
 
             if (mouse != null) {
+                // 1 setup
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 AffineTransform t = g2.getTransform();
-                double size = Math.sqrt(getHeight() * getWidth()) / 10;
+
+                // 2 transform
                 g2.translate(mouse.x, mouse.y);
-                double scale = size / 100;
-                g2.scale(scale, scale);
-                // TODO preserve relative click position within piece?
+                g2.scale(getPieceWidth() / 100, getPieceHeight() / 100);
                 g2.translate(-50, -50); // mouse at center of shape
+
+                // 3 paint
+                // TODO preserve relative click position within piece?
                 new QwirklePiecePainter().paint(g2, pickup.getPlacement());
+
+                // 4 cleanup
                 g2.setTransform(t);
             }
         }
     }
 
-    private QwirklePlacement findPlacement(MouseEvent e) {
-        return findPlacement(under, e);
+    private double getPieceWidth() {
+        return passOver == null ? getDefaultPieceSize() : passOver.getDisplay().getPieceWidth();
     }
 
-    private QwirklePlacement findPlacement(Component comp, MouseEvent e) {
-        QwirklePieceDisplay pd = null;
-        QwirklePlacement placement = null;
-        Point compPoint = SwingUtilities.convertPoint(this, e.getPoint(), comp);
-        if (comp instanceof QwirkleGridDisplay) {
-            QwirkleGridDisplay gd = (QwirkleGridDisplay) comp;
-            System.out.print("Found grid display -- ");
-            pd = gd.getPieceDisplay(compPoint.x, compPoint.y);
-        }
-        else if (comp instanceof QwirklePieceDisplay) {
-            pd = (QwirklePieceDisplay) comp;
-            System.out.print("Found piece display -- ");
-        }
-        else
-            System.out.print("Didn't find a Qwirkle UI component: " + comp.getClass().getSimpleName() + " -- ");
+    private double getPieceHeight() {
+        return passOver == null ? getDefaultPieceSize() : passOver.getDisplay().getPieceHeight();
+    }
 
-        if (pd != null) {
-//            MouseEvent compEvent = SwingUtilities.convertMouseEvent(this, e, comp);
-//            comp.dispatchEvent(e);
-
-            if (pd.getPiece() != null && pd.getQwirkleLocation() != null)
-                placement = new QwirklePlacement(pd.getPiece(), pd.getQwirkleLocation());
-            System.out.println(placement);
-        }
-        else
-            System.out.println("no piece");
-
-        return placement;
+    private double getDefaultPieceSize() {
+        return Math.sqrt(getHeight() * getWidth()) / 10;
     }
 }

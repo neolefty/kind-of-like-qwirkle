@@ -3,6 +3,7 @@ package qwirkle.ui.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.event.HighlightTurn;
+import qwirkle.control.event.PassOver;
 import qwirkle.control.event.PieceDrag;
 import qwirkle.game.*;
 import qwirkle.ui.paint.QwirklePiecePainter;
@@ -14,6 +15,7 @@ import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
@@ -37,7 +39,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     /** Create a QwirklePiecePanel.
-     *  @param bus The EventBus to post drag events to. Can be null if this won't post drag events. */
+     *  @param bus The EventBus to post {@link PieceDrag} events to. Can be null if this won't post drag events. */
     public QwirklePiecePanel(final EventBus bus, final QwirkleGrid grid, final QwirkleLocation location, boolean highlight) {
         bgMgr = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
 
@@ -55,6 +57,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     private void initEvents() {
+        // unsubscribe from bus on destruction
         if (bus != null) {
             // question: why do we register and deregister when hidden and shown?
             // answer: it's a hack, but it's the best I could figure out. The only
@@ -75,6 +78,21 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
                 }
 
                 @Override public void ancestorMoved(AncestorEvent event) { }
+            });
+        }
+
+        // post PassOver events
+        if (bus != null) {
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    bus.post(new PassOver(QwirklePiecePanel.this, true));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    bus.post(new PassOver(QwirklePiecePanel.this, true));
+                }
             });
         }
     }
@@ -102,13 +120,11 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
         }
     }
 
-    @Override
-    public QwirkleLocation getQwirkleLocation() {
-        return location;
-    }
-
-    @Override
-    public QwirklePiece getPiece() { return piece; }
+    // implement QwirklePieceDisplay
+    @Override public QwirkleLocation getQwirkleLocation() { return location; }
+    @Override public QwirklePiece getPiece() { return piece; }
+    @Override public int getPieceHeight() { return getHeight(); }
+    @Override public int getPieceWidth() { return getWidth(); }
 
     @Override
     public String toString() { return location + ": " + (piece == null ? "blank" : piece); }
