@@ -34,33 +34,53 @@ public class QwirklePlayableGridPanel extends QwirkleGridPanel {
         if (hypotheticalPlay != null) {
             hypotheticalPlay = null;
             hypotheticalBoard = null;
-            super.setGrid(board);
+            if (board != null)
+                super.setGrid(board);
+            board = null; // reload from super
         }
     }
 
     public Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
-        if (hypotheticalPlay == null)
-            return board.getLegalPlacements(piece);
-        else
-            return board.getLegalPlacements(getHypotheticalPlay(), piece);
+        return getHypotheticalBoard().getLegalPlacements(getHypotheticalPlay(), piece);
+    }
+
+    public boolean isLegalMove(QwirklePlacement placement) {
+        List<QwirklePlacement> placements = new ArrayList<>();
+        placements.add(placement);
+        if (hypotheticalPlay != null) placements.addAll(hypotheticalPlay);
+        return getBoard().isLegal(placements);
     }
 
     @Subscribe
     public void play(PiecePlay event) {
-        playHypothetically(event.getPlacement());
+        if (isLegalMove(event.getPlacement()))
+            playHypothetically(event.getPlacement());
+    }
+
+    /** The board including the hypothetical play. */
+    public QwirkleBoard getHypotheticalBoard() {
+        if (hypotheticalBoard == null)
+            hypotheticalBoard = getBoard();
+        return hypotheticalBoard;
+    }
+
+    /** The board not including the hypothetical play. */
+    public QwirkleBoard getBoard() {
+        if (board == null)
+            board = (QwirkleBoard) super.getGrid();
+        return board;
     }
 
     /** Add to the hypothetical play we're making. */
     public void playHypothetically(QwirklePlacement placement) {
         if (hypotheticalPlay == null) {
             hypotheticalPlay = new ArrayList<>();
-            board = (QwirkleBoard) super.getGrid();
-            if (board == null)
+            if (getBoard() == null)
                 throw new NullPointerException("Board is null. Can't make hypothetical plays.");
         }
         hypotheticalPlay.add(placement);
 
-        hypotheticalBoard = board.play(getHypotheticalPlay());
+        hypotheticalBoard = getBoard().play(getHypotheticalPlay());
         super.setGrid(hypotheticalBoard);
     }
 
@@ -82,12 +102,14 @@ public class QwirklePlayableGridPanel extends QwirkleGridPanel {
         return result;
     }
 
+    /** When a new turn happens, clear the hypothetical turn. */
     @Override
     public void nextTurn(QwirkleTurn turn) {
         clearHypothetical();
         super.nextTurn(turn);
     }
 
+    /** When a new game starts happens, clear the hypothetical turn. */
     @Override
     public void gameStarted(GameStarted started) {
         clearHypothetical();

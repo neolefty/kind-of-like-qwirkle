@@ -21,7 +21,7 @@ public class HypotheticalPlayBgColors implements ColorSet {
 
     @Override
     public Color getHighlight() {
-        return pieceColor.getColor(); // .darker();
+        return pieceColor.getColor().darker();
     }
 
     @Override

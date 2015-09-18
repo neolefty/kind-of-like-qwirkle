@@ -375,7 +375,7 @@ public class QwirkleBoardImpl extends QwirkleGridImpl implements QwirkleBoard {
     public Collection<QwirklePlacement> getLegalPlacements
             (Collection<QwirklePlacement> play, QwirklePiece piece)
     {
-        if (play.isEmpty())
+        if (play == null || play.isEmpty())
             return getLegalPlacements(piece);
         else {
             Collection<QwirklePlacement> candidates = play(play).getLegalPlacements(piece);

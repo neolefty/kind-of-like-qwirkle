@@ -119,8 +119,10 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     public void setGrid(QwirkleGrid grid) {
-        this.grid = grid;
-        refresh();
+        if (grid != this.grid) {
+            this.grid = grid;
+            refresh();
+        }
     }
 
     @Override public QwirkleGrid getGrid() { return grid; }
