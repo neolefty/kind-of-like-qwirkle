@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.board;
+package qwirkle.ui.swing.game;
 
 import qwirkle.event.PassOver;
 import qwirkle.ui.swing.paint.colors.ColorSet;

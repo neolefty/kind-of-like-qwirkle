@@ -8,7 +8,7 @@ import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.swing.main.QwirkleFrame;
-import qwirkle.ui.swing.main.QwirkleGamePanel;
+import qwirkle.ui.swing.game.QwirkleGamePanel;
 import qwirkle.ui.swing.paint.colors.Colors;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;

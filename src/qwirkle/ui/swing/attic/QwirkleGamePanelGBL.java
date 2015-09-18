@@ -2,8 +2,8 @@ package qwirkle.ui.swing.attic;
 
 import qwirkle.control.GameManager;
 import qwirkle.game.AsyncPlayer;
-import qwirkle.ui.swing.board.PlayerPanel;
-import qwirkle.ui.swing.board.QwirkleGridPanel;
+import qwirkle.ui.swing.game.PlayerPanel;
+import qwirkle.ui.swing.game.QwirkleGridPanel;
 
 import javax.swing.*;
 import java.awt.*;

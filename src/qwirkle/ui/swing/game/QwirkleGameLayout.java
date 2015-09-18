@@ -1,7 +1,5 @@
-package qwirkle.ui.swing.main;
+package qwirkle.ui.swing.game;
 
-import qwirkle.ui.swing.board.PlayerPanel;
-import qwirkle.ui.swing.board.QwirkleGridPanel;
 import qwirkle.ui.swing.util.LayoutBase;
 
 import java.awt.*;

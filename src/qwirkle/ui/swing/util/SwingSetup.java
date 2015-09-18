@@ -2,7 +2,7 @@ package qwirkle.ui.swing.util;
 
 import qwirkle.ui.swing.attic.BoardMonolithicPanel;
 import qwirkle.ui.swing.attic.QwirkleGridLayoutPanel;
-import qwirkle.ui.swing.board.QwirkleGridPanel;
+import qwirkle.ui.swing.game.QwirkleGridPanel;
 import qwirkle.ui.swing.attic.SquareLayout;
 import qwirkle.control.GameManager;
 

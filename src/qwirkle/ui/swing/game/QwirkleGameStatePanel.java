@@ -1,11 +1,10 @@
-package qwirkle.ui.swing.board;
+package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
 import qwirkle.event.GameStarted;
 import qwirkle.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
-import qwirkle.ui.swing.main.QwirkleGameLayout;
 import qwirkle.ui.swing.paint.colors.ColorSets;
 import qwirkle.ui.swing.paint.colors.Colors;
 import qwirkle.ui.swing.util.SwingKitty;

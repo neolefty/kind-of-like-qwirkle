@@ -1,9 +1,6 @@
-package qwirkle.ui.swing.main;
+package qwirkle.ui.swing.game;
 
 import qwirkle.control.GameManager;
-import qwirkle.ui.swing.board.GameControlPanel;
-import qwirkle.ui.swing.board.GameStatusPanel;
-import qwirkle.ui.swing.board.QwirkleGameStatePanel;
 
 import javax.swing.*;
 import java.awt.*;
