@@ -41,7 +41,7 @@ public class QwirklePlayableGridPanel extends QwirkleGridPanel {
     }
 
     public Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
-        return getHypotheticalBoard().getLegalPlacements(getHypotheticalPlay(), piece);
+        return getBoard().getLegalPlacements(getHypotheticalPlay(), piece);
     }
 
     public boolean isLegalMove(QwirklePlacement placement) {

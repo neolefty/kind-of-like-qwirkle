@@ -13,6 +13,7 @@ import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 import java.util.Collection;
 
 // TODO make playable spots pulse
+// TODO abstract this from Swing and move to qwirkle.control, like PieceDropWatcher?
 /** A listener that highlights playable spots on a board. */
 public class PlayableHighlighter {
     private QwirklePlayableGridPanel gridPanel;
@@ -60,7 +61,7 @@ public class PlayableHighlighter {
     private void forEachLegalQPP(QwirklePiece piece, QPPer goer) {
         QwirkleBoard board = getBoard();
         if (board != null) {
-            Collection<QwirklePlacement> legalMoves = board.getLegalPlacements(piece);
+            Collection<QwirklePlacement> legalMoves = gridPanel.getLegalMoves(piece);
             for (QwirklePlacement move : legalMoves) {
                 // do we need to check for null? hypothetically no ...
                 QwirklePiecePanel panel = gridPanel.getPiecePanel(move.getLocation());
