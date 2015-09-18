@@ -1,7 +1,7 @@
 package qwirkle.test.scripted;
 
 import qwirkle.control.GameManager;
-import qwirkle.control.SingleThreadedStrict;
+import qwirkle.control.impl.SingleThreadedStrict;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlayer;

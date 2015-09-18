@@ -1,6 +1,6 @@
 package qwirkle.event;
 
-import qwirkle.ui.board.QwirklePieceDisplay;
+import qwirkle.ui.QwirklePieceDisplay;
 
 /** The mouse passed over a {@link QwirklePieceDisplay}. */
 public class PassOver {

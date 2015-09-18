@@ -1,8 +1,8 @@
 package qwirkle.test.visual;
 
 import qwirkle.game.QwirkleShape;
-import qwirkle.ui.paint.QwirklePiecePainter;
-import qwirkle.ui.paint.colors.Colors;
+import qwirkle.ui.swing.paint.QwirklePiecePainter;
+import qwirkle.ui.swing.paint.colors.Colors;
 
 import javax.swing.*;
 import java.awt.*;
