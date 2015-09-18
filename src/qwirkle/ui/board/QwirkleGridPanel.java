@@ -2,11 +2,11 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.event.GameStarted;
+import qwirkle.event.GameStarted;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePlacement;
-import qwirkle.game.QwirkleTurn;
+import qwirkle.event.QwirkleTurn;
 
 import javax.swing.*;
 import java.awt.*;

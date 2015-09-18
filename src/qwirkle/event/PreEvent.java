@@ -1,4 +1,4 @@
-package qwirkle.control.event;
+package qwirkle.event;
 
 /** Notification that an event is about to be posted, so get your stories straight! */
 public class PreEvent {

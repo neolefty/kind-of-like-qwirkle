@@ -1,4 +1,7 @@
-package qwirkle.game;
+package qwirkle.event;
+
+import qwirkle.game.AsyncPlayer;
+import qwirkle.game.QwirklePiece;
 
 import java.util.ArrayList;
 import java.util.Collection;

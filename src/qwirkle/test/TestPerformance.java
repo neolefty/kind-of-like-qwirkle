@@ -4,7 +4,7 @@ import qwirkle.control.GameManager;
 import qwirkle.control.SingleThreadedStrict;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.QwirkleSettings;
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 
 import java.io.*;

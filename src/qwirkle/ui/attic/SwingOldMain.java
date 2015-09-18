@@ -3,7 +3,7 @@ package qwirkle.ui.attic;
 import qwirkle.control.NewThreadEachTime;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirklePlayer;
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.control.GameManager;
 import qwirkle.ui.main.QwirkleFrame;

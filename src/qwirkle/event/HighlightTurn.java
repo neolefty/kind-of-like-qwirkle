@@ -1,6 +1,4 @@
-package qwirkle.control.event;
-
-import qwirkle.game.QwirkleTurn;
+package qwirkle.event;
 
 /** An event that indicates a turn needs to be highlighted or unhighlighted. */
 public class HighlightTurn {

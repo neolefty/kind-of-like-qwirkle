@@ -1,4 +1,4 @@
-package qwirkle.control.event;
+package qwirkle.event;
 
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;

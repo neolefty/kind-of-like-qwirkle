@@ -1,8 +1,8 @@
 package qwirkle.ui.board;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.control.event.HighlightTurn;
-import qwirkle.game.QwirkleTurn;
+import qwirkle.event.HighlightTurn;
+import qwirkle.event.QwirkleTurn;
 import qwirkle.ui.paint.colors.Colors;
 import qwirkle.ui.swing.HighlightLabel;
 

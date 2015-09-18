@@ -4,10 +4,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
 import qwirkle.control.GameStatus;
-import qwirkle.control.event.GameOver;
-import qwirkle.control.event.GameStarted;
-import qwirkle.control.event.TurnStarting;
-import qwirkle.game.QwirkleTurn;
+import qwirkle.event.GameOver;
+import qwirkle.event.GameStarted;
+import qwirkle.event.TurnStarting;
+import qwirkle.event.QwirkleTurn;
 
 import javax.swing.*;
 import java.util.concurrent.Callable;

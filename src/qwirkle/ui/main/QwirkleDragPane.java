@@ -2,8 +2,8 @@ package qwirkle.ui.main;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.event.PassOver;
-import qwirkle.control.event.PieceDrag;
+import qwirkle.event.PassOver;
+import qwirkle.event.PieceDrag;
 import qwirkle.game.QwirklePiece;
 import qwirkle.ui.paint.QwirklePiecePainter;
 

@@ -1,9 +1,10 @@
 package qwirkle.control;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.event.GameOver;
-import qwirkle.control.event.GameStarted;
-import qwirkle.control.event.PreEvent;
+import qwirkle.event.GameOver;
+import qwirkle.event.GameStarted;
+import qwirkle.event.PreEvent;
+import qwirkle.event.QwirkleTurn;
 import qwirkle.game.*;
 
 import java.util.List;

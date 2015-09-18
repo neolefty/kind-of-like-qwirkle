@@ -5,9 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.GameManager;
-import qwirkle.control.event.GameStarted;
-import qwirkle.control.event.PassOver;
-import qwirkle.control.event.PieceDrag;
+import qwirkle.event.*;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleGridImpl;
 

@@ -2,8 +2,8 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
-import qwirkle.control.event.GameStarted;
-import qwirkle.control.event.TurnStarting;
+import qwirkle.event.GameStarted;
+import qwirkle.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.main.QwirkleGameLayout;
 import qwirkle.ui.paint.colors.ColorSets;

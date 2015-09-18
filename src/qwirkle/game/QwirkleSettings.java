@@ -1,6 +1,6 @@
 package qwirkle.game;
 
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 
 import java.util.*;

@@ -1,4 +1,4 @@
-package qwirkle.control.event;
+package qwirkle.event;
 
 import qwirkle.control.GameStatus;
 import qwirkle.game.AsyncPlayer;

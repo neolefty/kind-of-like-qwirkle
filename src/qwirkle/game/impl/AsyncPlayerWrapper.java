@@ -1,4 +1,4 @@
-package qwirkle.players;
+package qwirkle.game.impl;
 
 import qwirkle.control.ThreadingStrategy;
 import qwirkle.game.*;

@@ -3,10 +3,7 @@ package qwirkle.control;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
-import qwirkle.control.event.GameOver;
-import qwirkle.control.event.GameStarted;
-import qwirkle.control.event.PreEvent;
-import qwirkle.control.event.TurnStarting;
+import qwirkle.event.*;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
 
@@ -28,7 +25,7 @@ import java.util.*;
  *  </ul>
  *
  *  <p>Events are posted to the {@link EventBus} in two stages.
- *  First, wrapped in a {@link qwirkle.control.event.PreEvent} to allow setup by internal objects
+ *  First, wrapped in a {@link qwirkle.event.PreEvent} to allow setup by internal objects
  *  such as AnnotatedGame and second, normally, for GUI etc.</p>*/
 public class GameManager {
     // long-lived things

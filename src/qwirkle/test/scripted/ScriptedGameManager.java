@@ -5,7 +5,7 @@ import qwirkle.control.SingleThreadedStrict;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlayer;
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 
 import java.util.*;
 

@@ -4,7 +4,7 @@ import qwirkle.control.GameManager;
 import qwirkle.control.NewThreadEachTime;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleSettings;
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.main.QwirkleFrame;

@@ -1,6 +1,10 @@
-package qwirkle.game;
+package qwirkle.event;
 
 import qwirkle.control.GameStatus;
+import qwirkle.game.AsyncPlayer;
+import qwirkle.game.QwirkleGrid;
+import qwirkle.game.QwirkleLocation;
+import qwirkle.game.QwirklePlacement;
 
 import java.util.ArrayList;
 import java.util.Collection;

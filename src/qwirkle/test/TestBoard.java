@@ -3,10 +3,10 @@ package qwirkle.test;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
 import qwirkle.control.SingleThreadedStrict;
-import qwirkle.control.event.TurnStarting;
+import qwirkle.event.TurnStarting;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 

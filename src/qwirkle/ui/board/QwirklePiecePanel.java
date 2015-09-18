@@ -2,13 +2,12 @@ package qwirkle.ui.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.event.HighlightTurn;
-import qwirkle.control.event.PassOver;
-import qwirkle.control.event.PieceDrag;
+import qwirkle.event.HighlightTurn;
+import qwirkle.event.PassOver;
+import qwirkle.event.PieceDrag;
 import qwirkle.game.*;
 import qwirkle.ui.paint.QwirklePiecePainter;
 import qwirkle.ui.paint.colors.ColorSets;
-import qwirkle.ui.swing.BackgroundManager;
 import qwirkle.ui.swing.DragHelper;
 
 import javax.swing.*;

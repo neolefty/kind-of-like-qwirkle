@@ -2,10 +2,11 @@ package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.AnnotatedGame;
-import qwirkle.control.event.GameOver;
-import qwirkle.control.event.GameStarted;
+import qwirkle.event.GameOver;
+import qwirkle.event.GameStarted;
+import qwirkle.event.QwirkleTurn;
 import qwirkle.game.*;
-import qwirkle.players.AsyncPlayerWrapper;
+import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.test.scripted.ScriptedGameManager;
 import qwirkle.test.scripted.ScriptedPlayer;
 import qwirkle.test.scripted.ScriptedSettings;
