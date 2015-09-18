@@ -2,14 +2,15 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
+import qwirkle.control.PieceDropWatcher;
 import qwirkle.event.GameStarted;
 import qwirkle.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
-import qwirkle.ui.swing.game.board.PlayableHighlighter;
-import qwirkle.ui.swing.game.board.QwirkleGridPanel;
-import qwirkle.ui.swing.game.player.PlayerPanel;
 import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.swing.game.board.PlayableHighlighter;
+import qwirkle.ui.swing.game.board.QwirklePlayableGridPanel;
+import qwirkle.ui.swing.game.player.PlayerPanel;
 import qwirkle.ui.swing.util.SwingKitty;
 
 import javax.swing.*;
@@ -36,9 +37,11 @@ public class QwirkleGameStatePanel extends JPanel {
                 updateHighlight(turn.getCurPlayer());
             }
         });
+        // watch drops for interactive plays
+        new PieceDropWatcher(mgr.getEventBus());
 
         // board
-        QwirkleGridPanel grid = new QwirkleGridPanel(mgr.getEventBus());
+        QwirklePlayableGridPanel grid = new QwirklePlayableGridPanel(mgr.getEventBus());
         new PlayableHighlighter(mgr.getEventBus(), grid, ColorSets.BG_PLAYABLE);
         grid.setBlankIncluded(true);
         add(grid);

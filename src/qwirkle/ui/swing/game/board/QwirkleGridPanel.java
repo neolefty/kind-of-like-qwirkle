@@ -29,21 +29,20 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         layout = new QwirkleGridLayout();
         setLayout(layout);
         setBlankIncluded(true);
-        bus.register(new Object() {
-            /** Receive new turn notifications from the event bus. */
-            @Subscribe public void nextTurn(QwirkleTurn turn) {
-                lastTurn = turn;
-                grid = lastTurn.getGrid();
-                refresh();
-            }
+        bus.register(this);
+    }
 
-            /** Clear the board when a new game starts. */
-            @Subscribe public void gameStarted(GameStarted started) {
-                lastTurn = null;
-                grid = started.getStatus().getBoard();
-                refresh();
-            }
-        });
+    // listen for events
+    /** Receive new turn notifications from the event bus. */
+    @Subscribe public void nextTurn(QwirkleTurn turn) {
+        lastTurn = turn;
+        setGrid(lastTurn.getGrid());
+    }
+
+    /** Clear the board when a new game starts. */
+    @Subscribe public void gameStarted(GameStarted started) {
+        lastTurn = null;
+        setGrid(started.getStatus().getBoard());
     }
 
     public EventBus getEventBus() { return eventBus; }
@@ -67,16 +66,20 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
                 if (blankIncluded) {
                     for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
                         for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
-                            addPiecePanel(new QwirklePiecePanel(eventBus, grid, x, y, isInLastTurn(x, y)));
+                            addPiecePanel(createPiecePanel(x, y));
                 } else {
                     for (QwirklePlacement p : grid.getPlacements()) {
                         QwirkleLocation loc = p.getLocation();
-                        addPiecePanel(new QwirklePiecePanel(eventBus, grid, loc, isInLastTurn(loc)));
+                        addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
                     }
                 }
         }
         validate();
         repaint();
+    }
+
+    public QwirklePiecePanel createPiecePanel(int x, int y) {
+        return new QwirklePiecePanel(eventBus, grid, x, y, isInLastTurn(x, y));
     }
 
     private boolean isInLastTurn(int x, int y) {
@@ -115,8 +118,12 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         }
     }
 
-    @Override
-    public QwirkleGrid getGrid() { return grid; }
+    public void setGrid(QwirkleGrid grid) {
+        this.grid = grid;
+        refresh();
+    }
+
+    @Override public QwirkleGrid getGrid() { return grid; }
 
     @Override public int getPieceWidth() { return layout.getPieceSize(); }
 

@@ -91,7 +91,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    bus.post(new PassOver(QwirklePiecePanel.this, true));
+                    bus.post(new PassOver(QwirklePiecePanel.this, false));
                 }
             });
         }

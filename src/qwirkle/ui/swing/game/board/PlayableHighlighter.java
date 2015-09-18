@@ -8,17 +8,16 @@ import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 import qwirkle.ui.swing.colors.ColorSet;
-import qwirkle.ui.swing.colors.StaticColorSet;
+import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 
-import java.awt.*;
 import java.util.Collection;
 
 // TODO make playable spots pulse
 /** A listener that highlights playable spots on a board. */
 public class PlayableHighlighter {
-    private QwirkleGridPanel gridPanel;
+    private QwirklePlayableGridPanel gridPanel;
 
-    public PlayableHighlighter(EventBus bus, QwirkleGridPanel gridPanel, ColorSet playableColors) {
+    public PlayableHighlighter(EventBus bus, QwirklePlayableGridPanel gridPanel, ColorSet playableColors) {
         bus.register(this);
         this.gridPanel = gridPanel;
     }
@@ -42,8 +41,7 @@ public class PlayableHighlighter {
 
     // TODO draw inverted shape in each possible square
     private void highlightPlayable(PieceDrag event) {
-        Color pieceColor = event.getPiece().getColor().getColor();
-        final ColorSet colors = new StaticColorSet(pieceColor.darker().darker(), pieceColor.darker(), pieceColor.brighter());
+        final ColorSet colors = new HypotheticalPlayBgColors(event.getPiece());
         forEachLegalQPP(event.getPiece(), new QPPer() {
             @Override
             public void go(QwirklePiecePanel panel) {

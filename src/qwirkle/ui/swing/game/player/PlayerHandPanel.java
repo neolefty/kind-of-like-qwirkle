@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO allow dragging to reorder pieces
+// TODO on their turn, highlight the pieces in the player's hand that can be played (don't highlight the ones that can't)
+// TODO once a piece has been played, highlight the remaining pieces that can be played (see QwirklePlayableGridPanel)
 
 /** Show a player's status. Uses a {@link QwirkleGridPanel} with
  *  hacked event updates to show the player's current hand, highlighting

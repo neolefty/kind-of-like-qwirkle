@@ -31,8 +31,9 @@ public class QwirkleBoardImpl extends QwirkleGridImpl implements QwirkleBoard {
         this.lastScore = computeLastScore();
     }
 
-    public QwirkleBoardImpl(QwirkleBoard play) {
-        this(play.getPlacements(), play.getUndo(), play.getLastPlay());
+    /** Copy <tt>board</tt>. */
+    public QwirkleBoardImpl(QwirkleBoard board) {
+        this(board.getPlacements(), board.getUndo(), board.getLastPlay());
     }
 
     @Override public QwirkleBoard getUndo() { return previous; }

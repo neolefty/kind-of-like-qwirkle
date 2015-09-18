@@ -28,15 +28,19 @@ public class QwirkleLocation implements Comparable<QwirkleLocation> {
         }
     }
 
+    public boolean equals(int x, int y) {
+        return this.x == x && this.y == y;
+    }
+
     @Override
     public int hashCode() {
         int result = x;
         result = 31 * result + y;
         return result;
     }
-
     private SoftReference<List<QwirkleLocation>> neighbSoft;
     private List<QwirkleLocation> neighbors;
+
     public List<QwirkleLocation> getNeighbors() {
 //        List<QwirkleLocation> result = neighbSoft == null ? null : neighbSoft.get();
 //        if (result == null) {
@@ -69,7 +73,6 @@ public class QwirkleLocation implements Comparable<QwirkleLocation> {
         else
             return y == other.y ? x - other.x : y - other.y;
     }
-
     public QwirkleLocation getLeft() {
         return new QwirkleLocation(x-1, y);
     }
@@ -79,6 +82,7 @@ public class QwirkleLocation implements Comparable<QwirkleLocation> {
     public QwirkleLocation getBelow() {
         return new QwirkleLocation(x, y-1);
     }
+
     public QwirkleLocation getAbove() {
         return new QwirkleLocation(x, y+1);
     }
