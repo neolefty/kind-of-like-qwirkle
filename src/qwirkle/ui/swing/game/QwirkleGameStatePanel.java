@@ -8,8 +8,8 @@ import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.swing.game.board.PlayableHighlighter;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.swing.game.player.PlayerPanel;
-import qwirkle.ui.swing.paint.colors.ColorSets;
-import qwirkle.ui.swing.paint.colors.Colors;
+import qwirkle.ui.swing.colors.ColorSets;
+import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.util.SwingKitty;
 
 import javax.swing.*;

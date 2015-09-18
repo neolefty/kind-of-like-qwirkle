@@ -3,7 +3,7 @@ package qwirkle.ui.swing.attic;
 import com.google.common.eventbus.EventBus;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.ui.swing.game.board.QwirklePiecePanel;
-import qwirkle.ui.swing.paint.colors.Colors;
+import qwirkle.ui.swing.colors.Colors;
 
 import java.awt.*;
 

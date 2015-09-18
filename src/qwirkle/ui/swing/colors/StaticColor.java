@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.paint.colors;
+package qwirkle.ui.swing.colors;
 
 import java.awt.*;
 

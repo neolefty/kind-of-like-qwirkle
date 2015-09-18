@@ -2,7 +2,7 @@ package qwirkle.ui.swing.util;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.swing.paint.colors.Colors;
+import qwirkle.ui.swing.colors.Colors;
 
 import javax.swing.*;
 import java.awt.*;

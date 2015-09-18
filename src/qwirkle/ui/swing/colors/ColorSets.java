@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.paint.colors;
+package qwirkle.ui.swing.colors;
 
 /** A bunch of predefined color sets -- standard backgrounds. */
 public class ColorSets {

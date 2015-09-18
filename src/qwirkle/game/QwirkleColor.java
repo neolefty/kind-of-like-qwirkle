@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// TODO remove dependency on java.awt.Color
 public enum QwirkleColor {
     red (new Color(225, 20, 20), "r"),
     orange(new Color(240, 130, 0), "o"),

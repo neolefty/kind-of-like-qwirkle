@@ -1,7 +1,7 @@
-package qwirkle.ui.swing.game;
+package qwirkle.ui.swing.game.board;
 
 import qwirkle.event.PassOver;
-import qwirkle.ui.swing.paint.colors.ColorSet;
+import qwirkle.ui.swing.colors.ColorSet;
 
 import javax.swing.*;
 import java.awt.*;

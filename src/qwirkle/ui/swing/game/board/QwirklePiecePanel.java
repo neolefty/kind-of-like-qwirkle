@@ -7,9 +7,8 @@ import qwirkle.event.PassOver;
 import qwirkle.event.PieceDrag;
 import qwirkle.game.*;
 import qwirkle.ui.QwirklePieceDisplay;
-import qwirkle.ui.swing.game.BackgroundManager;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
-import qwirkle.ui.swing.paint.colors.ColorSets;
+import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.util.DragHelper;
 
 import javax.swing.*;

@@ -7,7 +7,7 @@ import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirkleShape;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
-import qwirkle.ui.swing.paint.colors.Colors;
+import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.util.HasTransparency;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
