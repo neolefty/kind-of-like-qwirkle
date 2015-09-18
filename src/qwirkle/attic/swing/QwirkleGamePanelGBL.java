@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.attic;
+package qwirkle.attic.swing;
 
 import qwirkle.control.GameManager;
 import qwirkle.game.AsyncPlayer;

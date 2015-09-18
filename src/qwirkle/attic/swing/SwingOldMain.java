@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.attic;
+package qwirkle.attic.swing;
 
 import qwirkle.control.impl.NewThreadEachTime;
 import qwirkle.game.QwirkleSettings;

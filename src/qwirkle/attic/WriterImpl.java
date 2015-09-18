@@ -1,6 +1,7 @@
-package qwirkle.control;
+package qwirkle.attic;
 
 import com.google.common.eventbus.EventBus;
+import qwirkle.attic.Writer;
 
 /** Helper class for monitoring changes of a single property.
  *  Used internally to grant read-only access to a watcher who can receive change notifications.

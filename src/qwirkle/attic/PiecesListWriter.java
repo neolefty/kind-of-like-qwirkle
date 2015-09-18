@@ -1,4 +1,4 @@
-package qwirkle.control;
+package qwirkle.attic;
 
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;

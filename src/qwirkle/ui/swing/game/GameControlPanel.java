@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.control.*;
 import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
+import qwirkle.event.GameThreadStatus;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.event.QwirkleTurn;
 import qwirkle.ui.swing.util.AutoSizeButton;
@@ -88,11 +89,11 @@ public class GameControlPanel extends JPanel {
 
         game.getEventBus().register(new Object() {
             @Subscribe
-            public void update(final QwirkleThreads threads) {
+            public void update(final GameThreadStatus event) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        if (threads.isRunning()) {
+                        if (event.isRunning()) {
                             runButton.setText(PAUSE);
                             stepButton.setEnabled(false);
                         } else {

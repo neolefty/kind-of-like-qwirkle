@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.attic;
+package qwirkle.attic.swing;
 
 import qwirkle.control.GameManager;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;

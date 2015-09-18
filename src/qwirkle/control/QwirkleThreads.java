@@ -1,44 +1,49 @@
 package qwirkle.control;
 
+import qwirkle.event.GameThreadStatus;
+
 /** Automatically run a game, pause it, etc. Posts itself to the EventBus whenever
  *  thread status changes. */
-public class QwirkleThreads extends WriterImpl<QwirkleThreads.Filament> {
+public class QwirkleThreads {
     private static final long DEFAULT_STEP_MILLIS = 1000;
     private static final long TICK_MILLIS = 50;
 
-    private GameManager game;
+    private GameManager mgr;
     private long stepMillis = DEFAULT_STEP_MILLIS;
+    private Filament filament;
 
-    public QwirkleThreads(GameManager game) {
-        init(this, game.getEventBus());
-        this.game = game;
+    public QwirkleThreads(GameManager mgr) {
+        if (mgr == null) throw new NullPointerException("game manager is null");
+        this.mgr = mgr;
     }
 
-    public boolean isRunning() { return get() != null; }
-
-    @Override
-    public void set(Filament filament) {
-        throw new IllegalStateException("Only internal.");
-    }
+    /** Is a game thread currently running?
+     *  May continue for a little while after <tt>stop</tt> is called.
+     *  You can wait for a {@link GameThreadStatus} event. */
+    public synchronized boolean isRunning() { return filament != null; }
 
     public synchronized void go() {
-        if (get() == null) {
-            Filament f = new Filament();
-            super.set(f);
-            f.start();
+        if (filament == null) {
+            filament = new Filament();
+            filament.start();
         }
+        // these events are sloppy -- could get out of order since we're no longer synchronized
+        mgr.getEventBus().post(new GameThreadStatus(true));
     }
 
     public synchronized void stop() {
-        if (get() != null) {
-            get().done();
-        }
+        // avoid need to synchronize by not using member directly
+        Filament tmp = filament;
+        if (tmp != null)
+            // Tell filament to finish up.
+            // It will automatically delete itself when it actually finishes.
+            tmp.done();
     }
 
     public long getStepMillis() { return stepMillis; }
     public void setStepMillis(long stepMillis) { this.stepMillis = stepMillis; }
 
-    public class Filament extends Thread {
+    private class Filament extends Thread {
         private boolean going = false;
 
         @Override
@@ -47,16 +52,21 @@ public class QwirkleThreads extends WriterImpl<QwirkleThreads.Filament> {
                 going = true;
                 while (going) {
                     long start = System.currentTimeMillis();
-                    game.step();
-                    if (!game.isFinished())
+                    mgr.step();
+                    if (!mgr.isFinished())
                         sleepFrom(start);
                 }
             } catch (InterruptedException ignored) {
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                done();
+                synchronized (QwirkleThreads.this) {
+                    filament = null;
+                }
+                // events are sloppy -- could get out of order since we're not synced
+                mgr.getEventBus().post(new GameThreadStatus(false));
             }
-            done();
-            QwirkleThreads.super.set(null);
         }
 
         private void sleepFrom(long start) throws InterruptedException {
@@ -70,8 +80,10 @@ public class QwirkleThreads extends WriterImpl<QwirkleThreads.Filament> {
             }
         }
 
-        /** This filament is terminating or should terminate. */
-        public void done() {
+        /** This filament is terminating or should terminate.
+         *  Doesn't need to be synchronized, since it isn't handled synchronously
+         *  -- it's just a suggestion that this be the last iteration of the loop. */
+        private void done() {
             going = false;
         }
     }

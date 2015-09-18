@@ -1,8 +1,4 @@
-package qwirkle.control;
-
-import qwirkle.game.QwirkleColor;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirkleShape;
+package qwirkle.game;
 
 import java.util.Collection;
 import java.util.HashSet;

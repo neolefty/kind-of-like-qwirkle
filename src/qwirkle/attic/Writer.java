@@ -1,4 +1,4 @@
-package qwirkle.control;
+package qwirkle.attic;
 
 import com.google.common.eventbus.EventBus;
 

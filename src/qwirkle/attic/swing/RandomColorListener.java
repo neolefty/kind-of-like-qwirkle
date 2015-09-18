@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.attic;
+package qwirkle.attic.swing;
 
 import javax.swing.*;
 import java.awt.*;

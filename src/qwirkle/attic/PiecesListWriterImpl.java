@@ -1,6 +1,7 @@
-package qwirkle.control;
+package qwirkle.attic;
 
 import com.google.common.eventbus.EventBus;
+import qwirkle.control.GameStatus;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 
