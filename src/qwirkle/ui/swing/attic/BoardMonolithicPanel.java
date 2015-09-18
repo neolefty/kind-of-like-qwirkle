@@ -5,7 +5,6 @@ import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
-import qwirkle.ui.swing.game.QwirkleGridSubscriberPanel;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.paint.colors.Colors;
 

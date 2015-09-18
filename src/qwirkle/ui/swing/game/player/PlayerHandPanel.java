@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.game;
+package qwirkle.ui.swing.game.player;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -8,6 +8,7 @@ import qwirkle.control.GameManager;
 import qwirkle.event.*;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleGridImpl;
+import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
 import java.util.ArrayList;
 import java.util.List;

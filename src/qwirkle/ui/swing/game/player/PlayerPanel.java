@@ -1,10 +1,11 @@
-package qwirkle.ui.swing.game;
+package qwirkle.ui.swing.game.player;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameManager;
 import qwirkle.event.GameStarted;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.event.QwirkleTurn;
+import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.swing.util.HasAspectRatio;

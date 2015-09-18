@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.game;
+package qwirkle.ui.swing.game.board;
 
 import qwirkle.game.HasQwirkleLocation;
 import qwirkle.game.QwirkleGrid;

@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.game;
+package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -7,6 +7,8 @@ import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
+import qwirkle.ui.swing.game.board.QwirkleGridPanel;
+import qwirkle.ui.swing.game.board.QwirklePiecePanel;
 import qwirkle.ui.swing.paint.colors.ColorSet;
 import qwirkle.ui.swing.paint.colors.StaticColorSet;
 

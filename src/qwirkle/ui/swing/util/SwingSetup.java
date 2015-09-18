@@ -1,14 +1,14 @@
 package qwirkle.ui.swing.util;
 
-import qwirkle.ui.swing.attic.BoardMonolithicPanel;
-import qwirkle.ui.swing.attic.QwirkleGridLayoutPanel;
-import qwirkle.ui.swing.game.QwirkleGridPanel;
-import qwirkle.ui.swing.attic.SquareLayout;
 import qwirkle.control.GameManager;
+import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.prefs.Preferences;
 
 public class SwingSetup {
@@ -42,18 +42,6 @@ public class SwingSetup {
         });
     }
 
-    // obsoleted by Frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
-/*
-    public static void exitOnClose(JFrame frame) {
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-    }
-*/
-
     public static void saveWindowBounds(JFrame frame, Preferences prefs) {
         if (frame.isVisible()) {
             Rectangle r = frame.getBounds();
@@ -73,15 +61,6 @@ public class SwingSetup {
         int height = prefs.getInt(SetupKit.PREFS_WINDOW_HEIGHT, screenSize.height / 2);
 
         return new Rectangle(left, top, width, height);
-    }
-
-    // compare the three game board panels
-    public static JComponent createThreePanelTest(GameManager game) {
-        Box box = new Box(BoxLayout.X_AXIS);
-        box.add(new BoardMonolithicPanel(game.getEventBus()));
-        box.add(new QwirkleGridPanel(game.getEventBus()));
-        box.add(new SquareLayout.SquarePanel(new QwirkleGridLayoutPanel(game.getEventBus())));
-        return box;
     }
 
     public static JPanel createUI(GameManager game) {
