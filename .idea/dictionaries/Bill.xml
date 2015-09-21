@@ -8,7 +8,10 @@
       <w>prestarter</w>
       <w>recurse</w>
       <w>screensaver</w>
+      <w>unplay</w>
+      <w>unproposal</w>
       <w>unsubscribe</w>
+      <w>warmup</w>
     </words>
   </dictionary>
 </component>

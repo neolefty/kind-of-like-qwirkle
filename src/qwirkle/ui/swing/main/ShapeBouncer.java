@@ -1,13 +1,14 @@
 package qwirkle.ui.swing.main;
 
-import qwirkle.control.GameManager;
+import com.google.common.eventbus.EventBus;
+import qwirkle.control.GameModel;
 import qwirkle.control.impl.SingleThreadedStrict;
 import qwirkle.game.QwirkleColor;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirkleShape;
-import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.util.HasTransparency;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
@@ -66,7 +67,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
 
     private long lastUpdate = System.currentTimeMillis();
 
-    public ShapeBouncer(GameManager game) {
+    public ShapeBouncer(GameModel game) {
         // idea: move this to scatter to keep it up to date with the game
         this(generatePieces(game));
     }
@@ -115,7 +116,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
         this.stepMillis = stepMillis;
     }
 
-    private static Collection<QwirklePiece> generatePieces(GameManager game) {
+    private static Collection<QwirklePiece> generatePieces(GameModel game) {
         QwirkleSettings settings = game.getSettings();
         QwirkleSettings oneDeck = new QwirkleSettings
                 (1, settings.getShapes(), settings.getColors(), settings.getPlayers());
@@ -378,7 +379,8 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
             bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
         }
         else {
-            GameManager justForDeck = new GameManager(new QwirkleSettings(), new SingleThreadedStrict());
+            GameModel justForDeck
+                    = new GameModel(new EventBus(), new QwirkleSettings(), new SingleThreadedStrict());
             bouncer = new ShapeBouncer(justForDeck);
             bouncer.changeColors = false;
         }

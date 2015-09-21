@@ -1,12 +1,13 @@
 package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameManager;
+import qwirkle.control.GameController;
+import qwirkle.control.GameModel;
 import qwirkle.control.impl.SingleThreadedStrict;
 import qwirkle.event.TurnStarting;
 import qwirkle.game.*;
-import qwirkle.game.impl.QwirkleBoardImpl;
 import qwirkle.game.impl.AsyncPlayerWrapper;
+import qwirkle.game.impl.QwirkleBoardImpl;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
 
@@ -69,9 +70,9 @@ public class TestBoard {
         // try a few times to make sure game works every time
         for (int n = 0; n < trials; ++n) {
             // play a few rounds of a game
-            GameManager mgr = new GameManager(settings, new SingleThreadedStrict());
+            GameController control = new GameController(settings, new SingleThreadedStrict());
             final boolean[] boardChanged = { false }, turnStarted = { false };
-            mgr.getEventBus().register(new Object() {
+            control.register(new Object() {
                 @Subscribe
                 public void board(QwirkleBoard board) {
                     boardChanged[0] = true;
@@ -84,25 +85,26 @@ public class TestBoard {
             });
             assert !boardChanged[0];
             assert !turnStarted[0];
-            mgr.start();
+            control.getGame().start();
             // advance to player #0
-            if (mgr.getCurrentPlayer() == players.get(1)) {
-                mgr.step();
+            GameModel game = control.getGame();
+            if (game.getCurrentPlayer() == players.get(1)) {
+                game.step();
 //                System.out.println(mgr);
             }
             // ensure that we're alternating between players
             //noinspection AssertWithSideEffects
-            assert mgr.getCurrentPlayer() == players.get(0);
-            mgr.step();
+            assert game.getCurrentPlayer() == players.get(0);
+            game.step();
 //            System.out.println(mgr);
             assert boardChanged[0];
             assert turnStarted[0];
             //noinspection AssertWithSideEffects
-            assert mgr.getCurrentPlayer() == players.get(1);
-            mgr.step();
+            assert game.getCurrentPlayer() == players.get(1);
+            game.step();
 //            System.out.println(mgr);
             //noinspection AssertWithSideEffects
-            assert mgr.getCurrentPlayer() == players.get(0);
+            assert game.getCurrentPlayer() == players.get(0);
         }
     }
 

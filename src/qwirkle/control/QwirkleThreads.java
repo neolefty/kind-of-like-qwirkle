@@ -8,13 +8,13 @@ public class QwirkleThreads {
     private static final long DEFAULT_STEP_MILLIS = 1000;
     private static final long TICK_MILLIS = 50;
 
-    private GameManager mgr;
+    private GameController control;
     private long stepMillis = DEFAULT_STEP_MILLIS;
     private Filament filament;
 
-    public QwirkleThreads(GameManager mgr) {
-        if (mgr == null) throw new NullPointerException("game manager is null");
-        this.mgr = mgr;
+    public QwirkleThreads(GameController control) {
+        if (control == null) throw new NullPointerException(GameController.class.getSimpleName() + " is null");
+        this.control = control;
     }
 
     /** Is a game thread currently running?
@@ -28,7 +28,7 @@ public class QwirkleThreads {
             filament.start();
         }
         // these events are sloppy -- could get out of order since we're no longer synchronized
-        mgr.getEventBus().post(new GameThreadStatus(true));
+        control.post(new GameThreadStatus(true));
     }
 
     public synchronized void stop() {
@@ -52,8 +52,8 @@ public class QwirkleThreads {
                 going = true;
                 while (going) {
                     long start = System.currentTimeMillis();
-                    mgr.step();
-                    if (!mgr.isFinished())
+                    control.getGame().step();
+                    if (!control.getGame().isFinished())
                         sleepFrom(start);
                 }
             } catch (InterruptedException ignored) {
@@ -65,7 +65,7 @@ public class QwirkleThreads {
                     filament = null;
                 }
                 // events are sloppy -- could get out of order since we're not synced
-                mgr.getEventBus().post(new GameThreadStatus(false));
+                control.post(new GameThreadStatus(false));
             }
         }
 

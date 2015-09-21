@@ -23,7 +23,7 @@ public class GameControlPanel extends JPanel {
 
     public static final double FONT_PROPORTION = 0.03;
 
-    public GameControlPanel(final GameManager game) {
+    public GameControlPanel(final GameController control) {
         // label: the number of remaining cards
         final JLabel remaining = new AutoSizeLabel(this, "", FONT_PROPORTION);
         // button: new game
@@ -31,10 +31,10 @@ public class GameControlPanel extends JPanel {
         // button: take a single turn
         final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
 
-        game.getEventBus().register(new Object() {
+        control.register(new Object() {
             @Subscribe
             public void update(QwirkleBoard board) {
-                remaining.setText(game.getDeck().size() + "");
+                remaining.setText(control.getGame().getDeck().size() + "");
             }
 
             @Subscribe
@@ -53,7 +53,7 @@ public class GameControlPanel extends JPanel {
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                game.start();
+                control.getGame().start();
             }
         });
 
@@ -65,7 +65,7 @@ public class GameControlPanel extends JPanel {
                 // take a turn outside of the event thread, to avoid delays
                 turnTaker.submit(new Runnable() {
                     @Override public void run() {
-                        game.step();
+                        control.getGame().step();
                     }
                 });
             }
@@ -73,21 +73,21 @@ public class GameControlPanel extends JPanel {
 
         // button: start/pause a game running
         final JButton runButton = new AutoSizeButton(this, PLAY, FONT_PROPORTION);
-        final QwirkleThreads threads = new QwirkleThreads(game);
+        final QwirkleThreads threads = new QwirkleThreads(control);
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (threads.isRunning())
                     threads.stop();
                 else {
-                    if (game.isFinished())
-                        game.start();
+                    if (control.getGame().isFinished())
+                        control.getGame().start();
                     threads.go();
                 }
             }
         });
 
-        game.getEventBus().register(new Object() {
+        control.register(new Object() {
             @Subscribe
             public void update(final GameThreadStatus event) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -106,12 +106,15 @@ public class GameControlPanel extends JPanel {
         });
 
         // enable turn button based on whether the game is finished
-        game.getStatus().listen(new GameStatus.StatusListener() {
-            @Override public void gameStarted(GameStarted started) {
+        control.register(new Object() {
+            @Subscribe
+            public void gameStarted(GameStarted started) {
                 stepButton.setEnabled(true);
                 newGame.setText(RESTART);
             }
-            @Override public void gameOver(GameOver over) {
+
+            @Subscribe
+            public void gameOver(GameOver over) {
                 stepButton.setEnabled(false);
                 newGame.setText(NEW_GAME);
             }

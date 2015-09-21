@@ -1,7 +1,8 @@
 package qwirkle.ui.swing.game.board;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import qwirkle.control.GameController;
+import qwirkle.control.HypotheticalPlay;
 import qwirkle.event.PieceDrag;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirkleGrid;
@@ -16,11 +17,13 @@ import java.util.Collection;
 // TODO abstract this from Swing and move to qwirkle.control, like PieceDropWatcher?
 /** A listener that highlights playable spots on a board. */
 public class PlayableHighlighter {
-    private QwirklePlayableGridPanel gridPanel;
+    private QwirkleGridPanel gridPanel;
+    private HypotheticalPlay hypo;
 
-    public PlayableHighlighter(EventBus bus, QwirklePlayableGridPanel gridPanel, ColorSet playableColors) {
-        bus.register(this);
+    public PlayableHighlighter(GameController control, QwirkleGridPanel gridPanel) {
+        control.register(this);
         this.gridPanel = gridPanel;
+        this.hypo = control.getEventsController().getHypotheticalPlay();
     }
 
     @Subscribe
@@ -61,7 +64,7 @@ public class PlayableHighlighter {
     private void forEachLegalQPP(QwirklePiece piece, QPPer goer) {
         QwirkleBoard board = getBoard();
         if (board != null) {
-            Collection<QwirklePlacement> legalMoves = gridPanel.getLegalMoves(piece);
+            Collection<QwirklePlacement> legalMoves = hypo.getLegalMoves(piece);
             for (QwirklePlacement move : legalMoves) {
                 // do we need to check for null? hypothetically no ...
                 QwirklePiecePanel panel = gridPanel.getPiecePanel(move.getLocation());

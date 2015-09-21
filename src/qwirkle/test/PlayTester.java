@@ -1,6 +1,7 @@
 package qwirkle.test;
 
-import qwirkle.control.GameManager;
+import com.google.common.eventbus.EventBus;
+import qwirkle.control.GameModel;
 import qwirkle.control.impl.SingleThreadedStrict;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirklePlayer;
@@ -10,10 +11,10 @@ import qwirkle.game.impl.AsyncPlayerWrapper;
 import java.util.Collection;
 
 public class PlayTester {
-    private final GameManager game;
+    private final GameModel game;
 
     public PlayTester(QwirkleSettings settings) {
-        this.game = new GameManager(settings, new SingleThreadedStrict());
+        this.game = new GameModel(new EventBus(), settings, new SingleThreadedStrict());
     }
 
     public PlayTester(Collection<QwirklePlayer> players) {
@@ -25,7 +26,7 @@ public class PlayTester {
         return play(3);
     }
 
-    public GameManager getGame() {
+    public GameModel getGame() {
         return game;
     }
 

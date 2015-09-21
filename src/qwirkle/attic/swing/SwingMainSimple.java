@@ -1,15 +1,15 @@
 package qwirkle.attic.swing;
 
-import qwirkle.control.GameManager;
+import qwirkle.control.GameController;
 import qwirkle.control.impl.NewThreadEachTime;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 import qwirkle.players.StupidPlayer;
-import qwirkle.ui.swing.main.QwirkleFrame;
-import qwirkle.ui.swing.game.QwirkleGamePanel;
 import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.swing.game.QwirkleGamePanel;
+import qwirkle.ui.swing.main.QwirkleFrame;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
 
@@ -28,8 +28,8 @@ public class SwingMainSimple {
                 players.add(new AsyncPlayerWrapper(new MaxPlayer("Gilly")));
                 players.add(new AsyncPlayerWrapper(new StupidPlayer("1")));
                 QwirkleSettings settings = new QwirkleSettings(players);
-                final GameManager game = new GameManager(settings, new NewThreadEachTime());
-                game.start();
+                GameController control = new GameController(settings, new NewThreadEachTime());
+                control.getGame().start();
 
                 // make a window frame
                 QwirkleFrame frame = new QwirkleFrame();
@@ -39,7 +39,7 @@ public class SwingMainSimple {
                 SwingSetup.addWindowSizer(frame, SwingMainSimple.class);
 
                 // add a view of the game
-                QwirkleGamePanel gamePanel = new QwirkleGamePanel(game);
+                QwirkleGamePanel gamePanel = new QwirkleGamePanel(control);
                 frame.setContentPane(gamePanel);
 
                 // set colors (only need it once, after everything is added)

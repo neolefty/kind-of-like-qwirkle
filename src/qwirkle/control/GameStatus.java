@@ -1,38 +1,35 @@
 package qwirkle.control;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
 import qwirkle.event.PreEvent;
-import qwirkle.event.QwirkleTurn;
-import qwirkle.game.*;
+import qwirkle.game.AsyncPlayer;
+import qwirkle.game.QwirkleBoard;
+import qwirkle.game.QwirklePiece;
+import qwirkle.game.QwirkleSettings;
 
 import java.util.List;
 
 /** The read-only, but live & changing, current state of a game.
  *  Gives a view of the game without giving access to GameManager. */
 public class GameStatus {
-    private GameManager game;
+    private GameModel game;
     private AnnotatedGame annotatedGame;
 
     /** Use Prestarter for a public constructor. */
-    public GameStatus(final GameManager game) {
+    public GameStatus(final EventBus bus, final GameModel game) {
         this.game = game;
-        game.getEventBus().register(new Object() {
+        bus.register(new Object() {
             // start a new AnnotatedGame each time a game begins
-            @Subscribe public void gameStarted(PreEvent pre) {
+            @Subscribe
+            public void gameStarted(PreEvent pre) {
                 if (pre.getEvent() instanceof GameStarted)
                     // note: AnnotatedGame will handle announcing itself
-                    annotatedGame = new AnnotatedGame(game.getEventBus());
+                    annotatedGame = new AnnotatedGame(bus);
             }
         });
     }
-
-    /** Listen for updates to the game status. */
-    public void listen(StatusListener listener) { game.getEventBus().register(listener); }
-
-    /** Listen for new turns. */
-    public void listen(TurnListener listener) { game.getEventBus().register(listener); }
 
     /** What does the playing surface look like? */
     public QwirkleBoard getBoard() { return game.getBoard(); }
@@ -60,13 +57,4 @@ public class GameStatus {
 
     /** The current leader. */
     public AsyncPlayer getLeader() { return annotatedGame.getLeader(); }
-
-    public interface StatusListener {
-        @Subscribe void gameStarted(GameStarted started);
-        @Subscribe void gameOver(GameOver over);
-    }
-
-    public interface TurnListener {
-        @Subscribe void turn(QwirkleTurn turn);
-    }
 }

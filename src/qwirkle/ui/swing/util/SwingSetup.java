@@ -1,6 +1,6 @@
 package qwirkle.ui.swing.util;
 
-import qwirkle.control.GameManager;
+import qwirkle.control.GameController;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
 import javax.swing.*;
@@ -63,10 +63,10 @@ public class SwingSetup {
         return new Rectangle(left, top, width, height);
     }
 
-    public static JPanel createUI(GameManager game) {
+    public static JPanel createUI(GameController control) {
         JPanel ui = new JPanel();
         ui.setLayout(new BorderLayout());
-        ui.add(new QwirkleGridPanel(game.getEventBus()));
+        ui.add(new QwirkleGridPanel(control.getEventBus()));
 //        ui.add(new PlayerPanel("Random", new RandomPlayer())(engine), BorderLayout.SOUTH);
         return ui;
     }

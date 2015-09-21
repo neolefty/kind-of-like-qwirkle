@@ -12,7 +12,9 @@ public class HypotheticalPlayBgColors implements ColorSet {
 
     public HypotheticalPlayBgColors(QwirkleColor pieceColor) { this.pieceColor = pieceColor; }
     public HypotheticalPlayBgColors(QwirklePiece piece) { this(piece.getColor()); }
-    public HypotheticalPlayBgColors(QwirklePlacement placement) { this(placement.getColor()); }
+    public HypotheticalPlayBgColors(QwirklePlacement placement) {
+        this(placement.getColor());
+    }
 
     @Override
     public Color getNormal() {

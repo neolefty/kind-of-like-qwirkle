@@ -1,17 +1,15 @@
 package qwirkle.control;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.event.*;
 import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleBoardImpl;
 
 import java.util.*;
 
-/** Manage a group of Qwirkle players playing a game.
+/** Model a group of Qwirkle players playing a game.
  *  To receive updates, register for {@link GameStatus}, {@link QwirkleBoard},
- *  {@link QwirkleTurn}, or {@link AnnotatedGame} on {@link #getEventBus}.
+ *  {@link QwirkleTurn}, or {@link AnnotatedGame} on {@link GameController#getEventBus}.
  *
  *  <p>Events:</p>
  *
@@ -27,7 +25,9 @@ import java.util.*;
  *  <p>Events are posted to the {@link EventBus} in two stages.
  *  First, wrapped in a {@link qwirkle.event.PreEvent} to allow setup by internal objects
  *  such as AnnotatedGame and second, normally, for GUI etc.</p>*/
-public class GameManager {
+public class GameModel {
+    // TODO move event management into EventsController, as much as possible
+
     // long-lived things
     private GameStatus status;
     private EventBus bus;
@@ -51,31 +51,23 @@ public class GameManager {
     private static final Random r = new Random();
     private boolean randomDeal = true; // by default, deal randomly
 
-    public GameManager(QwirkleSettings settings, ThreadingStrategy threading) {
+    public GameModel(EventBus bus, QwirkleSettings settings, ThreadingStrategy threading) {
+        this.bus = bus;
         this.settings = settings;
         this.threading = threading;
-        bus = new EventBus(new SubscriberExceptionHandler() {
-            @Override
-            public void handleException(Throwable exception, SubscriberExceptionContext context) {
-                System.out.println(context);
-                exception.printStackTrace(System.out);
-            }
-        });
-        status = new GameStatus(this);
+        status = new GameStatus(bus, this);
         deck = new ArrayList<>();
     }
 
     /** Initialize with default game settings. */
-    public GameManager(ThreadingStrategy threading) {
-        this(new QwirkleSettings(), threading);
+    public GameModel(EventBus bus, ThreadingStrategy threading) {
+        this(bus, new QwirkleSettings(), threading);
     }
 
     public GameStatus getStatus() { return status; }
 
     /** What are the settings currently being used? */
     public QwirkleSettings getSettings() { return settings; }
-
-    public EventBus getEventBus() { return bus; }
 
     public List<QwirklePiece> getDeck() { return deck; }
 
@@ -344,6 +336,8 @@ public class GameManager {
     }
 
     private void post(Object event) {
+        // TODO do this systematically for events outside of GameModel? Or is it too much of a kludge already?
+        // TODO figure out a way around the concurrency problems that necessitate PreEvent -- case by case?
         bus.post(new PreEvent(event));
         bus.post(event);
     }

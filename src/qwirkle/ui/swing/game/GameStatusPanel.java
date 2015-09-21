@@ -2,12 +2,12 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameManager;
+import qwirkle.control.GameController;
 import qwirkle.control.GameStatus;
 import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
-import qwirkle.event.TurnStarting;
 import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnStarting;
 
 import javax.swing.*;
 import java.util.concurrent.Callable;
@@ -18,10 +18,10 @@ public class GameStatusPanel extends Box {
     private TurnHighlightingLabel turnLabel, bestTurnLabel;
     private QwirkleTurn bestTurn, lastTurn;
 
-    public GameStatusPanel(final GameManager mgr) {
+    public GameStatusPanel(GameController control) {
         super(BoxLayout.X_AXIS);
 
-        EventBus bus = mgr.getEventBus();
+        EventBus bus = control.getEventBus();
         turnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<QwirkleTurn>() {
             @Override public QwirkleTurn call() { return lastTurn; }
         });
@@ -33,7 +33,7 @@ public class GameStatusPanel extends Box {
         add(Box.createGlue()); // fill space between labels
         add(bestTurnLabel, Box.RIGHT_ALIGNMENT);
 
-        mgr.getEventBus().register(new Object() {
+        control.register(new Object() {
             @Subscribe public void gameOver(GameOver gameOver) {
                 finished(gameOver.getStatus());
             }

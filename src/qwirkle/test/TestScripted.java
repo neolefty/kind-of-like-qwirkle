@@ -1,5 +1,6 @@
 package qwirkle.test;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.AnnotatedGame;
 import qwirkle.event.GameOver;
@@ -7,7 +8,7 @@ import qwirkle.event.GameStarted;
 import qwirkle.event.QwirkleTurn;
 import qwirkle.game.*;
 import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.test.scripted.ScriptedGameManager;
+import qwirkle.test.scripted.ScriptedGameModel;
 import qwirkle.test.scripted.ScriptedPlayer;
 import qwirkle.test.scripted.ScriptedSettings;
 
@@ -43,21 +44,31 @@ public class TestScripted {
         ScriptedSettings settings = new ScriptedSettings(players);
         // add two pieces to test that MaxPlayer knows what to do
         settings.setDeckPrefix("bc,yc");
-        final ScriptedGameManager mgr = new ScriptedGameManager();
+        EventBus bus = new EventBus();
+        final ScriptedGameModel mgr = new ScriptedGameModel(bus);
 
         // listen for the game to start, end, and each turn to pass
         final int[] receivedGameStarted = { 0 };
         final AnnotatedGame[] firstAnnotated = { null };
         final int[] receivedGameOver = { 0 };
         final int[] turnCount = {0};
-        mgr.getEventBus().register(new Object() {
-            @Subscribe public void gameStarted(GameStarted started) {
+        bus.register(new Object() {
+            @Subscribe
+            public void gameStarted(GameStarted started) {
                 receivedGameStarted[0]++;
                 if (firstAnnotated[0] == null) // only grab it the first time
                     firstAnnotated[0] = started.getStatus().getAnnotatedGame();
             }
-            @Subscribe public void gameOver(GameOver over) { receivedGameOver[0]++; }
-            @Subscribe public void turnPassed(QwirkleTurn turn) { ++turnCount[0]; }
+
+            @Subscribe
+            public void gameOver(GameOver over) {
+                receivedGameOver[0]++;
+            }
+
+            @Subscribe
+            public void turnPassed(QwirkleTurn turn) {
+                ++turnCount[0];
+            }
         });
 
         assert firstAnnotated[0] == null;
@@ -135,7 +146,7 @@ public class TestScripted {
 
         // check that we can start a new game
         final GameStarted[] nextStarted = { null };
-        mgr.getEventBus().register(new Object() {
+        bus.register(new Object() {
             @Subscribe public void started(GameStarted start) {
                 nextStarted[0] = start;
             }
@@ -149,7 +160,7 @@ public class TestScripted {
         assert newAnnotated.getTurns().size() == 0; // no real side effects
     }
 
-    public static void debugPrint(ScriptedGameManager mgr) {
+    public static void debugPrint(ScriptedGameModel mgr) {
         System.out.println();
         System.out.println("Turn #" + (mgr.getStatus().getAnnotatedGame().getTurns().size() - 1) + ":");
         System.out.println(mgr);
@@ -190,7 +201,8 @@ public class TestScripted {
         // simple deck with 3 shapes & 4 colors
         ScriptedSettings settings
                 = new ScriptedSettings(players, "csd", "rgby");
-        ScriptedGameManager mgr = new ScriptedGameManager();
+        EventBus bus = new EventBus();
+        ScriptedGameModel mgr = new ScriptedGameModel(bus);
         mgr.start(settings);
 
         // before turn 0

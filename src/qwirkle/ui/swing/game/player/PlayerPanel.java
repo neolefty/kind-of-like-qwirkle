@@ -1,10 +1,10 @@
 package qwirkle.ui.swing.game.player;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameManager;
+import qwirkle.control.GameController;
 import qwirkle.event.GameStarted;
-import qwirkle.game.AsyncPlayer;
 import qwirkle.event.QwirkleTurn;
+import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
@@ -34,9 +34,9 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
 
-    public PlayerPanel(final GameManager mgr, final AsyncPlayer player) {
+    public PlayerPanel(final GameController control, final AsyncPlayer player) {
         this.player = player;
-        this.handPanel = new PlayerHandPanel(mgr, player);
+        this.handPanel = new PlayerHandPanel(control, player);
 
         setLayout(new GridBagLayout());
         double fraction = 0.25;
@@ -46,13 +46,13 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         autoSizeLabels.add(scoreLabel);
         scoreSeparatorLabel = new AutoSizeLabel(this, ": ", fraction);
         autoSizeLabels.add(scoreSeparatorLabel);
-        bestMoveLabel = new TurnHighlightingLabel(mgr.getEventBus(), this, fraction * 0.7,
+        bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, fraction * 0.7,
                 new Callable<QwirkleTurn>() { @Override public QwirkleTurn call() { return bestMove; } });
         bestMoveLabel.setOpaque(false);
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);
 
-        mgr.getEventBus().register(new Object() {
+        control.register(new Object() {
             @Subscribe public void turn(QwirkleTurn turn) {
                 scoreLabel.setText("" + turn.getStatus().getScore(player));
                 setBestMove(turn.getStatus().getAnnotatedGame().getBestTurn(player));

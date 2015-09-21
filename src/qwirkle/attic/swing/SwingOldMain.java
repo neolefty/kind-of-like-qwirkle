@@ -1,11 +1,12 @@
 package qwirkle.attic.swing;
 
+import qwirkle.control.GameController;
 import qwirkle.control.impl.NewThreadEachTime;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.QwirklePlayer;
 import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
-import qwirkle.control.GameManager;
+import qwirkle.control.GameModel;
 import qwirkle.ui.swing.main.QwirkleFrame;
 import qwirkle.ui.swing.util.SwingSetup;
 
@@ -28,11 +29,11 @@ public class SwingOldMain {
         players.add(new MaxPlayer());
         players.add(new MaxPlayer());
         QwirkleSettings settings = new QwirkleSettings(AsyncPlayerWrapper.wrap(players));
-        final GameManager game = new GameManager(settings, new NewThreadEachTime());
-        game.start();
+        final GameController control = new GameController(settings, new NewThreadEachTime());
+        control.getGame().start();
 
         // display
-        JPanel ui = SwingSetup.createUI(game);
+        JPanel ui = SwingSetup.createUI(control);
         JFrame frame = new QwirkleFrame();
         frame.setContentPane(ui);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -49,6 +50,7 @@ public class SwingOldMain {
                     //noinspection InfiniteLoopStatement
                     while (true) {
                         long start = System.currentTimeMillis();
+                        GameModel game = control.getGame();
                         if (game.isFinished()) {
                             if (game.getBoard() != null && game.getBoard().size() > 0) {
                                 System.out.println(game);

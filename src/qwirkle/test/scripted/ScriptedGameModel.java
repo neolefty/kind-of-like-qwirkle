@@ -1,6 +1,7 @@
 package qwirkle.test.scripted;
 
-import qwirkle.control.GameManager;
+import com.google.common.eventbus.EventBus;
+import qwirkle.control.GameModel;
 import qwirkle.control.impl.SingleThreadedStrict;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirklePiece;
@@ -10,9 +11,9 @@ import qwirkle.game.impl.AsyncPlayerWrapper;
 import java.util.*;
 
 /** GameManager for scripted games. */
-public class ScriptedGameManager extends GameManager {
-    public ScriptedGameManager() {
-        super(new SingleThreadedStrict());
+public class ScriptedGameModel extends GameModel {
+    public ScriptedGameModel(EventBus bus) {
+        super(bus, new SingleThreadedStrict());
         setRandomDealing(false);
     }
 

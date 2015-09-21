@@ -4,9 +4,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
-import qwirkle.control.GameManager;
+import qwirkle.control.GameController;
 import qwirkle.event.*;
-import qwirkle.game.*;
+import qwirkle.game.AsyncPlayer;
+import qwirkle.game.QwirkleGrid;
+import qwirkle.game.QwirklePiece;
+import qwirkle.game.QwirklePlacement;
 import qwirkle.game.impl.QwirkleGridImpl;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
@@ -21,14 +24,14 @@ import java.util.List;
  *  hacked event updates to show the player's current hand, highlighting
  *  the most recently drawn pieces. */
 public class PlayerHandPanel extends QwirkleGridPanel {
-    private GameManager mgr;
+    private GameController control;
     private AsyncPlayer player;
     // what pieces did the player draw last?
     private List<QwirklePiece> lastDraw;
 
     private boolean vertical;
 
-    public PlayerHandPanel(final GameManager mgr, AsyncPlayer player) {
+    public PlayerHandPanel(final GameController control, AsyncPlayer player) {
         super(new EventBus(new SubscriberExceptionHandler() {
             @Override
             public void handleException(Throwable exception, SubscriberExceptionContext context) {
@@ -36,15 +39,15 @@ public class PlayerHandPanel extends QwirkleGridPanel {
                 exception.printStackTrace(System.out);
             }
         }));
+        this.control = control;
         setBlankIncluded(false);
 
-        this.mgr = mgr;
         this.player = player;
-        mgr.getEventBus().register(new GameListener());
+        control.register(new GameListener());
         // forward mouse events from the local bus to the parent bus
         getEventBus().register(new Object() {
-            @Subscribe public void dragPosted(PieceDrag event) { mgr.getEventBus().post(event); }
-            @Subscribe public void passedOver(PassOver event) { mgr.getEventBus().post(event); }
+            @Subscribe public void dragPosted(PieceDrag event) { control.post(event); }
+            @Subscribe public void passedOver(PassOver event) { control.post(event); }
         });
         setVertical(true);
     }
@@ -100,6 +103,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
 
     private void update(QwirkleTurn turn) {
         if (turn.getPlayer() == player) {
+
             // we just took a turn, so forget the previous pieces we drew -- we'll be getting new ones soon
             lastDraw = null;
             // force a UI update
@@ -121,7 +125,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         List<QwirklePlacement> drawPlacements = new ArrayList<>();
 
         // make a board from our hand, along with the new pieces
-        List<QwirklePiece> hand = mgr.getHand(player);
+        List<QwirklePiece> hand = control.getGame().getHand(player);
         if (hand != null) {
             // build a board that represents the hand
             for (int i = 0; i < hand.size(); ++i) {

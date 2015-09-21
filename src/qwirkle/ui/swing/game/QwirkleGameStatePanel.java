@@ -1,12 +1,10 @@
 package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameManager;
-import qwirkle.control.PieceDropWatcher;
+import qwirkle.control.GameController;
 import qwirkle.event.GameStarted;
 import qwirkle.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
-import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.board.PlayableHighlighter;
 import qwirkle.ui.swing.game.board.QwirklePlayableGridPanel;
@@ -23,28 +21,28 @@ import java.util.Map;
 public class QwirkleGameStatePanel extends JPanel {
     // synchronize on this before making any changes
     private final Map<AsyncPlayer, PlayerPanel> playerPanelMap = new LinkedHashMap<>();
-    private GameManager mgr;
+    private GameController control;
 
-    public QwirkleGameStatePanel(GameManager mgr) {
+    public QwirkleGameStatePanel(GameController control) {
         super(new QwirkleGameLayout());
+        this.control = control;
 
-        this.mgr = mgr;
-        mgr.getEventBus().register(new Object() {
-            @Subscribe public void started(GameStarted started) {
+        // board
+        QwirklePlayableGridPanel grid = new QwirklePlayableGridPanel(control);
+        grid.setBlankIncluded(true);
+        add(grid);
+
+        // ui controllers
+        new PlayableHighlighter(control, grid);
+        control.register(new Object() {
+            @Subscribe
+            public void started(GameStarted started) {
                 updatePlayers(started.getSettings().getPlayers());
             }
             @Subscribe public void turn(TurnStarting turn) {
                 updateHighlight(turn.getCurPlayer());
             }
         });
-        // watch drops for interactive plays
-        new PieceDropWatcher(mgr.getEventBus());
-
-        // board
-        QwirklePlayableGridPanel grid = new QwirklePlayableGridPanel(mgr.getEventBus());
-        new PlayableHighlighter(mgr.getEventBus(), grid, ColorSets.BG_PLAYABLE);
-        grid.setBlankIncluded(true);
-        add(grid);
     }
 
     // TODO move this to PlayerPanel -- they can listen for events too
@@ -71,7 +69,7 @@ public class QwirkleGameStatePanel extends JPanel {
     private void addPlayerPanels(List<AsyncPlayer> players) {
         synchronized (playerPanelMap) {
             for (AsyncPlayer player : players) {
-                PlayerPanel pp = new PlayerPanel(mgr, player);
+                PlayerPanel pp = new PlayerPanel(control, player);
                 playerPanelMap.put(player, pp);
                 // set an invisible border now to take up the space so the size doesn't change later
                 pp.setBorder(BorderFactory.createLineBorder(Colors.BG));

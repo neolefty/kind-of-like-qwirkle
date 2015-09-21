@@ -12,4 +12,9 @@ public class TurnStarting {
     public GameStatus getStatus() { return status; }
 
     public AsyncPlayer getCurPlayer() { return status.getCurPlayer(); }
+
+    @Override
+    public String toString() {
+        return "Starting turn for " + getCurPlayer().getName() + ".";
+    }
 }

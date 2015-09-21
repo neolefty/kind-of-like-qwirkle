@@ -58,24 +58,29 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     public void refresh() {
-        synchronized (getTreeLock()) {
-            QwirkleGrid grid = getGrid();
-            removeAll();
-            layout.setGrid(grid);
-            if (grid != null)
-                if (blankIncluded) {
-                    for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
-                        for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
-                            addPiecePanel(createPiecePanel(x, y));
-                } else {
-                    for (QwirklePlacement p : grid.getPlacements()) {
-                        QwirkleLocation loc = p.getLocation();
-                        addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
-                    }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (getTreeLock()) {
+                    QwirkleGrid grid = getGrid();
+                    removeAll();
+                    layout.setGrid(grid);
+                    if (grid != null)
+                        if (blankIncluded) {
+                            for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
+                                for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
+                                    addPiecePanel(createPiecePanel(x, y));
+                        } else {
+                            for (QwirklePlacement p : grid.getPlacements()) {
+                                QwirkleLocation loc = p.getLocation();
+                                addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
+                            }
+                        }
                 }
-        }
-        validate();
-        repaint();
+                validate();
+                repaint();
+            }
+        });
     }
 
     public QwirklePiecePanel createPiecePanel(int x, int y) {
@@ -84,10 +89,6 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
 
     private boolean isInLastTurn(int x, int y) {
         return lastTurn != null && lastTurn.containsLocation(x, y);
-    }
-
-    private boolean isInLastTurn(QwirkleLocation loc) {
-        return isInLastTurn(loc.getX(), loc.getY());
     }
 
     private Map<QwirkleLocation, QwirklePiecePanel> panelMap = new HashMap<>();
