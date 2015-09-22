@@ -1,30 +1,41 @@
 package qwirkle.control;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import qwirkle.event.PlayTurn;
 import qwirkle.game.QwirkleSettings;
 
 /** Interactive event processing and game model, encapsulated. */
 public class GameController {
     private GameModel game;
-    private EventsController events;
+    private InteractionController interact;
 
     public GameController(QwirkleSettings settings, ThreadingStrategy threading) {
-        this.events = new EventsController();
-        this.game = new GameModel(events.getEventBus(), settings, threading);
+        this.interact = new InteractionController();
+        this.game = new GameModel(interact.getEventBus(), settings, threading);
+
+        // link the two together by watching for PlayTurn
+        interact.register(new Object() {
+            @Subscribe
+            public void turnRequested(PlayTurn turn) {
+                game.play(game.getCurrentPlayer(), turn.getPlacements());
+            }
+        });
     }
 
-    public GameController(GameModel game, EventsController events) {
+    public GameController(GameModel game, InteractionController interact) {
         this.game = game;
-        this.events = events;
+        this.interact = interact;
     }
 
     public GameModel getGame() { return game; }
-    public EventsController getEventsController() { return events; }
-    public EventBus getEventBus() { return events.getEventBus(); }
+    public InteractionController getInteraction() { return interact; }
+    public HypotheticalPlay getHypothetical() { return interact.getHypotheticalPlay(); }
+    public EventBus getEventBus() { return interact.getEventBus(); }
 
     /** Convenience method. Calls {@link EventBus#post}. */
-    public void post(Object event) { events.post(event); }
+    public void post(Object event) { interact.post(event); }
 
     /** Convenience method. Calls {@link EventBus#register}. */
-    public void register(Object subscriber) { events.register(subscriber); }
+    public void register(Object subscriber) { interact.register(subscriber); }
 }

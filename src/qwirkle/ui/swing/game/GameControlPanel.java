@@ -6,7 +6,7 @@ import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
 import qwirkle.event.GameThreadStatus;
 import qwirkle.game.QwirkleBoard;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.ui.swing.util.AutoSizeButton;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 
@@ -38,7 +38,7 @@ public class GameControlPanel extends JPanel {
             }
 
             @Subscribe
-            public void turn(QwirkleTurn turn) { // when a turn has been taken, enable the take-a-turn button
+            public void turn(TurnCompleted turn) { // when a turn has been taken, enable the take-a-turn button
                 // get back into the event loop to re-enable the button
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -63,7 +63,10 @@ public class GameControlPanel extends JPanel {
             @Override public void actionPerformed(ActionEvent actionEvent) {
                 stepButton.setEnabled(false); // button will be re-enabled once the turn has been taken
                 // take a turn outside of the event thread, to avoid delays
-                turnTaker.submit(new Runnable() {
+                if (!control.getHypothetical().isEmpty())
+                    control.getHypothetical().confirm();
+                else
+                    turnTaker.submit(new Runnable() {
                     @Override public void run() {
                         control.getGame().step();
                     }

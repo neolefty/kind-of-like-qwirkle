@@ -6,7 +6,7 @@ import qwirkle.event.GameStarted;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePlacement;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.ui.QwirkleGridDisplay;
 import qwirkle.ui.QwirklePieceDisplay;
 
@@ -19,7 +19,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGridLayout layout;
     private boolean blankIncluded;
     private QwirkleGrid grid;
-    private QwirkleTurn lastTurn;
+    private TurnCompleted lastTurn;
     private EventBus eventBus;
 
     private boolean draggable = false;
@@ -34,7 +34,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
 
     // listen for events
     /** Receive new turn notifications from the event bus. */
-    @Subscribe public void nextTurn(QwirkleTurn turn) {
+    @Subscribe public void nextTurn(TurnCompleted turn) {
         lastTurn = turn;
         setGrid(lastTurn.getGrid());
     }

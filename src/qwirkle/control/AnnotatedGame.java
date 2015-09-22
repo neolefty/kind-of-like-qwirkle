@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.event.GameOver;
 import qwirkle.event.PreEvent;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.game.*;
 
 import java.util.*;
@@ -15,9 +15,9 @@ import java.util.*;
  *
  *  <p>Only records a single game. Quits when that game ends.</p> */
 public class AnnotatedGame {
-    private List<QwirkleTurn> turns = new ArrayList<>(); // list of turns so far
-    private List<QwirkleTurn> turnsNoMod = null; // version of turns list that is unmodifiable
-    private QwirkleTurn bestTurn = null; // the turn with the best score so far
+    private List<TurnCompleted> turns = new ArrayList<>(); // list of turns so far
+    private List<TurnCompleted> turnsNoMod = null; // version of turns list that is unmodifiable
+    private TurnCompleted bestTurn = null; // the turn with the best score so far
     private boolean finished = false; // has the game already finished?
     private Map<AsyncPlayer, Integer> scores = new HashMap<>(); // scores
 
@@ -31,9 +31,9 @@ public class AnnotatedGame {
                     finished = true;
                 }
                 // log turns as they arrive
-                else if (pre.getEvent() instanceof QwirkleTurn) {
+                else if (pre.getEvent() instanceof TurnCompleted) {
                     try {
-                        log((QwirkleTurn) pre.getEvent());
+                        log((TurnCompleted) pre.getEvent());
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
                         e.fillInStackTrace();
@@ -44,12 +44,12 @@ public class AnnotatedGame {
         });
     }
 
-    private void log(QwirkleTurn turn) {
+    private void log(TurnCompleted turn) {
         if (finished)
             throw new IllegalStateException("Game is already finished. Should have unregistered already.");
 
         // integrity check
-        QwirkleTurn prevTurn = getMostRecentTurn();
+        TurnCompleted prevTurn = getMostRecentTurn();
         QwirkleGrid curGrid = turn.getGrid();
         QwirkleBoard prevBoard = null;
         if (curGrid instanceof QwirkleBoard)
@@ -81,7 +81,7 @@ public class AnnotatedGame {
     }
 
     /** The most recent turn. Null if none yet. */
-    public QwirkleTurn getMostRecentTurn() {
+    public TurnCompleted getMostRecentTurn() {
         return (turns.size() == 0) ? null : turns.get(turns.size() - 1);
     }
 
@@ -92,19 +92,19 @@ public class AnnotatedGame {
     }
 
     /** The turns in this game so far. */
-    public List<QwirkleTurn> getTurns() {
+    public List<TurnCompleted> getTurns() {
         if (turnsNoMod == null)
             turnsNoMod = Collections.unmodifiableList(turns);
         return turnsNoMod;
     }
 
     /** What is the turn with the best score so far? */
-    public QwirkleTurn getBestTurn() { return bestTurn; }
+    public TurnCompleted getBestTurn() { return bestTurn; }
 
     /** What is the best move made so far by a particular player? */
-    public QwirkleTurn getBestTurn(AsyncPlayer player) {
-        QwirkleTurn best = null;
-        for (QwirkleTurn t : turns)
+    public TurnCompleted getBestTurn(AsyncPlayer player) {
+        TurnCompleted best = null;
+        for (TurnCompleted t : turns)
             if (t.getPlayer() == player && t.getScore() > 0
                     && (best == null || t.getScore() > best.getScore()))
                 best = t;

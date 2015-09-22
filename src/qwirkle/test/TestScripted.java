@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.control.AnnotatedGame;
 import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.game.*;
 import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.test.scripted.ScriptedGameModel;
@@ -66,7 +66,7 @@ public class TestScripted {
             }
 
             @Subscribe
-            public void turnPassed(QwirkleTurn turn) {
+            public void turnPassed(TurnCompleted turn) {
                 ++turnCount[0];
             }
         });

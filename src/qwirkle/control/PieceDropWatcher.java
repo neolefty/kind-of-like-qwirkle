@@ -3,8 +3,8 @@ package qwirkle.control;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.event.PassOver;
-import qwirkle.event.PieceDrag;
-import qwirkle.event.PiecePlay;
+import qwirkle.event.DragPiece;
+import qwirkle.event.PlayPiece;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePlacement;
 import qwirkle.ui.QwirklePieceDisplay;
@@ -26,13 +26,13 @@ public class PieceDropWatcher {
             }
 
             @Subscribe
-            public void drag(PieceDrag event) {
+            public void drag(DragPiece event) {
                 if (event.isDrop()) {
                     QwirklePieceDisplay display = lastDisplay; // avoid concurrency problems by grabbing a temp copy
                     if (display != null && display.getPiece() == null) {
                         QwirkleLocation location = display.getQwirkleLocation();
                         QwirklePlacement placement = new QwirklePlacement(event.getPiece(), location);
-                        bus.post(PiecePlay.propose(placement));
+                        bus.post(PlayPiece.propose(placement));
                     }
                 }
             }

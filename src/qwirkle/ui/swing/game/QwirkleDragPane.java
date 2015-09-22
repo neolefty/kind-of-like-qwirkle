@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.event.PassOver;
-import qwirkle.event.PieceDrag;
+import qwirkle.event.DragPiece;
 import qwirkle.game.QwirklePiece;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 
@@ -13,7 +13,7 @@ import java.awt.geom.AffineTransform;
 
 /** Supports dragging {@link QwirklePiece}s around a UI. */
 public class QwirkleDragPane extends JComponent {
-    private PieceDrag pickup;
+    private DragPiece pickup;
     private PassOver passOver;
 
     public QwirkleDragPane(EventBus bus) {
@@ -22,7 +22,7 @@ public class QwirkleDragPane extends JComponent {
     }
 
     @Subscribe
-    public void dragEvent(PieceDrag event) {
+    public void dragEvent(DragPiece event) {
         if (event.isPickup()) {
             setVisible(true);
             debugln("Picked up: " + event);

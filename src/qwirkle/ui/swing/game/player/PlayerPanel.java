@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game.player;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameController;
 import qwirkle.event.GameStarted;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
@@ -29,7 +29,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private AutoSizeLabel nameLabel, scoreLabel, scoreSeparatorLabel;
     private TurnHighlightingLabel bestMoveLabel;
     private Boolean vertical = null;
-    private QwirkleTurn bestMove = null;
+    private TurnCompleted bestMove = null;
 
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
@@ -47,17 +47,20 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         scoreSeparatorLabel = new AutoSizeLabel(this, ": ", fraction);
         autoSizeLabels.add(scoreSeparatorLabel);
         bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, fraction * 0.7,
-                new Callable<QwirkleTurn>() { @Override public QwirkleTurn call() { return bestMove; } });
+                new Callable<TurnCompleted>() { @Override public TurnCompleted call() { return bestMove; } });
         bestMoveLabel.setOpaque(false);
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);
 
         control.register(new Object() {
-            @Subscribe public void turn(QwirkleTurn turn) {
+            @Subscribe
+            public void turn(TurnCompleted turn) {
                 scoreLabel.setText("" + turn.getStatus().getScore(player));
                 setBestMove(turn.getStatus().getAnnotatedGame().getBestTurn(player));
             }
-            @Subscribe public void gameStart(GameStarted started) {
+
+            @Subscribe
+            public void gameStart(GameStarted started) {
                 clear();
             }
         });
@@ -68,7 +71,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         return isHorizontal() ? HORIZONTAL_ASPECT_RATIO : VERTICAL_ASPECT_RATIO;
     }
 
-    private void setBestMove(QwirkleTurn best) {
+    private void setBestMove(TurnCompleted best) {
         this.bestMove = best;
         if (best == null) {
             bestMoveLabel.setText(" ");

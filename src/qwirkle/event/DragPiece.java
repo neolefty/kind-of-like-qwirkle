@@ -6,7 +6,7 @@ import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 
 /** A piece is being dragged -- picked up or put down or cancelled. */
-public class PieceDrag {
+public class DragPiece {
     public enum Action {
         PICKUP, SUSTAIN, DROP, CANCEL
     }
@@ -16,7 +16,7 @@ public class PieceDrag {
     private Action action;
 
     /** Create a drag event. */
-    public PieceDrag(QwirkleGrid grid, QwirkleLocation location, Action pickup) {
+    public DragPiece(QwirkleGrid grid, QwirkleLocation location, Action pickup) {
         this.grid = grid;
         this.location = location;
         this.action = pickup;
@@ -29,21 +29,21 @@ public class PieceDrag {
     }
 
     /** Drop a piece. */
-    public PieceDrag drop() {
+    public DragPiece drop() {
         checkStartOrSustain(Action.DROP);
-        return new PieceDrag(getGrid(), location, Action.DROP);
+        return new DragPiece(getGrid(), location, Action.DROP);
     }
 
     /** Keep dragging. */
-    public PieceDrag sustain() {
+    public DragPiece sustain() {
         checkStartOrSustain(Action.SUSTAIN);
-        return new PieceDrag(grid, location, Action.SUSTAIN);
+        return new DragPiece(grid, location, Action.SUSTAIN);
     }
 
     /** Keep dragging. */
-    public PieceDrag cancel() {
+    public DragPiece cancel() {
         checkStartOrSustain(Action.CANCEL);
-        return new PieceDrag(grid, location, Action.CANCEL);
+        return new DragPiece(grid, location, Action.CANCEL);
     }
 
     /** The grid this piece is being picked up from. */
@@ -67,8 +67,8 @@ public class PieceDrag {
     public boolean isCancel() { return action == Action.CANCEL; }
 
     /** Convenience method. */
-    public static PieceDrag createPickup(QwirkleGrid grid, QwirkleLocation location) {
-        return new PieceDrag(grid, location, Action.PICKUP);
+    public static DragPiece createPickup(QwirkleGrid grid, QwirkleLocation location) {
+        return new DragPiece(grid, location, Action.PICKUP);
     }
 
     @Override

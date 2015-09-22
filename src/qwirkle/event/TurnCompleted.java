@@ -13,7 +13,7 @@ import java.util.List;
 
 /** A single turn in Qwirkle. Pieces placed on a grid by a player.
  *  Immutable except for getStatus(), which points to a long-lived object that tracks changes to the game. */
-public class QwirkleTurn {
+public class TurnCompleted {
     private AsyncPlayer player;
     private GameStatus status;
     private int score;
@@ -25,7 +25,7 @@ public class QwirkleTurn {
     private int discardCount;
 
     /** <tt>player</tt> played <tt>placements</tt> for <tt>score</tt> points. */
-    public static QwirkleTurn play
+    public static TurnCompleted play
             (GameStatus status, Collection<QwirklePlacement> placements,
              AsyncPlayer player, int score)
     {
@@ -36,35 +36,35 @@ public class QwirkleTurn {
         if (placements.isEmpty())
             throw new IllegalArgumentException("placements collection is empty");
         List<QwirklePlacement> placeList = Collections.unmodifiableList(new ArrayList<>(placements));
-        return new QwirkleTurn(status, null, placeList, player, score, 0); // 0 discards
+        return new TurnCompleted(status, null, placeList, player, score, 0); // 0 discards
     }
 
     /** <tt>player</tt> discarded <tt>discardCount</tt> pieces. */
-    public static QwirkleTurn discard(GameStatus status, AsyncPlayer player, int discardCount) {
+    public static TurnCompleted discard(GameStatus status, AsyncPlayer player, int discardCount) {
         if (discardCount < 0)
             throw new IllegalArgumentException("Discard count is " + discardCount);
-        return new QwirkleTurn(status, null, null, player, 0, discardCount); // 0 score, null placements
+        return new TurnCompleted(status, null, null, player, 0, discardCount); // 0 score, null placements
     }
 
     /** A player is dealt new tiles to fill their hand back up after a discard or play.
      *  In this case, though, the board represents their hand, including the new pieces,
      *  and the placements are the new pieces (to highlight).
      *  The orientation of the board etc. is left up to the caller. */
-    public static QwirkleTurn drawToHand
+    public static TurnCompleted drawToHand
             (QwirkleGrid hand, Collection<QwirklePlacement> draw, AsyncPlayer player)
     {
         List<QwirklePlacement> drawList = Collections.unmodifiableList(new ArrayList<>(draw));
-        return new QwirkleTurn(null, hand, drawList, player, 0, 0);
+        return new TurnCompleted(null, hand, drawList, player, 0, 0);
     }
 
     /** Give a bonus at the end of the game, to the player who finishes first,
      *  equal to the sum of the pieces still held by the other players. */
-    public QwirkleTurn bonus(int bonus) {
+    public TurnCompleted bonus(int bonus) {
         if (isDiscard())
             throw new IllegalStateException("Can't get a bonus (" + bonus + ") after passing.");
         else if (bonus < 0)
             throw new IllegalStateException("Bonus is negative: " + bonus);
-        QwirkleTurn result = new QwirkleTurn(status, null, placements, player, score, discardCount);
+        TurnCompleted result = new TurnCompleted(status, null, placements, player, score, discardCount);
         result.bonus = bonus;
         return result;
     }
@@ -76,9 +76,9 @@ public class QwirkleTurn {
      *  @param placements what pieces were played. May not be null or zero-length.
      *  @param player the player who made the play. Not null.
      *  @param score the score for the play. */
-    private QwirkleTurn
-            (GameStatus status, QwirkleGrid board, List<QwirklePlacement> placements,
-             AsyncPlayer player, int score, int discardCount)
+    private TurnCompleted
+    (GameStatus status, QwirkleGrid board, List<QwirklePlacement> placements,
+     AsyncPlayer player, int score, int discardCount)
     {
         if (board == null && status == null)
             throw new NullPointerException("Status and board are both null.");

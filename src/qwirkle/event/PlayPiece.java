@@ -4,10 +4,10 @@ import qwirkle.game.QwirklePlacement;
 
 // TODO when all the plays have been chosen for a turn, bundle them up into a single event
 /** Someone plays a piece interactively. */
-public class PiecePlay {
+public class PlayPiece {
     private QwirklePlacement placement;
     private Phase phase;
-    private PiecePlay proposal;
+    private PlayPiece proposal;
 
     /** A player {@link Phase#propose}s a play by dragging a piece.
      *  The game {@link Phase#accept}s or {@link Phase#reject}s it.
@@ -20,15 +20,16 @@ public class PiecePlay {
         reject, // the game says no, you can't do that
 
         cancel, // unproposal was successful
-        confirm // your moves are confirmed; probably time for the next player's turn
+        // TODO remove this phase? Is it implied when a new QwirkleTurn event arrives?
+        confirm // your moves are confirmed; probably time for the next player's turn soon
     }
 
-    private PiecePlay(QwirklePlacement placement) {
+    private PlayPiece(QwirklePlacement placement) {
         this.placement = placement;
         this.phase = Phase.propose;
     }
 
-    private PiecePlay(PiecePlay previous, Phase requiredPhase, Phase newPhase) {
+    private PlayPiece(PlayPiece previous, Phase requiredPhase, Phase newPhase) {
         if (previous.getPhase() != requiredPhase)
             throw new IllegalStateException
                     ("Can only " + newPhase + " a " + requiredPhase + " -- not " + previous);
@@ -44,33 +45,33 @@ public class PiecePlay {
 
     // TODO do we need to add a QwirkleGrid to this -- the grid it was played on?
     /** A player proposes playing a piece, probably by dragging it to the board. */
-    public static PiecePlay propose(QwirklePlacement placement) {
-        return new PiecePlay(placement);
+    public static PlayPiece propose(QwirklePlacement placement) {
+        return new PlayPiece(placement);
     }
 
     /** Accept a single placement. */
-    public PiecePlay accept() { return new PiecePlay(this, Phase.propose, Phase.accept); }
+    public PlayPiece accept() { return new PlayPiece(this, Phase.propose, Phase.accept); }
 
     /** Reject a single placement. */
-    public PiecePlay reject() { return new PiecePlay(this, Phase.propose, Phase.reject); }
+    public PlayPiece reject() { return new PlayPiece(this, Phase.propose, Phase.reject); }
 
     /** Player changes their mind about a proposed placement.
      *  May trigger a cascade of cancellations. */
-    public PiecePlay unpropose() { return new PiecePlay(this, Phase.propose, Phase.unpropose); }
+    public PlayPiece unpropose() { return new PlayPiece(this, Phase.propose, Phase.unpropose); }
 
     /** Confirm an already-accepted play. */
-    public PiecePlay confirm() { return new PiecePlay(getProposal(), Phase.accept, Phase.confirm); }
+    public PlayPiece confirm() { return new PlayPiece(getProposal(), Phase.accept, Phase.confirm); }
 
     /** Cancel an already-accepted play, usually a response to an un-proposal,
      *  but may be part of an unpropose cascade. */
-    public PiecePlay cancel() { return new PiecePlay(getProposal(), Phase.accept, Phase.cancel); }
+    public PlayPiece cancel() { return new PlayPiece(getProposal(), Phase.accept, Phase.cancel); }
 
     public QwirklePlacement getPlacement() { return placement; }
 
     /** What phase of a play is this? Proposal, acceptance, etc. */
     public Phase getPhase() { return phase; }
 
-    public PiecePlay getProposal() {
+    public PlayPiece getProposal() {
         return proposal;
     }
 
@@ -82,7 +83,7 @@ public class PiecePlay {
     public boolean isAccept() { return phase == Phase.accept; }
     /** This play has been rejected by the board, probably because it was illegal. */
     public boolean isReject() { return phase == Phase.reject; }
-    /** This play has been confirmed and committed to the board. */
+    /** This play has been confirmed and will be committed to the board. */
     public boolean isConfirm() { return phase == Phase.confirm; }
     /** This play has been cancelled, probably after an unproposal. */
     public boolean isCancel() { return phase == Phase.cancel; }

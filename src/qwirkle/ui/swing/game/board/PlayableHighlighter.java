@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game.board;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameController;
 import qwirkle.control.HypotheticalPlay;
-import qwirkle.event.PieceDrag;
+import qwirkle.event.DragPiece;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirklePiece;
@@ -23,18 +23,18 @@ public class PlayableHighlighter {
     public PlayableHighlighter(GameController control, QwirkleGridPanel gridPanel) {
         control.register(this);
         this.gridPanel = gridPanel;
-        this.hypo = control.getEventsController().getHypotheticalPlay();
+        this.hypo = control.getInteraction().getHypotheticalPlay();
     }
 
     @Subscribe
-    public void drag(PieceDrag event) {
+    public void drag(DragPiece event) {
         if (event.isPickup())
             highlightPlayable(event);
         else if (event.isCancel() || event.isDrop())
             unhighlight(event);
     }
 
-    private void unhighlight(PieceDrag event) {
+    private void unhighlight(DragPiece event) {
         forEachLegalQPP(event.getPiece(), new QPPer() {
             @Override
             public void go(QwirklePiecePanel panel) {
@@ -44,7 +44,7 @@ public class PlayableHighlighter {
     }
 
     // TODO draw inverted shape in each possible square
-    private void highlightPlayable(PieceDrag event) {
+    private void highlightPlayable(DragPiece event) {
         final ColorSet colors = new HypotheticalPlayBgColors(event.getPiece());
         forEachLegalQPP(event.getPiece(), new QPPer() {
             @Override

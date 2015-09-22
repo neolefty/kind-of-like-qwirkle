@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game.board;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameController;
 import qwirkle.control.HypotheticalPlay;
-import qwirkle.event.PiecePlay;
+import qwirkle.event.PlayPiece;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
@@ -17,14 +17,14 @@ public class QwirklePlayableGridPanel extends QwirkleGridPanel {
         super(control.getEventBus());
         control.register(new Object() {
             @Subscribe
-            public void play(PiecePlay event) {
+            public void play(PlayPiece event) {
                 // refresh if a placement is accepted or canceled
                 // note: if a turn is confirmed, a QwirkleTurn will post and super will update
                 if (event.isAccept() || event.isCancel())
                     setGrid(hypoPlay.getHypotheticalBoard());
             }
         });
-        this.hypoPlay = control.getEventsController().getHypotheticalPlay();
+        this.hypoPlay = control.getInteraction().getHypotheticalPlay();
     }
 
     /** The current board not including the hypothetical play. */

@@ -2,7 +2,7 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.EventBus;
 import qwirkle.event.HighlightTurn;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.util.HighlightLabel;
 
@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 public class TurnHighlightingLabel extends HighlightLabel {
     private EventBus bus;
 
-    public TurnHighlightingLabel(EventBus bus, Component parent, double fraction, Callable<QwirkleTurn> getter) {
+    public TurnHighlightingLabel(EventBus bus, Component parent, double fraction, Callable<TurnCompleted> getter) {
         super(parent, fraction, Colors.MOUSE_HL);
         TurnHighlighter highlighter = new TurnHighlighter(getter);
         setHighlightAction(highlighter.createHighlighter(true));
@@ -23,10 +23,10 @@ public class TurnHighlightingLabel extends HighlightLabel {
 
     /** Creates TurnGetters to highlight turns. */
     private class TurnHighlighter {
-        private QwirkleTurn lastHighlight = null;
-        private Callable<QwirkleTurn> getter;
+        private TurnCompleted lastHighlight = null;
+        private Callable<TurnCompleted> getter;
 
-        TurnHighlighter(Callable<QwirkleTurn> getter) {
+        TurnHighlighter(Callable<TurnCompleted> getter) {
             this.getter = getter;
         }
 
@@ -49,7 +49,7 @@ public class TurnHighlightingLabel extends HighlightLabel {
         }
 
         // highlight something
-        private synchronized void postHighlight(QwirkleTurn turn) {
+        private synchronized void postHighlight(TurnCompleted turn) {
             if (turn != null) {
                 this.lastHighlight = turn;
                 bus.post(new HighlightTurn(turn, true));

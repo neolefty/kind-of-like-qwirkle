@@ -2,18 +2,13 @@ package qwirkle.control;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.event.PiecePlay;
-import qwirkle.event.PreEvent;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.*;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /** A play that a player is contemplating. */
 public class HypotheticalPlay {
@@ -25,29 +20,34 @@ public class HypotheticalPlay {
     // The board including the hypothetical play
     private QwirkleBoard hypoBoard;
 
-    private List<PiecePlay> plays = new ArrayList<>();
+    private List<PlayPiece> plays = new ArrayList<>();
 
     public HypotheticalPlay(final EventBus bus) {
         this.bus = bus;
         bus.register(this);
     }
 
+    @Subscribe
+    public void startGame(GameStarted started) {
+        clearHypothetical(started.getStatus().getBoard());
+    }
+
     /** When a turn is about to post, clear our hypothetical play.
      *  Note: this uses a pre-event to avoid concurrency issues with highlighting. */
     @Subscribe
     public void preTurnTaken(PreEvent pre) {
-        if (pre.getEvent() instanceof QwirkleTurn)
-            clearHypothetical(((QwirkleTurn) pre.getEvent()).getStatus().getBoard());
+        if (pre.getEvent() instanceof TurnCompleted)
+            clearHypothetical(((TurnCompleted) pre.getEvent()).getStatus().getBoard());
     }
 
     /** Respond player interactions -- proposing a piece to play or unplay. */
     @Subscribe
-    public synchronized void proposePlay(PiecePlay event) {
+    public synchronized void proposePlay(PlayPiece event) {
         // A. playing a new piece is proposed
         if (event.isPropose()) {
             // if it's legal, accept it
             if (isLegalMove(event.getPlacement())) {
-                PiecePlay accept = event.accept();
+                PlayPiece accept = event.accept();
                 plays.add(accept);
                 hypoBoard = getBoard().play(getPlacements());
                 bus.post(accept);
@@ -60,8 +60,8 @@ public class HypotheticalPlay {
         else if (event.isUnpropose()) {
             // if they actually played it, then figure out how many pieces must be cancelled
             if (containsPlacement(event.getPlacement().getLocation())) {
-                List<PiecePlay> cancellations = cascadeCancel(event);
-                for (PiecePlay cancel : cancellations)
+                List<PlayPiece> cancellations = cascadeCancel(event);
+                for (PlayPiece cancel : cancellations)
                     bus.post(cancel);
             }
         }
@@ -70,19 +70,22 @@ public class HypotheticalPlay {
 
     /** What plays need to be cancelled if <tt>unpropose</tt> is cancelled?
      *  Create cancel events & remove their proposed events from <tt>this.plays</tt>. */
-    private synchronized List<PiecePlay> cascadeCancel(PiecePlay unpropose) {
+    private synchronized List<PlayPiece> cascadeCancel(PlayPiece unpropose) {
         throw new IllegalStateException("NYI");
     }
 
     /** Where can this piece be placed legally? */
     public Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
-        return getBoard().getLegalPlacements(getPlacements(), piece);
+//        if (getBoard() == null)
+//            return Collections.singletonList(new QwirklePlacement(piece, 0, 0));
+//        else
+            return getBoard().getLegalPlacements(getPlacements(), piece);
     }
 
     /** The placements so far accepted from the player. */
     public synchronized List<QwirklePlacement> getPlacements() {
         List<QwirklePlacement> result = new ArrayList<>();
-        for (PiecePlay play : plays)
+        for (PlayPiece play : plays)
             result.add(play.getPlacement());
         return Collections.unmodifiableList(result);
     }
@@ -103,7 +106,7 @@ public class HypotheticalPlay {
 
     /** Is this location one of the placements that has already been accepted? */
     public synchronized boolean containsPlacement(QwirkleLocation location) {
-        for (PiecePlay play : plays)
+        for (PlayPiece play : plays)
             if (play.getPlacement().getLocation().equals(location))
                 return true;
         return false;
@@ -114,5 +117,15 @@ public class HypotheticalPlay {
         hypoBoard = null;
         plays.clear();
         this.board = board;
+    }
+
+    /** Does this have no hypothetical placements? */
+    public synchronized boolean isEmpty() {
+        return plays.isEmpty();
+    }
+
+    /** Confirm this hypothetical play as a real play. */
+    public void confirm() {
+        bus.post(new PlayTurn(getPlacements()));
     }
 }

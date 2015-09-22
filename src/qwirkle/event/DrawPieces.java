@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.List;
 
 /** Event: A player drew some pieces at the end of their turn. */
-public class QwirkleDraw {
+public class DrawPieces {
     private List<QwirklePiece> pieces;
     private AsyncPlayer player;
-    public QwirkleDraw(AsyncPlayer player, Collection<QwirklePiece> pieces) {
+    public DrawPieces(AsyncPlayer player, Collection<QwirklePiece> pieces) {
         this.player = player;
         this.pieces = Collections.unmodifiableList(new ArrayList<>(pieces));
     }

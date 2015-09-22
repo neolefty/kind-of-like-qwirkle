@@ -9,14 +9,14 @@ import java.util.*;
 
 /** Model a group of Qwirkle players playing a game.
  *  To receive updates, register for {@link GameStatus}, {@link QwirkleBoard},
- *  {@link QwirkleTurn}, or {@link AnnotatedGame} on {@link GameController#getEventBus}.
+ *  {@link TurnCompleted}, or {@link AnnotatedGame} on {@link GameController#getEventBus}.
  *
  *  <p>Events:</p>
  *
  *  <ul>
  *      <li>Game starts: {@link GameStarted}</li>
- *      <li>Turn is taken: {@link QwirkleTurn}</li>
- *      <li>A player drew some pieces at the end of their turn: {@link QwirkleDraw}</li>
+ *      <li>Turn is taken: {@link TurnCompleted}</li>
+ *      <li>A player drew some pieces at the end of their turn: {@link DrawPieces}</li>
  *      <li>Board changes: {@link QwirkleBoard}</li>
  *      <li>Ready to start next turn: {@link TurnStarting}</li>
  *      <li>Game ends: {@link GameOver}</li>
@@ -200,7 +200,7 @@ public class GameModel {
             cur.awaitDecision(board, getHand(cur), threading, new AsyncPlayer.PlayOrDiscard() {
                 @Override
                 public void play(Collection<QwirklePlacement> placements) {
-                    stepPlay(cur, placements);
+                    GameModel.this.play(cur, placements);
                 }
 
                 @Override
@@ -217,11 +217,11 @@ public class GameModel {
         }
     }
 
-    /** The part of a step after the AsyncPlayer callback if the player chose to play pieces. */
-    private void stepPlay(AsyncPlayer cur, Collection<QwirklePlacement> play) {
+    /** A player takes a turn by playing some pieces. */
+    public void play(AsyncPlayer cur, Collection<QwirklePlacement> play) {
         checkCurrent(cur, "play");
         List<QwirklePiece> hand = playerHands.get(cur);
-        QwirkleTurn turn; // the turn object -- used for event signalling
+        TurnCompleted turn; // the turn object -- used for event signalling
         if (play == null || play.isEmpty())
             throw new IllegalStateException("Play is empty (" + play + ").");
 
@@ -231,7 +231,7 @@ public class GameModel {
             hand.remove(placement.getPiece()); // remove played pieces from the player's hand
         setBoard(board.play(play)); // update the board
         // initialize the turn object, for event signalling
-        turn = QwirkleTurn.play(status, play, cur, board.getLastScore());
+        turn = TurnCompleted.play(status, play, cur, board.getLastScore());
 
         stepFinish(cur, turn);
     }
@@ -250,13 +250,13 @@ public class GameModel {
         }
 
         // initialize the turn object, for event signalling
-        QwirkleTurn turn = QwirkleTurn.discard(status, cur, discards == null ? 0 : discards.size());
+        TurnCompleted turn = TurnCompleted.discard(status, cur, discards == null ? 0 : discards.size());
 
         stepFinish(cur, turn);
     }
 
     /** The part of a step after a play or discard is created. */
-    private void stepFinish(AsyncPlayer cur, QwirkleTurn turn) {
+    private void stepFinish(AsyncPlayer cur, TurnCompleted turn) {
         // 2. did the game end?
         boolean itsOver = false;
         int bonus = 0;
@@ -315,7 +315,7 @@ public class GameModel {
             List<QwirklePiece> dealt = deal(player, getHand(player));
             if (dealt.size() > 0) {
                 playerHands.get(player).addAll(dealt);
-                post(new QwirkleDraw(player, dealt));
+                post(new DrawPieces(player, dealt));
             }
         }
     }
@@ -396,7 +396,7 @@ public class GameModel {
         else
             result.append("  - Next player: " + getCurrentPlayer().getName() + "\n");
         AnnotatedGame noted = status.getAnnotatedGame();
-        QwirkleTurn best = noted.getBestTurn();
+        TurnCompleted best = noted.getBestTurn();
         if (best != null) {
             result.append("  - Best play (" + best.getScore() + "): " + best.getPlacements() + "\n");
             AsyncPlayer leader = noted.getLeader();

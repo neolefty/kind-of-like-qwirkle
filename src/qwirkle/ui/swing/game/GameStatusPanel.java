@@ -6,7 +6,7 @@ import qwirkle.control.GameController;
 import qwirkle.control.GameStatus;
 import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
-import qwirkle.event.QwirkleTurn;
+import qwirkle.event.TurnCompleted;
 import qwirkle.event.TurnStarting;
 
 import javax.swing.*;
@@ -16,17 +16,17 @@ import java.util.concurrent.Callable;
 public class GameStatusPanel extends Box {
     // Show the status of the current turn and the overall game
     private TurnHighlightingLabel turnLabel, bestTurnLabel;
-    private QwirkleTurn bestTurn, lastTurn;
+    private TurnCompleted bestTurn, lastTurn;
 
     public GameStatusPanel(GameController control) {
         super(BoxLayout.X_AXIS);
 
         EventBus bus = control.getEventBus();
-        turnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<QwirkleTurn>() {
-            @Override public QwirkleTurn call() { return lastTurn; }
+        turnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<TurnCompleted>() {
+            @Override public TurnCompleted call() { return lastTurn; }
         });
-        bestTurnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<QwirkleTurn>() {
-            @Override public QwirkleTurn call() { return bestTurn; }
+        bestTurnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<TurnCompleted>() {
+            @Override public TurnCompleted call() { return bestTurn; }
         });
 
         add(turnLabel, Box.LEFT_ALIGNMENT);
@@ -34,15 +34,20 @@ public class GameStatusPanel extends Box {
         add(bestTurnLabel, Box.RIGHT_ALIGNMENT);
 
         control.register(new Object() {
-            @Subscribe public void gameOver(GameOver gameOver) {
+            @Subscribe
+            public void gameOver(GameOver gameOver) {
                 finished(gameOver.getStatus());
             }
-            @Subscribe public void gameStarted(GameStarted started) {
+
+            @Subscribe
+            public void gameStarted(GameStarted started) {
                 bestTurn = null;
                 lastTurn = null;
 //                bestTurnLabel.setText("");
             }
-            @Subscribe public void turn(TurnStarting starting) {
+
+            @Subscribe
+            public void turn(TurnStarting starting) {
                 GameStatus status = starting.getStatus();
                 if (status.getAnnotatedGame() != null
                         && status.getAnnotatedGame().getBestTurn() != null) {
@@ -52,7 +57,9 @@ public class GameStatusPanel extends Box {
                     bestTurnLabel.setToolTipText("Best turn so far in this game: " + bestTurn.getSummary(false));
                 }
             }
-            @Subscribe public void turn(QwirkleTurn turn) {
+
+            @Subscribe
+            public void turn(TurnCompleted turn) {
                 lastTurn = turn;
                 // note spaces at left & right -- cosmetic
                 turnLabel.setText(" Last: " + turn.getSummary(true) + " ");

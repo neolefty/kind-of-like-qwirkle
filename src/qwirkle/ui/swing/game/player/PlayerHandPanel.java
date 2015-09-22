@@ -46,7 +46,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         control.register(new GameListener());
         // forward mouse events from the local bus to the parent bus
         getEventBus().register(new Object() {
-            @Subscribe public void dragPosted(PieceDrag event) { control.post(event); }
+            @Subscribe public void dragPosted(DragPiece event) { control.post(event); }
             @Subscribe public void passedOver(PassOver event) { control.post(event); }
         });
         setVertical(true);
@@ -62,7 +62,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
 
     private class GameListener {
         // someone took a turn
-        @Subscribe public void turned(QwirkleTurn turn) {
+        @Subscribe public void turned(TurnCompleted turn) {
             try {
                 update(turn);
             } catch(Exception e) {
@@ -78,7 +78,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
             }
         }
         // maybe hand changed
-        @Subscribe public void dealt(QwirkleDraw draw) {
+        @Subscribe public void dealt(DrawPieces draw) {
             try {
                 update(draw);
             } catch(Exception e) {
@@ -92,7 +92,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         update();
     }
 
-    private void update(QwirkleDraw draw) {
+    private void update(DrawPieces draw) {
         if (draw.getPlayer() == player)
             lastDraw = draw.getDrawn();
         // only highlight the most recent player's draw at a time
@@ -101,7 +101,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         update();
     }
 
-    private void update(QwirkleTurn turn) {
+    private void update(TurnCompleted turn) {
         if (turn.getPlayer() == player) {
 
             // we just took a turn, so forget the previous pieces we drew -- we'll be getting new ones soon
@@ -113,12 +113,12 @@ public class PlayerHandPanel extends QwirkleGridPanel {
 
     /** Update the UI. */
     private void update() {
-        QwirkleTurn fakeTurn = createFakeTurn();
+        TurnCompleted fakeTurn = createFakeTurn();
         getEventBus().post(fakeTurn);
     }
 
-    /** Create a fake {@link QwirkleTurn} to tell the {@link QwirkleGridPanel} what to draw. */
-    private QwirkleTurn createFakeTurn() {
+    /** Create a fake {@link TurnCompleted} to tell the {@link QwirkleGridPanel} what to draw. */
+    private TurnCompleted createFakeTurn() {
         List<QwirklePlacement> handPlaces = new ArrayList<>();
         List<QwirklePiece> drawScratch = new ArrayList<>();
         if (lastDraw != null) drawScratch.addAll(lastDraw);
@@ -143,6 +143,6 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         }
 
         QwirkleGrid handGrid = new QwirkleGridImpl(handPlaces);
-        return QwirkleTurn.drawToHand(handGrid, drawPlacements, player);
+        return TurnCompleted.drawToHand(handGrid, drawPlacements, player);
     }
 }
