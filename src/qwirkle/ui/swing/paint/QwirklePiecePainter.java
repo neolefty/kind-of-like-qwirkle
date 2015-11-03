@@ -54,7 +54,7 @@ public class QwirklePiecePainter implements HasTransparency {
         Stroke oldStroke = g.getStroke();
 
         // colored shape
-        Color c = piece.getColor().getColor();
+        Color c = new Color(piece.getColor().getColorInt());
         if (transparency != 0)
             c = new Color(c.getRed(), c.getGreen(), c.getBlue(), getAlpha());
         g.setColor(c);

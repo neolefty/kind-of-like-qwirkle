@@ -6,10 +6,7 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.control.GameController;
 import qwirkle.event.*;
-import qwirkle.game.AsyncPlayer;
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.*;
 import qwirkle.game.impl.QwirkleGridImpl;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
@@ -17,17 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO allow dragging to reorder pieces
+// TODO while dragging, indicate the piece being dragged or else hide it in the player's hand
+// TODO after dropped, remove the piece from the player's hand
 // TODO on their turn, highlight the pieces in the player's hand that can be played (don't highlight the ones that can't)
 // TODO once a piece has been played, highlight the remaining pieces that can be played (see QwirklePlayableGridPanel)
+// TODO allow cancelling by dragging off of the board
 
 /** Show a player's status. Uses a {@link QwirkleGridPanel} with
  *  hacked event updates to show the player's current hand, highlighting
- *  the most recently drawn pieces. */
+ *  the most recently drawn pieces.
+ *
+ *  <p>Note that there are two event buses involved: A local one for this panel, with internal events,
+ *  and a global one that receives events from the game at large.</p>*/
 public class PlayerHandPanel extends QwirkleGridPanel {
     private GameController control;
     private AsyncPlayer player;
     // what pieces did the player draw last?
     private List<QwirklePiece> lastDraw;
+    // what pieces has the player placed on the board but not finalized as a play?
+    // Note: track placements to avoid ambiguity due to duplicate pieces.
+    private List<QwirklePlacement> tentativePlay = new ArrayList<>();
+    private List<QwirklePlacement> draggedOut = new ArrayList<>();
 
     private boolean vertical;
 
@@ -44,8 +51,8 @@ public class PlayerHandPanel extends QwirkleGridPanel {
 
         this.player = player;
         control.register(new GameListener());
-        // forward mouse events from the local bus to the parent bus
         getEventBus().register(new Object() {
+            // forward mouse events from the local bus to the parent bus
             @Subscribe public void dragPosted(DragPiece event) { control.post(event); }
             @Subscribe public void passedOver(PassOver event) { control.post(event); }
         });
@@ -61,6 +68,33 @@ public class PlayerHandPanel extends QwirkleGridPanel {
     }
 
     private class GameListener {
+//        // hide & show pieces in hand as we drag them to the board
+//        @Subscribe public void drag(DragPiece event) {
+//            if (event.getPlayer() == player && event.getAction() != DragPiece.Action.SUSTAIN) {
+//                System.out.println(event);
+//                if (event.getAction() == DragPiece.Action.PICKUP) {
+//                    draggedOut.add(event.getPlacement());
+////                    update();
+//                }
+//                else if (event.getAction() == DragPiece.Action.CANCEL
+//                        || event.getAction() == DragPiece.Action.DROP)
+//                {
+//                    draggedOut.remove(event.getPlacement());
+////                    update();
+//                }
+//            }
+//        }
+
+//        // hide & show pieces in hand as we drag them to the board
+//        @Subscribe public void play(PlayPiece event) {
+//            if (event.getPlayer() == player) {
+//                if (event.isPropose())
+//                    tentativePlay.add(event.getPlacement());
+//                else if (event.isCancel() || event.isReject() || event.isUnpropose())
+//                    tentativePlay.remove(event.getPlacement());
+//            }
+//        }
+
         // someone took a turn
         @Subscribe public void turned(TurnCompleted turn) {
             try {
@@ -101,11 +135,14 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         update();
     }
 
+    /** A turn came in from external bus. */
     private void update(TurnCompleted turn) {
         if (turn.getPlayer() == player) {
-
             // we just took a turn, so forget the previous pieces we drew -- we'll be getting new ones soon
             lastDraw = null;
+            // likewise forget about the play we were contemplating
+            tentativePlay.clear();
+            draggedOut.clear();
             // force a UI update
             update();
         }
@@ -128,10 +165,14 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         List<QwirklePiece> hand = control.getGame().getHand(player);
         if (hand != null) {
             // build a board that represents the hand
+            if (!draggedOut.isEmpty())
+                System.out.println("hiding " + draggedOut);
             for (int i = 0; i < hand.size(); ++i) {
+                QwirkleLocation location = new QwirkleLocation(vertical ? 0 : i, vertical ? i : 0);
                 QwirklePiece piece = hand.get(i);
-                QwirklePlacement place = new QwirklePlacement(piece, vertical ? 0 : i, vertical ? i : 0);
-                handPlaces.add(place);
+                QwirklePlacement place = new QwirklePlacement(piece, location);
+//                if (!draggedOut.contains(place))
+                    handPlaces.add(place);
             }
             // highlight the new pieces, starting at the bottom
             for (int i = handPlaces.size() - 1; i >= 0; --i) {

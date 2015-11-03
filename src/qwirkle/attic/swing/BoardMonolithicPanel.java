@@ -63,7 +63,7 @@ public class BoardMonolithicPanel extends QwirkleGridSubscriberPanel {
 
                 g2.translate(xOffset * QwirklePiecePainter.WIDTH, yOffset * QwirklePiecePainter.HEIGHT);
 //                g2.setStroke(new BasicStroke(3));
-//                g2.setColor(piece == null ? Color.GRAY : piece.getColor().getColor());
+//                g2.setColor(piece == null ? Color.GRAY : piece.getColor().getColorInt());
 //                g2.drawRect(3, 3, 97, 97);
 
                 if (piece != null)

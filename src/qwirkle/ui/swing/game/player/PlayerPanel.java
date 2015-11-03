@@ -4,7 +4,9 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameController;
 import qwirkle.event.GameStarted;
 import qwirkle.event.TurnCompleted;
+import qwirkle.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
+import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
@@ -30,6 +32,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private TurnHighlightingLabel bestMoveLabel;
     private Boolean vertical = null;
     private TurnCompleted bestMove = null;
+    private boolean myTurn;
 
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
@@ -54,9 +57,14 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
 
         control.register(new Object() {
             @Subscribe
-            public void turn(TurnCompleted turn) {
-                scoreLabel.setText("" + turn.getStatus().getScore(player));
-                setBestMove(turn.getStatus().getAnnotatedGame().getBestTurn(player));
+            public void turnCompleted(TurnCompleted event) {
+                scoreLabel.setText("" + event.getStatus().getScore(player));
+                setBestMove(event.getStatus().getAnnotatedGame().getBestTurn(player));
+            }
+
+            @Subscribe
+            public void turnStart(TurnStarting event) {
+                setMyTurn(event.getCurPlayer() == player);
             }
 
             @Subscribe
@@ -101,6 +109,26 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
 
     public boolean isVertical() { return vertical; }
     public boolean isHorizontal() { return !isVertical(); }
+
+    private boolean isMyTurn() { return myTurn; }
+
+    private void setMyTurn(boolean myTurn) {
+        if (myTurn != this.myTurn) {
+            this.myTurn = myTurn;
+            // TODO make highlighting the current player a little nicer
+            if (myTurn) {
+                setDraggable(true);
+                setBorder(BorderFactory.createLineBorder(Colors.FG));
+                setBackground(Colors.BG_HL);
+            }
+            else {
+                setDraggable(false);
+                setBorder(null);
+                setBackground(Colors.BG);
+            }
+            repaint();
+        }
+    }
 
     public void setVertical(boolean vertical) {
         if (this.vertical != null && this.vertical == vertical)
@@ -177,6 +205,9 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
 
     // TODO maybe remove this once we've moved the current player event processing into this panel?
     public void setDraggable(boolean draggable) {
-        handPanel.setDraggable(draggable);
+        if (draggable)
+            handPanel.makeDraggable(player);
+        else
+            handPanel.makeUndraggable();
     }
 }

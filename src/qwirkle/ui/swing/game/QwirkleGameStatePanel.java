@@ -3,7 +3,6 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.control.GameController;
 import qwirkle.event.GameStarted;
-import qwirkle.event.TurnStarting;
 import qwirkle.game.AsyncPlayer;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.board.PlayableHighlighter;
@@ -12,7 +11,6 @@ import qwirkle.ui.swing.game.player.PlayerPanel;
 import qwirkle.ui.swing.util.SwingKitty;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,26 +37,7 @@ public class QwirkleGameStatePanel extends JPanel {
             public void started(GameStarted started) {
                 updatePlayers(started.getSettings().getPlayers());
             }
-            @Subscribe public void turn(TurnStarting turn) {
-                updateHighlight(turn.getCurPlayer());
-            }
         });
-    }
-
-    // TODO move this to PlayerPanel -- they can listen for events too
-    // TODO abstract it a bit -- "setCurrent(curPlayer == player)" and leave the styling up to the PlayerPanel
-    private void updateHighlight(AsyncPlayer curPlayer) {
-        for (AsyncPlayer player : playerPanelMap.keySet()) {
-            boolean cur = curPlayer == player;
-
-            Color bg = (cur) ? Colors.BG_HL : Colors.BG;
-//            SwingKitty.setColors(playerPanelMap.get(player), SwingMain.Colors.FG, bg);
-            PlayerPanel pp = playerPanelMap.get(player);
-            pp.setBackground(bg);
-            Color borderColor = (cur) ? Colors.FG : Colors.BG;
-            pp.setBorder(BorderFactory.createLineBorder(borderColor));
-            pp.setDraggable(cur);
-        }
     }
 
     private void updatePlayers(List<AsyncPlayer> players) {

@@ -26,8 +26,6 @@ import java.util.*;
  *  First, wrapped in a {@link qwirkle.event.PreEvent} to allow setup by internal objects
  *  such as AnnotatedGame and second, normally, for GUI etc.</p>*/
 public class GameModel {
-    // TODO move event management into EventsController, as much as possible
-
     // long-lived things
     private GameStatus status;
     private EventBus bus;
@@ -160,7 +158,7 @@ public class GameModel {
         chooseFirstPlayer();
 
         // signal that the first turn is starting
-        bus.post(new TurnStarting(status));
+        post(new TurnStarting(status));
     }
 
     /** Has this game started? True if any pieces have been dealt to players or if anything is played on the board. */
@@ -336,8 +334,6 @@ public class GameModel {
     }
 
     private void post(Object event) {
-        // TODO do this systematically for events outside of GameModel? Or is it too much of a kludge already?
-        // TODO figure out a way around the concurrency problems that necessitate PreEvent -- case by case?
         bus.post(new PreEvent(event));
         bus.post(event);
     }
@@ -370,7 +366,7 @@ public class GameModel {
             // update the reference to the current player
             curPlayer = findCurrentPlayer();
             // notify everyone that we're ready for a new turn
-            bus.post(new TurnStarting(status));
+            post(new TurnStarting(status));
         }
     }
 

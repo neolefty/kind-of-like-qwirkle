@@ -32,7 +32,7 @@ public class PieceDropWatcher {
                     if (display != null && display.getPiece() == null) {
                         QwirkleLocation location = display.getQwirkleLocation();
                         QwirklePlacement placement = new QwirklePlacement(event.getPiece(), location);
-                        bus.post(PlayPiece.propose(placement));
+                        bus.post(PlayPiece.propose(event.getPlayer(), placement));
                     }
                 }
             }

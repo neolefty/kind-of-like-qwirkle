@@ -7,7 +7,6 @@ import java.util.List;
 
 /** A QwirklePlayer that works asynchronously. To enable human players. */
 public abstract class AsyncPlayer {
-    // TODO test this by adapting existing framework to use it
     public interface PlayOrDiscard {
         void play(Collection<QwirklePlacement> placements);
         void discard(Collection<QwirklePiece> pieces);

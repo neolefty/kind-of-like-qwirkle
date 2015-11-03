@@ -1,9 +1,6 @@
 package qwirkle.event;
 
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirkleLocation;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.*;
 
 /** A piece is being dragged -- picked up or put down or cancelled. */
 public class DragPiece {
@@ -11,12 +8,14 @@ public class DragPiece {
         PICKUP, SUSTAIN, DROP, CANCEL
     }
 
+    private AsyncPlayer player;
     private QwirkleGrid grid;
     private QwirkleLocation location;
     private Action action;
 
     /** Create a drag event. */
-    public DragPiece(QwirkleGrid grid, QwirkleLocation location, Action pickup) {
+    public DragPiece(AsyncPlayer player, QwirkleGrid grid, QwirkleLocation location, Action pickup) {
+        this.player = player;
         this.grid = grid;
         this.location = location;
         this.action = pickup;
@@ -31,20 +30,23 @@ public class DragPiece {
     /** Drop a piece. */
     public DragPiece drop() {
         checkStartOrSustain(Action.DROP);
-        return new DragPiece(getGrid(), location, Action.DROP);
+        return new DragPiece(getPlayer(), getGrid(), location, Action.DROP);
     }
 
     /** Keep dragging. */
     public DragPiece sustain() {
         checkStartOrSustain(Action.SUSTAIN);
-        return new DragPiece(grid, location, Action.SUSTAIN);
+        return new DragPiece(getPlayer(), grid, location, Action.SUSTAIN);
     }
 
     /** Keep dragging. */
     public DragPiece cancel() {
         checkStartOrSustain(Action.CANCEL);
-        return new DragPiece(grid, location, Action.CANCEL);
+        return new DragPiece(getPlayer(), grid, location, Action.CANCEL);
     }
+
+    /** The player who is dragging. */
+    public AsyncPlayer getPlayer() { return player; }
 
     /** The grid this piece is being picked up from. */
     public QwirkleGrid getGrid() { return grid; }
@@ -58,7 +60,7 @@ public class DragPiece {
     /** The piece being picked up or dropped. */
     public QwirklePiece getPiece() { return grid.get(location); }
 
-    /** Is this a pickup (true) or drop (false)? */
+    /** Is this a pickup, drop, sustain, cancel? */
     public Action getAction() { return action; }
 
     public boolean isPickup() { return action == Action.PICKUP; }
@@ -67,8 +69,8 @@ public class DragPiece {
     public boolean isCancel() { return action == Action.CANCEL; }
 
     /** Convenience method. */
-    public static DragPiece createPickup(QwirkleGrid grid, QwirkleLocation location) {
-        return new DragPiece(grid, location, Action.PICKUP);
+    public static DragPiece createPickup(AsyncPlayer player, QwirkleGrid grid, QwirkleLocation location) {
+        return new DragPiece(player, grid, location, Action.PICKUP);
     }
 
     @Override

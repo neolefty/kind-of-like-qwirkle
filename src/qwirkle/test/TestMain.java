@@ -11,6 +11,9 @@ public class TestMain {
         TestBoard.main(args);
         TestScripted.main(args);
         TestPerformance.main(args);
+
+        System.out.println();
+        System.out.println("All tests pass.");
     }
 
     public static <T> void checkContentsMatch(Collection<T> a, Collection<T> b) {

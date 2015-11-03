@@ -1,30 +1,30 @@
 package qwirkle.game;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// TODO remove dependency on java.awt.Color
 public enum QwirkleColor {
-    red (new Color(225, 20, 20), "r"),
-    orange(new Color(240, 130, 0), "o"),
-    yorangow (new Color(255, 214, 0), "w"),
-    yellow (new Color(215, 255, 0), "y"),
-    green (new Color(0, 180, 70), "g"),
-    blue (new Color(0, 60, 255), "b"),
-    purple (new Color(140, 0, 255), "p"),
-    grey (new Color(140, 140, 140), "e"),
-    white (new Color(255, 255, 255), "h");
+    red (225, 20, 20, "r"),
+    orange(240, 130, 0, "o"),
+    yorangow (255, 214, 0, "w"),
+    yellow (215, 255, 0, "y"),
+    green (0, 180, 70, "g"),
+    blue (0, 60, 255, "b"),
+    purple (140, 0, 255, "p"),
+    grey (140, 140, 140, "e"),
+    white (255, 255, 255, "h");
 
-    private final Color color;
+    private final int color;
     private String abbrev;
 
-    QwirkleColor(Color color, String abbrev) {
-        this.color = color;
+    QwirkleColor(int r, int g, int b, String abbrev) {
+        this.color = b + (g << 8) + (r << 16);
         this.abbrev = abbrev;
     }
-    public Color getColor() { return color; }
+
+    /** The RGB color 0xRRGGBB. Avoid dependency on java.awt.Color. */
+    public int getColorInt() { return color; }
 
     public String getAbbrev() { return abbrev; }
 

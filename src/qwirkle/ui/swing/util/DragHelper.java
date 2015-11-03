@@ -1,5 +1,7 @@
 package qwirkle.ui.swing.util;
 
+import qwirkle.game.AsyncPlayer;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,6 +22,9 @@ public class DragHelper {
     private Point latestMousePress = null;
 
     private DragHandler handler;
+
+    // the player who is acting
+    private AsyncPlayer player;
 
     /** Implement this and pass it to {@link #DragHelper}. */
     public interface DragHandler {
@@ -84,20 +89,28 @@ public class DragHelper {
     /** Are we currently mid-drag? */
     public boolean isDragging() { return dragging; }
 
+    /** The player making an action. */
+    public AsyncPlayer getPlayer() { return player; }
+
     /** Are we currently mid-drag? */
     private void setDragging(boolean dragging) {
         this.dragging = dragging;
     }
 
-    /** Can a drag-and-drop be initiated over this panel? Default true. */
-    public void setDraggable(boolean draggable) {
-        if (this.draggable != draggable) {
-            // need to cancel if we turn off draggability while currently dragging
-            if (!draggable && isDragging()) {
-                handler.cancelDrag();
-                dragging = false;
-            }
-            this.draggable = draggable;
+    /** Make this draggable. */
+    public void makeDraggable(AsyncPlayer player) {
+        this.player = player;
+        this.draggable = true;
+    }
+
+    /** Make this no longer draggable. */
+    public void makeUndraggable() {
+        // need to cancel if we turn off draggability while currently dragging
+        if (isDragging()) {
+            handler.cancelDrag();
+            dragging = false;
         }
+        this.player = null;
+        this.draggable = false;
     }
 }

@@ -25,7 +25,7 @@ public class ComplimentaryColor implements ColorSource {
     @Override
     public Color getColor() {
         float[] hsv = new float[3];
-        Color c = fg.getColor();
+        Color c = new Color(fg.getColorInt());
         Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
         hsv[0] += 0.5f; // complementary
         hsv[2] = brightness;

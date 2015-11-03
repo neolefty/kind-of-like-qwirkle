@@ -1,11 +1,13 @@
 package qwirkle.event;
 
+import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirklePlacement;
 
 // TODO when all the plays have been chosen for a turn, bundle them up into a single event
 /** Someone plays a piece interactively. */
 public class PlayPiece {
     private QwirklePlacement placement;
+    private AsyncPlayer player;
     private Phase phase;
     private PlayPiece proposal;
 
@@ -24,7 +26,8 @@ public class PlayPiece {
         confirm // your moves are confirmed; probably time for the next player's turn soon
     }
 
-    private PlayPiece(QwirklePlacement placement) {
+    private PlayPiece(QwirklePlacement placement, AsyncPlayer player) {
+        this.player = player;
         this.placement = placement;
         this.phase = Phase.propose;
     }
@@ -35,6 +38,7 @@ public class PlayPiece {
                     ("Can only " + newPhase + " a " + requiredPhase + " -- not " + previous);
 
         this.placement = previous.getPlacement();
+        this.player = previous.getPlayer();
         this.phase = newPhase;
 
         if (previous.getPhase() == Phase.propose)
@@ -43,10 +47,13 @@ public class PlayPiece {
             this.proposal = previous.getProposal();
     }
 
+    /** Which player is playing? */
+    public AsyncPlayer getPlayer() { return player; }
+
     // TODO do we need to add a QwirkleGrid to this -- the grid it was played on?
     /** A player proposes playing a piece, probably by dragging it to the board. */
-    public static PlayPiece propose(QwirklePlacement placement) {
-        return new PlayPiece(placement);
+    public static PlayPiece propose(AsyncPlayer player, QwirklePlacement placement) {
+        return new PlayPiece(placement, player);
     }
 
     /** Accept a single placement. */

@@ -7,6 +7,7 @@ import qwirkle.event.PassOver;
 import qwirkle.event.DragPiece;
 import qwirkle.game.*;
 import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.util.DragHelper;
@@ -49,11 +50,16 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
         this.grid = grid;
         initEvents();
 
-        // TODO in production, hide coords -- they are meaningless to users because graphical layout is visible
         if (piece != null)
-            setToolTipText(new QwirklePlacement(piece, location).toString());
+            //noinspection ConstantConditions
+            setToolTipText(UIConstants.PRODUCTION
+                    ? piece.toString()
+                    : new QwirklePlacement(piece, location).toString());
         else
-            setToolTipText("Empty space at " + location.toString());
+            //noinspection ConstantConditions
+            setToolTipText(UIConstants.PRODUCTION
+                    ? "empty space"
+                    : "empty space at " + location.toString());
     }
 
     private void initEvents() {
@@ -109,7 +115,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        if (piece != null) {
+        if (piece != null && !isDragging()) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             AffineTransform t = g2.getTransform();
@@ -129,30 +135,34 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     @Override
     public String toString() { return location + ": " + (piece == null ? "blank" : piece); }
 
+    private boolean isDragging() {
+        return dragHelper != null && dragHelper.isDragging();
+    }
+
     public boolean isDraggable() {
         return dragHelper != null && dragHelper.isDraggable();
     }
 
-    public void setDraggable(boolean draggable) {
-        if (draggable) { // start listening for drag events
-            if (dragHelper == null)
-                initDragHelper();
-            else
-                dragHelper.setDraggable(true);
-        }
-        else { // stop listening for drag events
-            if (dragHelper != null)
-                dragHelper.setDraggable(false);
-        }
+    /** Start listening for drag events and assume they're actions of <tt>player</tt>. */
+    public void makeDraggable(AsyncPlayer player) {
+        if (dragHelper == null)
+            initDragHelper(player);
+        else
+            dragHelper.makeDraggable(player);
     }
 
-    private void initDragHelper() {
+    public void makeUndraggable() {
+        if (dragHelper != null)
+            dragHelper.makeUndraggable();
+    }
+
+    private void initDragHelper(final AsyncPlayer player) {
         dragHelper = new DragHelper(this, new DragHelper.DragHandler() {
             DragPiece event;
 
             @Override
             public void startDrag(MouseEvent e) {
-                event = post(DragPiece.createPickup(grid, location));
+                event = post(DragPiece.createPickup(player, grid, location));
             }
 
             @Override

@@ -3,6 +3,7 @@ package qwirkle.ui.swing.game.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.event.GameStarted;
+import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleGrid;
 import qwirkle.game.QwirkleLocation;
 import qwirkle.game.QwirklePlacement;
@@ -23,6 +24,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private EventBus eventBus;
 
     private boolean draggable = false;
+    private AsyncPlayer dragPlayer = null;
 
     public QwirkleGridPanel(EventBus bus) {
         this.eventBus = bus;
@@ -103,18 +105,31 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
 
     private void addPiecePanel(QwirklePiecePanel pp) {
         if (draggable && pp.getPiece() != null)
-            pp.setDraggable(true);
+            pp.makeDraggable(dragPlayer);
         panelMap.put(pp.getQwirkleLocation(), pp);
         add(pp);
     }
 
-    /** Can drag-and-drop operations start from this grid? */
-    public void setDraggable(boolean draggable) {
+    /** Enable drag-and-drop operations starting from this grid. */
+    public void makeDraggable(AsyncPlayer player) {
         synchronized (getTreeLock()) {
-            this.draggable = draggable;
+            this.dragPlayer = player;
+            this.draggable = true;
             for (Component c : getComponents()) {
                 if (c instanceof QwirklePiecePanel)
-                    ((QwirklePiecePanel) c).setDraggable(draggable);
+                    ((QwirklePiecePanel) c).makeDraggable(dragPlayer);
+            }
+        }
+    }
+
+    /** Disable drag-and-drop operations starting from this grid. */
+    public void makeUndraggable() {
+        synchronized (getTreeLock()) {
+            this.dragPlayer = null;
+            this.draggable = false;
+            for (Component c : getComponents()) {
+                if (c instanceof QwirklePiecePanel)
+                    ((QwirklePiecePanel) c).makeUndraggable();
             }
         }
     }

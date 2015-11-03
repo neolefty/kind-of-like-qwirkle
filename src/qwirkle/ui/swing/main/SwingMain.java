@@ -25,8 +25,6 @@ public class SwingMain {
     // TODO start new game automatically if playing continuously
     // TODO disable screensaver if playing continuously
 
-    public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
-//    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -66,7 +64,7 @@ public class SwingMain {
                 // manage the game & screensaver panels with a ScreenSaverPane
                 ScreenSaverPane.Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
                 ScreenSaverPane ssp = new ScreenSaverPane
-                        (gamePanel, screensaver, fader, SCREENSAVER_TIMEOUT);
+                        (gamePanel, screensaver, fader, UIConstants.SCREENSAVER_TIMEOUT);
 //                ssp.setFadeMillis(5000);
                 frame.setContentPane(ssp);
 

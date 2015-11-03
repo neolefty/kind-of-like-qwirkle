@@ -18,16 +18,16 @@ public class HypotheticalPlayBgColors implements ColorSet {
 
     @Override
     public Color getNormal() {
-        return pieceColor.getColor().darker().darker();
+        return new Color(pieceColor.getColorInt()).darker().darker();
     }
 
     @Override
     public Color getHighlight() {
-        return pieceColor.getColor().darker();
+        return new Color(pieceColor.getColorInt()).darker();
     }
 
     @Override
     public Color getActivated() {
-        return pieceColor.getColor().brighter();
+        return new Color(pieceColor.getColorInt()).brighter();
     }
 }

@@ -74,7 +74,6 @@ public class QwirkleDragPane extends JComponent {
                 g2.translate(-50, -50); // mouse at center of shape
 
                 // 3 paint
-                // TODO preserve relative click position within piece?
                 new QwirklePiecePainter().paint(g2, pickup.getPlacement());
 
                 // 4 cleanup
