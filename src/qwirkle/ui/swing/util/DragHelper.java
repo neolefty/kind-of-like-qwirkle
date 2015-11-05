@@ -3,9 +3,7 @@ package qwirkle.ui.swing.util;
 import qwirkle.game.AsyncPlayer;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 
 /** Supports dragging stuff. */
 public class DragHelper {
@@ -41,27 +39,27 @@ public class DragHelper {
         void cancelDrag();
     }
 
-    public DragHelper(Component listenTo, final DragHandler handler) {
+    public DragHelper(final Component listenTo, final DragHandler handler) {
         if (handler == null) throw new NullPointerException("handler is null");
         this.handler = handler;
 
-        listenTo.addMouseMotionListener(new MouseMotionAdapter() {
+        MouseMotionListener motion = new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (isDraggable()) {
                     // if we're already dragging, keep going
                     if (isDragging())
                         handler.keepDragging(e);
-                    // have we moved the mouse far enough to initiate a drag?
+                        // have we moved the mouse far enough to initiate a drag?
                     else if (latestMousePress != null && e.getPoint().distance(latestMousePress) >= dragActivateDistance) {
                         setDragging(true);
                         handler.startDrag(e);
                     }
                 }
             }
-        });
-
-        listenTo.addMouseListener(new MouseAdapter() {
+        };
+        listenTo.addMouseMotionListener(motion);
+        MouseAdapter mouse = new MouseAdapter() {
             /** Note that once a mouse is pressed in this Component, it will receive all mouse events
              *  until it is released. Therefore, events need to be forwarded if a different Component
              *  is supposed to get them.
@@ -74,12 +72,28 @@ public class DragHelper {
             @Override
             public void mouseReleased(MouseEvent e) {
                 latestMousePress = null;
+                dragDebug("released");
                 if (isDragging()) {
                     setDragging(false);
                     handler.endDrag(e);
                 }
             }
-        });
+        };
+        listenTo.addMouseListener(mouse);
+
+//        listenTo.addComponentListener(new ComponentAdapter() {
+//            @Override public void componentHidden(ComponentEvent e) { dragDebug("source hidden"); }
+//            @Override public void componentResized(ComponentEvent e) { dragDebug("source resized"); }
+//            @Override public void componentMoved(ComponentEvent e) { dragDebug("source moved"); }
+//            @Override public void componentShown(ComponentEvent e) { dragDebug("source shown"); }
+//        });
+    }
+
+    public static final boolean DEBUG = false;
+    private void dragDebug(String msg) {
+        if (isDragging())
+            if (DEBUG)
+                System.out.println("**** " + msg + " ****");
     }
 
     /** Can a drag-and-drop be initiated over this panel? Default false.

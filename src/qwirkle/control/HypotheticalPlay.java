@@ -3,10 +3,7 @@ package qwirkle.control;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.event.*;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirkleLocation;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.*;
 
 import java.util.*;
 
@@ -19,8 +16,10 @@ public class HypotheticalPlay {
 
     // The board including the hypothetical play
     private QwirkleBoard hypoBoard;
+    private AsyncPlayer currentPlayer;
 
-    private List<PlayPiece> plays = new ArrayList<>();
+    // The accepted plays, in the order they were placed
+    private List<PlayPiece> acceptedPlays = new ArrayList<>();
 
     public HypotheticalPlay(final EventBus bus) {
         this.bus = bus;
@@ -40,6 +39,10 @@ public class HypotheticalPlay {
             clearHypothetical(((TurnCompleted) pre.getEvent()).getStatus().getBoard());
     }
 
+    /** When a new turn starts, update our notion of the current player. */
+    @Subscribe
+    public void turnStarting(TurnStarting event) { currentPlayer = event.getCurPlayer(); }
+
     /** Respond player interactions -- proposing a piece to play or unplay. */
     @Subscribe
     public synchronized void proposePlay(PlayPiece event) {
@@ -48,7 +51,7 @@ public class HypotheticalPlay {
             // if it's legal, accept it
             if (isLegalMove(event.getPlacement())) {
                 PlayPiece accept = event.accept();
-                plays.add(accept);
+                acceptedPlays.add(accept);
                 hypoBoard = getBoard().play(getPlacements());
                 bus.post(accept);
             }
@@ -58,21 +61,29 @@ public class HypotheticalPlay {
         }
         // B. a player has changed their mind and wants to retract a play
         else if (event.isUnpropose()) {
-            // if they actually played it, then figure out how many pieces must be cancelled
-            if (containsPlacement(event.getPlacement().getLocation())) {
-                List<PlayPiece> cancellations = cascadeCancel(event);
-                for (PlayPiece cancel : cancellations)
-                    bus.post(cancel);
+            // is this one of ours?
+            if (containsPlacement(event.getPlacement())) {
+                // can we remove it without breaking things?
+                if (isRemovable(event.getPlacement())) {
+                    boolean removed = acceptedPlays.remove(event.getPrevious());
+                    hypoBoard = getBoard().play(getPlacements());
+                    if (!removed) throw new IllegalStateException
+                            ("Couldn't remove " + event.getPrevious() + " from accepted plays.");
+                    bus.post(event.cancel());
+                }
+                // sorry, we would need to remove other pieces first and cascade to this one
+                else
+                    throw new IllegalStateException("Removing a locked piece is not supported: " + event);
             }
         }
     }
 
-
-    /** What plays need to be cancelled if <tt>unpropose</tt> is cancelled?
-     *  Create cancel events & remove their proposed events from <tt>this.plays</tt>. */
-    private synchronized List<PlayPiece> cascadeCancel(PlayPiece unpropose) {
-        throw new IllegalStateException("NYI");
+    /** Accept or reject a proposal. */
+    private void respondToProposal(PlayPiece proposal) {
     }
+
+    /** How many pieces are currently in this hypothetical play? */
+    public int size() { return acceptedPlays.size(); }
 
     /** Where can this piece be placed legally? */
     public Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
@@ -85,9 +96,14 @@ public class HypotheticalPlay {
     /** The placements so far accepted from the player. */
     public synchronized List<QwirklePlacement> getPlacements() {
         List<QwirklePlacement> result = new ArrayList<>();
-        for (PlayPiece play : plays)
+        for (PlayPiece play : acceptedPlays)
             result.add(play.getPlacement());
         return Collections.unmodifiableList(result);
+    }
+
+    /** Not synchronized; neither is {@link #turnStarting}, where player is set. */
+    public AsyncPlayer getCurrentPlayer() {
+        return currentPlayer;
     }
 
     /** Is <tt>placement</tt> legal, considering the other accepted moves so far? */
@@ -104,10 +120,10 @@ public class HypotheticalPlay {
     /** The board including hypothetical plays. */
     public synchronized QwirkleBoard getHypotheticalBoard() { return hypoBoard; }
 
-    /** Is this location one of the placements that has already been accepted? */
-    public synchronized boolean containsPlacement(QwirkleLocation location) {
-        for (PlayPiece play : plays)
-            if (play.getPlacement().getLocation().equals(location))
+    /** Is this one of the placements that has already been accepted? */
+    public synchronized boolean containsPlacement(QwirklePlacement placement) {
+        for (PlayPiece play : acceptedPlays)
+            if (play.getPlacement().equals(placement))
                 return true;
         return false;
     }
@@ -115,17 +131,43 @@ public class HypotheticalPlay {
     /** Clear hypothetical plays because the board has updated. */
     private synchronized void clearHypothetical(QwirkleBoard board) {
         hypoBoard = null;
-        plays.clear();
+        currentPlayer = null;
+        acceptedPlays.clear();
         this.board = board;
     }
 
     /** Does this have no hypothetical placements? */
     public synchronized boolean isEmpty() {
-        return plays.isEmpty();
+        return acceptedPlays.isEmpty();
     }
 
     /** Confirm this hypothetical play as a real play. */
     public void confirm() {
         bus.post(new PlayTurn(getPlacements()));
+    }
+
+    /** Is this placement removable? */
+    public synchronized boolean isRemovable(QwirklePlacement placement) {
+        // if it's not one of ours, duh, no
+        if (!containsPlacement(placement))
+            return false;
+        // if it's the only move, then it's fine to remove it
+        else if (size() == 1)
+            return true;
+        // if the move is still legal without it
+        else {
+            List<QwirklePlacement> without = new ArrayList<>(getPlacements());
+            without.remove(placement);
+            return getBoard().isLegal(without);
+        }
+    }
+
+    /** Get the event that records a particular placement being accepted.
+     *  Useful if you want to unpropose that placement. */
+    public PlayPiece getAcceptedPlay(QwirklePlacement placement) {
+        for (PlayPiece accept : acceptedPlays)
+            if (accept.getPlacement().equals(placement))
+                return accept;
+        throw new IllegalStateException("No acceptance found for " + placement);
     }
 }

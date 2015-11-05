@@ -16,6 +16,9 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO check for memory leaks related to listening for events and then getting deleted from the UI
+// potential fix: reuse QwirklePiecePanels (hide, or map them, or whatever)
+// potential fix: make listener references weak in EventBus
 public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGridLayout layout;
     private boolean blankIncluded;
@@ -105,7 +108,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
 
     private void addPiecePanel(QwirklePiecePanel pp) {
         if (draggable && pp.getPiece() != null)
-            pp.makeDraggable(dragPlayer);
+            pp.makeDraggable(dragPlayer, null);
         panelMap.put(pp.getQwirkleLocation(), pp);
         add(pp);
     }
@@ -117,7 +120,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
             this.draggable = true;
             for (Component c : getComponents()) {
                 if (c instanceof QwirklePiecePanel)
-                    ((QwirklePiecePanel) c).makeDraggable(dragPlayer);
+                    ((QwirklePiecePanel) c).makeDraggable(dragPlayer, null);
             }
         }
     }

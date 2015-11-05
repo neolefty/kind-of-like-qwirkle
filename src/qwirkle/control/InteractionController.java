@@ -32,4 +32,5 @@ public class InteractionController {
 
     /** Convenience method. Calls {@link EventBus#register}. */
     public void register(Object subscriber) { bus.register(subscriber); }
+    public void unregister(Object subscriber) { bus.unregister(subscriber); }
 }

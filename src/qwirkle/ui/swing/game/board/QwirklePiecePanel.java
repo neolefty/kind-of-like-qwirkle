@@ -2,14 +2,15 @@ package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import qwirkle.event.DragPiece;
 import qwirkle.event.HighlightTurn;
 import qwirkle.event.PassOver;
-import qwirkle.event.DragPiece;
+import qwirkle.event.PlayPiece;
 import qwirkle.game.*;
 import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
-import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.util.DragHelper;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
+// TODO allow cancelling a re-pick -- that is, if you pick up a play from the board, allow putting it back in the same spot.
 public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, QwirklePieceDisplay {
     private static final QwirklePiecePainter painter = new QwirklePiecePainter();
 
@@ -143,10 +145,13 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
         return dragHelper != null && dragHelper.isDraggable();
     }
 
-    /** Start listening for drag events and assume they're actions of <tt>player</tt>. */
-    public void makeDraggable(AsyncPlayer player) {
+    /** Start listening for drag events and assume they're actions of <tt>player</tt>.
+     *  @param player the player who will be doing the dragging
+     *  @param context is this piece part of a hypothetical play that might be canceled, or what?
+     *                      (null if no context) */
+    public void makeDraggable(AsyncPlayer player, PlayPiece context) {
         if (dragHelper == null)
-            initDragHelper(player);
+            initDragHelper(player, context);
         else
             dragHelper.makeDraggable(player);
     }
@@ -156,18 +161,26 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
             dragHelper.makeUndraggable();
     }
 
-    private void initDragHelper(final AsyncPlayer player) {
+    private void initDragHelper(final AsyncPlayer player, final PlayPiece context) {
+        if (context != null && !context.isAccept())
+            throw new IllegalArgumentException("Unsupported state: " + context);
         dragHelper = new DragHelper(this, new DragHelper.DragHandler() {
             DragPiece event;
 
             @Override
             public void startDrag(MouseEvent e) {
+                if (context != null) {
+                    if (context.isAccept()) {
+                        bus.post(context.unpropose());
+                    }
+                }
                 event = post(DragPiece.createPickup(player, grid, location));
             }
 
             @Override
             public void keepDragging(MouseEvent e) {
-                event = post(event.sustain());
+                if (event != null)
+                    event = post(event.sustain());
             }
 
             // TODO change the location to be the destination -- do we need both source & dest?

@@ -9,6 +9,7 @@ import qwirkle.ui.swing.util.HighlightLabel;
 import java.awt.*;
 import java.util.concurrent.Callable;
 
+// TODO highlight all the pieces relevant to the score, and the played piece with a color?
 /** A JLabel that highlights a turn by firing HighlightTurn events. */
 public class TurnHighlightingLabel extends HighlightLabel {
     private EventBus bus;

@@ -38,4 +38,5 @@ public class GameController {
 
     /** Convenience method. Calls {@link EventBus#register}. */
     public void register(Object subscriber) { interact.register(subscriber); }
+    public void unregister(Object subscriber) { interact.unregister(subscriber); }
 }

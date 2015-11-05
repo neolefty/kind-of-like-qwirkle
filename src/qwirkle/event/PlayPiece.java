@@ -1,6 +1,7 @@
 package qwirkle.event;
 
 import qwirkle.game.AsyncPlayer;
+import qwirkle.game.QwirklePiece;
 import qwirkle.game.QwirklePlacement;
 
 // TODO when all the plays have been chosen for a turn, bundle them up into a single event
@@ -9,14 +10,17 @@ public class PlayPiece {
     private QwirklePlacement placement;
     private AsyncPlayer player;
     private Phase phase;
-    private PlayPiece proposal;
+    private PlayPiece previous;
 
     /** A player {@link Phase#propose}s a play by dragging a piece.
      *  The game {@link Phase#accept}s or {@link Phase#reject}s it.
      *  Later, it may be either {@link Phase#cancel}ed or {@link Phase#confirm}ed. */
     public enum Phase {
+        // propose --> accept --> confirm
+        //         \                \--> unpropose --> cancel
+        //           \--> reject
         propose, // a player suggests a move by dragging a piece
-        unpropose, // never mind, I don't want to do this
+        unpropose, // never mind, I don't want to do this previously accepted play
 
         accept, // the game says okay you can do that; anything else?
         reject, // the game says no, you can't do that
@@ -40,15 +44,14 @@ public class PlayPiece {
         this.placement = previous.getPlacement();
         this.player = previous.getPlayer();
         this.phase = newPhase;
-
-        if (previous.getPhase() == Phase.propose)
-            this.proposal = previous;
-        else
-            this.proposal = previous.getProposal();
+        this.previous = previous;
     }
 
     /** Which player is playing? */
     public AsyncPlayer getPlayer() { return player; }
+
+    /** Convenience. */
+    public QwirklePiece getPiece() { return placement.getPiece(); }
 
     // TODO do we need to add a QwirkleGrid to this -- the grid it was played on?
     /** A player proposes playing a piece, probably by dragging it to the board. */
@@ -64,23 +67,23 @@ public class PlayPiece {
 
     /** Player changes their mind about a proposed placement.
      *  May trigger a cascade of cancellations. */
-    public PlayPiece unpropose() { return new PlayPiece(this, Phase.propose, Phase.unpropose); }
+    public PlayPiece unpropose() { return new PlayPiece(this, Phase.accept, Phase.unpropose); }
 
     /** Confirm an already-accepted play. */
-    public PlayPiece confirm() { return new PlayPiece(getProposal(), Phase.accept, Phase.confirm); }
+    public PlayPiece confirm() { return new PlayPiece(this, Phase.accept, Phase.confirm); }
 
     /** Cancel an already-accepted play, usually a response to an un-proposal,
      *  but may be part of an unpropose cascade. */
-    public PlayPiece cancel() { return new PlayPiece(getProposal(), Phase.accept, Phase.cancel); }
+     public PlayPiece cancel() { return new PlayPiece(this, Phase.unpropose, Phase.cancel); }
 
     public QwirklePlacement getPlacement() { return placement; }
 
     /** What phase of a play is this? Proposal, acceptance, etc. */
     public Phase getPhase() { return phase; }
 
-    public PlayPiece getProposal() {
-        return proposal;
-    }
+    /** What preceded this phase? For example, a cancel is preceded by an unproposal.
+     *  For a proposal, returns null. */
+    public PlayPiece getPrevious() { return previous; }
 
     /** This play is proposed by a player. */
     public boolean isPropose() { return phase == Phase.propose; }

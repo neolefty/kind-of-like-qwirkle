@@ -14,7 +14,7 @@ public class DragPiece {
     private Action action;
 
     /** Create a drag event. */
-    public DragPiece(AsyncPlayer player, QwirkleGrid grid, QwirkleLocation location, Action pickup) {
+    private DragPiece(AsyncPlayer player, QwirkleGrid grid, QwirkleLocation location, Action pickup) {
         this.player = player;
         this.grid = grid;
         this.location = location;

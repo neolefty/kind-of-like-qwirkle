@@ -13,6 +13,7 @@ import qwirkle.players.StupidPlayer;
 
 import java.util.*;
 
+// TODO deal with the situation where no move whatsoever is possible -- a perfect 6 x 6 square, for example?
 /** Basic tests of the Qwirkle game board. */
 public class TestBoard {
     private static final Random r = new Random();
@@ -20,6 +21,7 @@ public class TestBoard {
     public static void main(String[] args) {
         TestMain.checkAssert();
 
+        TestBoard.testLogic();
         TestBoard.testInit();
         TestBoard.testLegal();
 
@@ -29,6 +31,25 @@ public class TestBoard {
                 ++i;
 
         TestBoard.testGroup();
+    }
+
+    /** Test some miscellaneous logical things. */
+    private static void testLogic() {
+        testCountMatches();
+        System.out.println("Logic passes");
+    }
+
+    /** Test counting the number of matching pieces a player has. Used to determine who goes first. */
+    private static void testCountMatches() {
+        // bd and gd match; ys doesn't
+        List<QwirklePiece> a = Arrays.asList(new QwirklePiece("bd"), new QwirklePiece("bd"),
+                new QwirklePiece("gd"), new QwirklePiece("ys"));
+        assert QwirkleKit.countMatches(a) == 2;
+        // p4, y4, and g4 match; y4 and ys match
+        List<QwirklePiece> b = Arrays.asList(new QwirklePiece("p4"), new QwirklePiece("p4"),
+                new QwirklePiece("ys"), new QwirklePiece("ys"), new QwirklePiece("ys"),
+                new QwirklePiece("y4"), new QwirklePiece("g4"));
+        assert QwirkleKit.countMatches(b) == 3;
     }
 
     /** Test game initialization (pieces, colors, players, etc) */

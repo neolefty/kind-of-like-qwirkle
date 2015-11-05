@@ -3,6 +3,7 @@ package qwirkle.game;
 import java.util.Collection;
 import java.util.List;
 
+// TODO: write a cooperative player that tries to maximize harmonious plays (to make 6x6 blocks) -- alt win = locked 6x6 game :)
 public interface QwirklePlayer {
     /** Choose where to play.
      *  @param board The current state of the game
@@ -18,5 +19,5 @@ public interface QwirklePlayer {
     Collection<QwirklePiece>
     discard(QwirkleBoard board, List<QwirklePiece> hand);
 
-    public String getName();
+    String getName();
 }

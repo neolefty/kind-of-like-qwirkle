@@ -22,10 +22,10 @@ public class GameStatusPanel extends Box {
         super(BoxLayout.X_AXIS);
 
         EventBus bus = control.getEventBus();
-        turnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<TurnCompleted>() {
+        turnLabel = new TurnHighlightingLabel(bus, this, 0.023, new Callable<TurnCompleted>() {
             @Override public TurnCompleted call() { return lastTurn; }
         });
-        bestTurnLabel = new TurnHighlightingLabel(bus, this, 0.025, new Callable<TurnCompleted>() {
+        bestTurnLabel = new TurnHighlightingLabel(bus, this, 0.023, new Callable<TurnCompleted>() {
             @Override public TurnCompleted call() { return bestTurn; }
         });
 

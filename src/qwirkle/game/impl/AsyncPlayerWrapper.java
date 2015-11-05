@@ -48,4 +48,6 @@ public class AsyncPlayerWrapper extends AsyncPlayer {
     }
 
     public QwirklePlayer getPlayer() { return player; }
+
+    @Override public String toString() { return player.toString(); }
 }

@@ -25,7 +25,7 @@ public class GameControlPanel extends JPanel {
 
     public GameControlPanel(final GameController control) {
         // label: the number of remaining cards
-        final JLabel remaining = new AutoSizeLabel(this, "", FONT_PROPORTION);
+        final JLabel remaining = new AutoSizeLabel(this, "108", FONT_PROPORTION);
         // button: new game
         final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
         // button: take a single turn
@@ -124,7 +124,9 @@ public class GameControlPanel extends JPanel {
         });
 
         // lay them out
+        add(new AutoSizeLabel(this, "Remaining: ", FONT_PROPORTION));
         add(remaining);
+        add(new AutoSizeLabel(this, " ", FONT_PROPORTION));
         add(newGame);
         add(Box.createHorizontalStrut(10));
         add(stepButton);
