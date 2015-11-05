@@ -16,9 +16,11 @@ public enum QwirkleColor {
     white (255, 255, 255, "h");
 
     private final int color;
+    private final int r, g, b;
     private String abbrev;
 
     QwirkleColor(int r, int g, int b, String abbrev) {
+        this.r = r; this.g = g; this.b = b;
         this.color = b + (g << 8) + (r << 16);
         this.abbrev = abbrev;
     }
@@ -27,6 +29,10 @@ public enum QwirkleColor {
     public int getColorInt() { return color; }
 
     public String getAbbrev() { return abbrev; }
+
+    public int getR() { return r; }
+    public int getG() { return g; }
+    public int getB() { return b; }
 
     /** Find a shape by abbreviation. */
     public static QwirkleColor pick(String abbrev) {

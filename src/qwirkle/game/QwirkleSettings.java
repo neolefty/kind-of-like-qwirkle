@@ -1,6 +1,5 @@
 package qwirkle.game;
 
-import qwirkle.control.ThreadingStrategy;
 import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
 
@@ -19,6 +18,18 @@ public class QwirkleSettings {
             = Collections.unmodifiableList(Arrays.asList(
             QwirkleColor.blue, QwirkleColor.green, QwirkleColor.yellow,
             QwirkleColor.orange, QwirkleColor.red, QwirkleColor.purple));
+
+    static public final List<QwirkleShape> EIGHT_SHAPES
+            = Collections.unmodifiableList(Arrays.asList(
+            QwirkleShape.square, QwirkleShape.circle, QwirkleShape.diamond,
+            QwirkleShape.star4, QwirkleShape.star8, QwirkleShape.heart,
+            QwirkleShape.flower, QwirkleShape.triangle));
+
+    static public final List<QwirkleColor> EIGHT_COLORS
+            = Collections.unmodifiableList(Arrays.asList(
+            QwirkleColor.blue, QwirkleColor.green, QwirkleColor.yellow,
+            QwirkleColor.orange, QwirkleColor.red, QwirkleColor.purple,
+            QwirkleColor.yorangow, QwirkleColor.grey));
 
     static public final List<AsyncPlayer> DEFAULT_PLAYERS
             = Collections.unmodifiableList(AsyncPlayerWrapper.wrap(Arrays.asList(

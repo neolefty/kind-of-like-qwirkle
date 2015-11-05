@@ -1,5 +1,6 @@
 package qwirkle.players;
 
+import com.google.common.collect.Multimap;
 import qwirkle.game.*;
 
 import java.util.*;
@@ -26,55 +27,9 @@ public class MaxPlayer implements QwirklePlayer {
 
     @Override
     public Collection<QwirklePlacement> play(QwirkleBoard board, List<QwirklePiece> hand) {
-//        long start = System.currentTimeMillis();
-        Set<Set<QwirklePlacement>> plays = new HashSet<>();
-        Set<QwirklePiece> toPlay = new HashSet<>(hand);
-        Set<QwirklePlacement> played = new HashSet<>();
-        build(board, played, toPlay, plays);
-//        long end = System.currentTimeMillis();
-//        System.out.println(getName() + " found " + plays.size() + " moves in " + (end - start) + " ms: " + plays);
-//        System.out.println(getName() + " found " + plays.size() + " moves in " + (end - start) + " ms.");
-
-        // map of score to move -- highest score first
-        Map<Integer, Set<QwirklePlacement>> moves = new TreeMap<>(Collections.reverseOrder());
-        // 0 points for playing nothing, so that we return an empty move if nothing is possible
-        moves.put(0, new HashSet<QwirklePlacement>());
-        for (Set<QwirklePlacement> play : plays)
-            moves.put(board.play(play).getLastScore(), play);
+        Multimap<Integer, Set<QwirklePlacement>> moves = QwirkleKit.rankAllMoves(board, hand, true);
         int bestScore = moves.keySet().iterator().next();
-//        System.out.println("Best (" + bestScore + "): " + moves.get(bestScore));
-        return moves.get(bestScore);
-    }
-
-    /** Recursively build up a set of all possible moves (depth-first tree search).
-     *   Note: Be sure to balance modifications of collections that come from above,
-     *   except for adding to <tt>plays</tt>. */
-    private void build(QwirkleBoard board, Set<QwirklePlacement> played, Set<QwirklePiece> toPlay,
-                       Set<Set<QwirklePlacement>> plays)
-    {
-        // for each piece, find a place to add it to the current play
-        boolean foundOne = false;
-        Set<QwirklePiece> toPlayScratch = new HashSet<>(toPlay); // avoid concurrent mod
-        for (QwirklePiece piece : toPlay) {
-            // each possible place is a new potential play
-            Collection<QwirklePlacement> places = board.getLegalPlacements(played, piece);
-            if (!places.isEmpty())
-                foundOne = true;
-            // recur
-            for (QwirklePlacement place : places) {
-                // do
-                played.add(place);
-                toPlayScratch.remove(place.getPiece());
-                // descend
-                build(board, played, toPlayScratch, plays);
-                 // undo
-                toPlayScratch.add(place.getPiece());
-                played.remove(place);
-            }
-        }
-        // if we couldn't add any pieces to our current move, it's a leaf
-        if (!foundOne && !played.isEmpty())
-            plays.add(new HashSet<>(played));
+        return moves.get(bestScore).iterator().next(); // randomly choose one of the best
     }
 
     /** Keep the largest group; discard the rest. Discard duplicates. */

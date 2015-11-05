@@ -6,6 +6,7 @@ import qwirkle.game.AsyncPlayer;
 import qwirkle.game.QwirkleSettings;
 import qwirkle.game.impl.AsyncPlayerWrapper;
 import qwirkle.players.MaxPlayer;
+import qwirkle.players.RainbowPlayer;
 import qwirkle.players.StupidPlayer;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.QwirkleDragPane;
@@ -32,10 +33,17 @@ public class SwingMain {
             public void run() {
                 // set up a game
                 List<AsyncPlayer> players = new ArrayList<>();
-                players.add(new AsyncPlayerWrapper(new MaxPlayer("Sam")));
+                RainbowPlayer a = new RainbowPlayer("Rainbow"); // a.setBias(10);
+                players.add(new AsyncPlayerWrapper(a));
+//                RainbowPlayer b = new RainbowPlayer("Color Wheel"); // b.setBias(10);
+//                players.add(new AsyncPlayerWrapper(b));
+
+//                players.add(new AsyncPlayerWrapper(new MaxPlayer("Sam")));
                 players.add(new AsyncPlayerWrapper(new MaxPlayer("Gilly")));
                 players.add(new AsyncPlayerWrapper(new StupidPlayer("1")));
+
                 QwirkleSettings settings = new QwirkleSettings(players);
+//                QwirkleSettings settings = new QwirkleSettings(2, QwirkleSettings.EIGHT_SHAPES, QwirkleSettings.EIGHT_COLORS, players);
 
                 // TODO move settings to a setup screen and dynamically update them
                 GameController control = new GameController(settings, new NewThreadEachTime());
