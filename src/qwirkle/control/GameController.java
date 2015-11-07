@@ -9,6 +9,7 @@ import qwirkle.game.QwirkleSettings;
 public class GameController {
     private GameModel game;
     private InteractionController interact;
+    private QwirkleThreads threads;
 
     public GameController(QwirkleSettings settings, ThreadingStrategy threading) {
         this.interact = new InteractionController();
@@ -21,6 +22,8 @@ public class GameController {
                 game.play(game.getCurrentPlayer(), turn.getPlacements());
             }
         });
+        threads = new QwirkleThreads(this);
+        threads.setStepMillis(300);
     }
 
     public GameController(GameModel game, InteractionController interact) {
@@ -32,6 +35,7 @@ public class GameController {
     public InteractionController getInteraction() { return interact; }
     public HypotheticalPlay getHypothetical() { return interact.getHypotheticalPlay(); }
     public EventBus getEventBus() { return interact.getEventBus(); }
+    public QwirkleThreads getThreads() { return threads; }
 
     /** Convenience method. Calls {@link EventBus#post}. */
     public void post(Object event) { interact.post(event); }

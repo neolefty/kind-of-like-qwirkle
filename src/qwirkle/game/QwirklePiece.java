@@ -2,7 +2,7 @@ package qwirkle.game;
 
 /** A piece you can play in the game Qwirkle.
  *  Immutable -- you can't change the color or shape. */
-public class QwirklePiece {
+public class QwirklePiece implements Comparable<QwirklePiece> {
     private QwirkleColor color;
     private QwirkleShape shape;
 
@@ -34,8 +34,14 @@ public class QwirklePiece {
     public QwirkleColor getColor() { return color; }
     public QwirkleShape getShape() { return shape; }
 
+    // used like mad in comparisons, so cache it
+    private transient String toStringCache;
     @Override
-    public String toString() { return color + " " + shape; }
+    public String toString() {
+        if (toStringCache == null)
+            toStringCache = color + " " + shape;
+        return toStringCache;
+    }
 
     public String getAbbrev() {
         return color.getAbbrev() + shape.getAbbrev();
@@ -57,5 +63,10 @@ public class QwirklePiece {
         int result = color.hashCode();
         result = 31 * result + shape.hashCode();
         return result;
+    }
+
+    @Override
+    public int compareTo(QwirklePiece that) {
+        return toString().compareTo(that.toString());
     }
 }

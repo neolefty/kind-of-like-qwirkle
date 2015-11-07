@@ -30,9 +30,12 @@ public class QwirklePlacement implements HasQwirkleLocation, Comparable<QwirkleP
 
     @Override
     public int compareTo(QwirklePlacement that) {
-        return (that == null) ? 1
-                : (that == this ? 0
-                : (location.compareTo(that.location)));
+        if (that == null) return 1;
+        else if (that == this || that.equals(this)) return 0;
+        else if (location.equals(that.location))
+            return piece.compareTo(that.piece);
+        else
+            return location.compareTo(that.location);
     }
 
     public int getX() { return location.getX(); }
@@ -57,7 +60,7 @@ public class QwirklePlacement implements HasQwirkleLocation, Comparable<QwirkleP
     @Override
     public int hashCode() {
         int result = location.hashCode();
-        result = 31 * result + piece.hashCode();
+        result = 37 * result + piece.hashCode();
         return result;
     }
 }

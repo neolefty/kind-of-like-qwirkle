@@ -9,28 +9,6 @@ import java.util.*;
 public class QwirkleSettings {
     static public final int DEFAULT_DECK_COUNT = 3;
 
-    static public final List<QwirkleShape> DEFAULT_SHAPES
-            = Collections.unmodifiableList(Arrays.asList(
-            QwirkleShape.square, QwirkleShape.circle, QwirkleShape.diamond,
-            QwirkleShape.star4, QwirkleShape.star8, QwirkleShape.heart));
-
-    static public final List<QwirkleColor> DEFAULT_COLORS
-            = Collections.unmodifiableList(Arrays.asList(
-            QwirkleColor.blue, QwirkleColor.green, QwirkleColor.yellow,
-            QwirkleColor.orange, QwirkleColor.red, QwirkleColor.purple));
-
-    static public final List<QwirkleShape> EIGHT_SHAPES
-            = Collections.unmodifiableList(Arrays.asList(
-            QwirkleShape.square, QwirkleShape.circle, QwirkleShape.diamond,
-            QwirkleShape.star4, QwirkleShape.star8, QwirkleShape.heart,
-            QwirkleShape.flower, QwirkleShape.triangle));
-
-    static public final List<QwirkleColor> EIGHT_COLORS
-            = Collections.unmodifiableList(Arrays.asList(
-            QwirkleColor.blue, QwirkleColor.green, QwirkleColor.yellow,
-            QwirkleColor.orange, QwirkleColor.red, QwirkleColor.purple,
-            QwirkleColor.yorangow, QwirkleColor.grey));
-
     static public final List<AsyncPlayer> DEFAULT_PLAYERS
             = Collections.unmodifiableList(AsyncPlayerWrapper.wrap(Arrays.asList(
             (QwirklePlayer) new MaxPlayer(), new MaxPlayer())));
@@ -57,7 +35,7 @@ public class QwirkleSettings {
     }
 
     public QwirkleSettings(int deckCount) {
-        this(deckCount, DEFAULT_SHAPES, DEFAULT_COLORS, DEFAULT_PLAYERS);
+        this(deckCount, QwirkleShape.DEFAULT_SHAPES, QwirkleColor.DEFAULT_COLORS, DEFAULT_PLAYERS);
     }
 
     /** A game with all default settings. */
@@ -68,7 +46,7 @@ public class QwirkleSettings {
     }
 
     public QwirkleSettings(Collection<AsyncPlayer> players, int deckCount) {
-        this(deckCount, DEFAULT_SHAPES, DEFAULT_COLORS, players);
+        this(deckCount, QwirkleShape.DEFAULT_SHAPES, QwirkleColor.DEFAULT_COLORS, players);
     }
 
     /** The number of copies of all the kinds of pieces to use in this game.

@@ -1,6 +1,7 @@
 package qwirkle.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +20,18 @@ public enum QwirkleShape {
     butterfly("b"),
     star5("5"),
     anotherStar("n");
+
+    static public final List<QwirkleShape> EIGHT_SHAPES
+            = Collections.unmodifiableList(Arrays.asList(
+            square, circle, diamond, star4, star8, heart, flower, triangle));
+
+    static public final List<QwirkleShape> DEFAULT_SHAPES
+            = Collections.unmodifiableList(Arrays.asList(
+            square, circle, diamond, star4, star8, heart));
+
+    static public final List<QwirkleShape> FIVE_SHAPES
+            = Collections.unmodifiableList(Arrays.asList(
+            square, circle, diamond, star4, heart));
 
     private String abbrev;
     QwirkleShape(String abbrev) {

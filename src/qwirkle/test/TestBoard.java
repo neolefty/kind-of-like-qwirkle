@@ -77,10 +77,10 @@ public class TestBoard {
         // make sure a multi-deck deal works
         int nDecks = 5;
         QwirkleSettings settings = new QwirkleSettings(nDecks, Arrays.asList(shapes),
-                QwirkleSettings.DEFAULT_COLORS, players);
+                QwirkleColor.DEFAULT_COLORS, players);
         List<QwirklePiece> deck = settings.generate();
-        assert deck.size() == QwirkleSettings.DEFAULT_COLORS.size() * shapes.length * nDecks;
-        QwirklePiece piece = new QwirklePiece(QwirkleSettings.DEFAULT_COLORS.get(0), shapes[0]);
+        assert deck.size() == QwirkleColor.DEFAULT_COLORS.size() * shapes.length * nDecks;
+        QwirklePiece piece = new QwirklePiece(QwirkleColor.DEFAULT_COLORS.get(0), shapes[0]);
         int countPiece = 0;
         // count how many times a unique piece shows up in the deck. Should == nDecks.
         for (QwirklePiece p : deck)

@@ -2,6 +2,7 @@ package qwirkle.players;
 
 import com.google.common.collect.Multimap;
 import qwirkle.game.*;
+import qwirkle.test.Stopwatch;
 
 import java.util.*;
 
@@ -27,7 +28,7 @@ public class MaxPlayer implements QwirklePlayer {
 
     @Override
     public Collection<QwirklePlacement> play(QwirkleBoard board, List<QwirklePiece> hand) {
-        Multimap<Integer, Set<QwirklePlacement>> moves = QwirkleKit.rankAllMoves(board, hand, true);
+        Multimap<Integer, Set<QwirklePlacement>> moves = PlayerKit.rankAllMoves(board, hand, true, false);
         int bestScore = moves.keySet().iterator().next();
         return moves.get(bestScore).iterator().next(); // randomly choose one of the best
     }

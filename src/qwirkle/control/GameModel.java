@@ -243,6 +243,7 @@ public class GameModel {
             if (!hand.containsAll(discards)) // validate discards
                 throw new IllegalArgumentException(cur.getName() + " cannot discard "
                         + QwirklePiece.abbrev(discards) + " from hand (" + QwirklePiece.abbrev(hand) + ").");
+            discards = new ArrayList<>(discards); // just in case they passed us their hand as their discards
             hand.removeAll(discards); // remove them from the player's hand
             deck.addAll(discards); // put them back into the deck
         }

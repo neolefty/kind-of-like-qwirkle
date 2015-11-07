@@ -3,11 +3,11 @@ package qwirkle.ui.swing.main;
 import qwirkle.control.GameController;
 import qwirkle.control.impl.NewThreadEachTime;
 import qwirkle.game.AsyncPlayer;
+import qwirkle.game.QwirkleColor;
 import qwirkle.game.QwirkleSettings;
+import qwirkle.game.QwirkleShape;
 import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.players.MaxPlayer;
 import qwirkle.players.RainbowPlayer;
-import qwirkle.players.StupidPlayer;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.QwirkleDragPane;
 import qwirkle.ui.swing.game.QwirkleGamePanel;
@@ -16,6 +16,7 @@ import qwirkle.ui.swing.util.SwingSetup;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SwingMain {
@@ -26,24 +27,37 @@ public class SwingMain {
     // TODO start new game automatically if playing continuously
     // TODO disable screensaver if playing continuously
 
+    private static AsyncPlayer createRainbowPlayer(String s, Collection<QwirkleColor> colors) {
+        RainbowPlayer result = new RainbowPlayer(s, colors);
+        result.setBias(5);
+        result.getRainbow().setDislikeMonochrome(0);
+        return new AsyncPlayerWrapper(result);
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                // set up a game
+                // settings
+                List<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
+                List<QwirkleShape> shapes = QwirkleShape.DEFAULT_SHAPES;
+                int decks = 3;
+
+                // players
                 List<AsyncPlayer> players = new ArrayList<>();
-                RainbowPlayer a = new RainbowPlayer("Rainbow"); // a.setBias(10);
-                players.add(new AsyncPlayerWrapper(a));
-//                RainbowPlayer b = new RainbowPlayer("Color Wheel"); // b.setBias(10);
-//                players.add(new AsyncPlayerWrapper(b));
-
+                players.add(createRainbowPlayer("Rainbow", colors));
+                players.add(createRainbowPlayer("Color Wheel", colors));
 //                players.add(new AsyncPlayerWrapper(new MaxPlayer("Sam")));
-                players.add(new AsyncPlayerWrapper(new MaxPlayer("Gilly")));
-                players.add(new AsyncPlayerWrapper(new StupidPlayer("1")));
+//                players.add(new AsyncPlayerWrapper(new MaxPlayer("Gilly")));
+//                players.add(new AsyncPlayerWrapper(new StupidPlayer("1")));
 
-                QwirkleSettings settings = new QwirkleSettings(players);
-//                QwirkleSettings settings = new QwirkleSettings(2, QwirkleSettings.EIGHT_SHAPES, QwirkleSettings.EIGHT_COLORS, players);
+                QwirkleSettings settings = new QwirkleSettings(decks, shapes, colors, players);
+
+//                QwirkleSettings settings = new QwirkleSettings(1, QwirkleShape.FIVE_SHAPES, QwirkleColor.FIVE_COLORS, players);
+//                QwirkleSettings settings = new QwirkleSettings(2, QwirkleShape.EIGHT_SHAPES, QwirkleColor.EIGHT_COLORS, players);
+//                QwirkleSettings settings = new QwirkleSettings(3, QwirkleShape.DEFAULT_SHAPES, QwirkleColor.SIX_GREYS, players);
+//                QwirkleSettings settings = new QwirkleSettings(2, QwirkleShape.EIGHT_SHAPES, QwirkleColor.EIGHT_GREYS, players);
+//                QwirkleSettings settings = new QwirkleSettings(3, QwirkleShape.EIGHT_SHAPES, QwirkleColor.FIVE_COLORS, players);
 
                 // TODO move settings to a setup screen and dynamically update them
                 GameController control = new GameController(settings, new NewThreadEachTime());

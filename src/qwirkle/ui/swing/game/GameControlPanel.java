@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.control.*;
 import qwirkle.event.GameOver;
 import qwirkle.event.GameStarted;
-import qwirkle.event.GameThreadStatus;
+import qwirkle.event.ThreadStatus;
 import qwirkle.game.QwirkleBoard;
 import qwirkle.event.TurnCompleted;
 import qwirkle.ui.swing.util.AutoSizeButton;
@@ -30,25 +30,18 @@ public class GameControlPanel extends JPanel {
         final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
         // button: take a single turn
         final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
+        // button: start/pause a game running
+        final JButton runButton = new AutoSizeButton(this, PLAY, FONT_PROPORTION);
 
-        control.register(new Object() {
-            @Subscribe
-            public void update(QwirkleBoard board) {
-                remaining.setText(control.getGame().getDeck().size() + "");
-            }
-
-            @Subscribe
-            public void turn(TurnCompleted turn) { // when a turn has been taken, enable the take-a-turn button
-                // get back into the event loop to re-enable the button
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        stepButton.setEnabled(true);
-                        stepButton.grabFocus();
-                    }
-                });
-            }
-        });
+        // lay them out
+        add(new AutoSizeLabel(this, "Remaining: ", FONT_PROPORTION));
+        add(remaining);
+        add(new AutoSizeLabel(this, " ", FONT_PROPORTION));
+        add(newGame);
+        add(Box.createHorizontalStrut(10));
+        add(stepButton);
+        add(Box.createHorizontalStrut(10));
+        add(runButton);
 
         newGame.addActionListener(new ActionListener() {
             @Override
@@ -60,77 +53,99 @@ public class GameControlPanel extends JPanel {
         // take turns in their own thread, to avoid blocking the event queue
         final ExecutorService turnTaker = Executors.newSingleThreadExecutor();
         stepButton.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent actionEvent) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 stepButton.setEnabled(false); // button will be re-enabled once the turn has been taken
                 // take a turn outside of the event thread, to avoid delays
                 if (!control.getHypothetical().isEmpty())
                     control.getHypothetical().confirm();
                 else
                     turnTaker.submit(new Runnable() {
-                    @Override public void run() {
-                        control.getGame().step();
-                    }
-                });
+                        @Override
+                        public void run() {
+                            control.getGame().step();
+                        }
+                    });
             }
         });
 
-        // button: start/pause a game running
-        final JButton runButton = new AutoSizeButton(this, PLAY, FONT_PROPORTION);
-        final QwirkleThreads threads = new QwirkleThreads(control);
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (threads.isRunning())
-                    threads.stop();
-                else {
-                    if (control.getGame().isFinished())
-                        control.getGame().start();
-                    threads.go();
-                }
+            if (control.getThreads().isRunning())
+                control.getThreads().stop();
+            else
+                control.getThreads().go();
             }
         });
 
         control.register(new Object() {
+        });
+
+        control.register(new Object() {
+            // update run button when autoplay starts & stops
             @Subscribe
-            public void update(final GameThreadStatus event) {
+            public void update(final ThreadStatus event) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         if (event.isRunning()) {
                             runButton.setText(PAUSE);
+                            // disable step button while game is auto-playing
                             stepButton.setEnabled(false);
                         } else {
                             runButton.setText(PLAY);
+                            // enable step button while not auto-playing
                             stepButton.setEnabled(true);
                         }
                     }
                 });
             }
-        });
 
-        // enable turn button based on whether the game is finished
-        control.register(new Object() {
+            // display the number of cards remaining
+            @Subscribe
+            public void update(QwirkleBoard board) {
+                remaining.setText(control.getGame().getDeck().size() + "");
+            }
+
+            // after a turn has been taken, enable the take-a-turn button
+            @Subscribe
+            public void turn(TurnCompleted turn) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!control.getThreads().isRunning()) {
+                            stepButton.setEnabled(true);
+                            stepButton.grabFocus();
+                        }
+                    }
+                });
+            }
+
+            // when a game ends, disable taking another turn
+            @Subscribe
+            public void gameOver(GameOver event) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        stepButton.setEnabled(false);
+                        newGame.setText(NEW_GAME);
+                    }
+                });
+            }
+
+            // when a game starts, update button text & enable the turn button (unless auto-playing)
             @Subscribe
             public void gameStarted(GameStarted started) {
-                stepButton.setEnabled(true);
-                newGame.setText(RESTART);
-            }
-
-            @Subscribe
-            public void gameOver(GameOver over) {
-                stepButton.setEnabled(false);
-                newGame.setText(NEW_GAME);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!control.getThreads().isRunning())
+                            stepButton.setEnabled(true);
+                        newGame.setText(RESTART);
+                    }
+                });
             }
         });
-
-        // lay them out
-        add(new AutoSizeLabel(this, "Remaining: ", FONT_PROPORTION));
-        add(remaining);
-        add(new AutoSizeLabel(this, " ", FONT_PROPORTION));
-        add(newGame);
-        add(Box.createHorizontalStrut(10));
-        add(stepButton);
-        add(Box.createHorizontalStrut(10));
-        add(runButton);
     }
 }
