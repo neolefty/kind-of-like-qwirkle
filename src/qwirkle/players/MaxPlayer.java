@@ -2,7 +2,6 @@ package qwirkle.players;
 
 import com.google.common.collect.Multimap;
 import qwirkle.game.*;
-import qwirkle.test.Stopwatch;
 
 import java.util.*;
 
@@ -65,4 +64,5 @@ public class MaxPlayer implements QwirklePlayer {
     }
 
     @Override public String getName() { return name; }
+    @Override public String toString() { return name; }
 }

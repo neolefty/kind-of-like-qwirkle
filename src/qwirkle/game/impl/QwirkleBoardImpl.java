@@ -4,6 +4,7 @@ import qwirkle.game.*;
 
 import java.util.*;
 
+// TODO implement as overwrite immutable so that we don't have to recreate all the QwirkleLine's each time
 /** Game logic of a Qwirkle board. */
 public class QwirkleBoardImpl extends QwirkleGridImpl implements QwirkleBoard {
     private Set<QwirkleLine> lines = null;

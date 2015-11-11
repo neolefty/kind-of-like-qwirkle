@@ -9,4 +9,6 @@ public class GameStarted {
     public GameStarted(GameStatus status) { this.status = status; }
     public GameStatus getStatus() { return status; }
     public QwirkleSettings getSettings() { return status.getSettings(); }
+    @Override
+    public String toString() { return "Game started: " + getSettings(); }
 }

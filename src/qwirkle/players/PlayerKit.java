@@ -11,6 +11,11 @@ import java.util.*;
 
 /** Helper functions for players. */
 public class PlayerKit {
+    private static final boolean DEBUG = false;
+    private static void debugln(String msg) {
+        if (DEBUG)
+            System.out.println(PlayerKit.class.getSimpleName() + ": " + msg);
+    }
 
     private static Comparator setComparator = new Comparator<Set<Comparable>>() {
         @Override
@@ -141,7 +146,7 @@ public class PlayerKit {
             result.put(board.play(play).getLastScore(), play);
         }
         w.mark("ranked " + result.size());
-        System.out.println(w);
+        debugln(w.toString());
 
         return result;
     }

@@ -158,6 +158,12 @@ public class Rainbow {
         return result;
     }
 
+    public static int colorDistance(Integer a, Integer b) {
+        int ra = a >> 16 & 255, ga = a >> 8 & 255, ba = a & 255;
+        int rb = a >> 16 & 255, gb = a >> 8 & 255, bb = a & 255;
+        return Math.abs(ra - rb) + Math.abs(ga - gb) + Math.abs(ba - bb);
+    }
+
     // should we use distance squared?
     private static int colorDistance(QwirkleColor a, QwirkleColor b) {
         return Math.abs(a.getR() - b.getR())

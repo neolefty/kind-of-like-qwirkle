@@ -79,4 +79,20 @@ public class QwirkleSettings {
                     result.add(new QwirklePiece(color, shape));
         return result;
     }
+
+    /** Is this the default setup with 3 decks of the 6 standard shapes and colors? */
+    public boolean isDefaultSetup() {
+        return getDeckCount() == DEFAULT_DECK_COUNT
+                && getShapes() == QwirkleShape.DEFAULT_SHAPES
+                && getColors() == QwirkleColor.DEFAULT_COLORS;
+    }
+
+    @Override
+    public String toString() {
+        return "Game with " + players + ": "
+                + (isDefaultSetup()
+                        ? "default pieces"
+                        : getDeckCount() + " decks of " + getShapes().size()
+                            + " shapes and " + getColors().size() + " colors");
+    }
 }

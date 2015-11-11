@@ -30,7 +30,7 @@ public class SwingMain {
     private static AsyncPlayer createRainbowPlayer(String s, Collection<QwirkleColor> colors) {
         RainbowPlayer result = new RainbowPlayer(s, colors);
         result.setBias(5);
-        result.getRainbow().setDislikeMonochrome(0);
+        result.getRainbow().setDislikeMonochrome(0); // single color strips are totally okay
         return new AsyncPlayerWrapper(result);
     }
 
@@ -39,9 +39,12 @@ public class SwingMain {
             @Override
             public void run() {
                 // settings
-                List<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
-                List<QwirkleShape> shapes = QwirkleShape.DEFAULT_SHAPES;
-                int decks = 3;
+//                List<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
+//                List<QwirkleShape> shapes = QwirkleShape.DEFAULT_SHAPES;
+//                int decks = 3;
+                List<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
+                List<QwirkleShape> shapes = QwirkleShape.FIVE_SHAPES;
+                int decks = 1;
 
                 // players
                 List<AsyncPlayer> players = new ArrayList<>();

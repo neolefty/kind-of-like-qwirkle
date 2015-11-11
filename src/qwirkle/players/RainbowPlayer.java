@@ -26,7 +26,7 @@ public class RainbowPlayer implements QwirklePlayer {
         return result;
     }
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static void debug(String s) { if (DEBUG) System.out.println(s); }
 
     public RainbowPlayer(String name, QwirkleSettings settings) {

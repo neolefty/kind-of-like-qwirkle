@@ -7,6 +7,7 @@ import qwirkle.game.impl.QwirkleBoardImpl;
 
 import java.util.*;
 
+// TODO consider switching to an immutable GameModel
 /** Model a group of Qwirkle players playing a game.
  *  To receive updates, register for {@link GameStatus}, {@link QwirkleBoard},
  *  {@link TurnCompleted}, or {@link AnnotatedGame} on {@link GameController#getEventBus}.
@@ -102,6 +103,7 @@ public class GameModel {
 
     /** Mark the game as over. */
     private void finished(String reason) {
+        //noinspection StringEquality
         if (finishedMessage != null)
             throw new IllegalStateException("Already finished: " + finishedMessage
                     + "; can't finish again (" + reason + ").");
@@ -187,7 +189,7 @@ public class GameModel {
         }
         // advance until they're the first player
         while (getCurrentPlayer() != best)
-            advance();
+            advance(false);
     }
 
     /** The current player take a turn, draws to fill hand, then advance to the next player. */
@@ -274,6 +276,7 @@ public class GameModel {
         // announce the end only after we broadcast the last turn
         if (itsOver)
             finished(cur.getName() + " went out. Bonus " + bonus + " for other players' tiles.");
+
         // did the game stall (broadcasts game finished events)
         checkStalled();
 
@@ -281,7 +284,7 @@ public class GameModel {
         deal();
 
         // 5. advance to the next player
-        advance();
+        advance(true);
     }
 
     /** Check that <tt>player</tt> is the current player. */
@@ -359,7 +362,7 @@ public class GameModel {
     }
 
     /** Move the current player to the end of the line. */
-    private void advance() {
+    private void advance(boolean postEvent) {
         if (!isFinished()) {
             AsyncPlayer cur = getCurrentPlayer();
             // move current player to the back of the map
@@ -367,7 +370,8 @@ public class GameModel {
             // update the reference to the current player
             curPlayer = findCurrentPlayer();
             // notify everyone that we're ready for a new turn
-            post(new TurnStarting(status));
+            if (postEvent)
+                post(new TurnStarting(status));
         }
     }
 

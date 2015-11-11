@@ -23,7 +23,6 @@ public class GameController {
             }
         });
         threads = new QwirkleThreads(this);
-        threads.setStepMillis(300);
     }
 
     public GameController(GameModel game, InteractionController interact) {
