@@ -87,6 +87,9 @@ public class QwirkleSettings {
                 && getColors() == QwirkleColor.DEFAULT_COLORS;
     }
 
+    /** How many pieces are in a decks that these settings would generate? Default 108 (6 * 6 * 3). */
+    public int getDeckSize() { return getDeckCount() * getColors().size() * getShapes().size(); }
+
     @Override
     public String toString() {
         return "Game with " + players + ": "

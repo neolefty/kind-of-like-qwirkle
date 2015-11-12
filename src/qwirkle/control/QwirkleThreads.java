@@ -241,7 +241,7 @@ public class QwirkleThreads {
         }
     }
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private transient long beginning = System.currentTimeMillis();
     private String ts() { return "-=[" + (System.currentTimeMillis() - beginning) + "]=-"; }
     private void debug(String s) { if (DEBUG) System.out.print(ts() + " " + s + " "); }
