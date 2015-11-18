@@ -60,13 +60,15 @@ public class QwirkleThreads {
             // when a game begins, we can start taking turns
 //            @Subscribe public void gameStarted(GameStarted event) { eventArrived(event); }
             private void eventArrived(Object event) {
+                //noinspection TryWithIdenticalCatches
                 try {
                     debugln("\n" + control.getGame().getBoard().toString());
                     debugln("<<< Trigger next turn: " + event.toString());
                     waitForTurn.await(0, TimeUnit.NANOSECONDS);
                 }
-                catch (TimeoutException ignored) { } // we expect this
-                catch(InterruptedException | BrokenBarrierException e) {
+                catch(TimeoutException ignored) { } // we expect this because our timeout is 0
+                catch(BrokenBarrierException ignored) { } // probably because a human played
+                catch(InterruptedException e) {
                     debugln("How many waiting now? " + waitForTurn.getNumberWaiting());
                     e.printStackTrace(System.out);
                 }
