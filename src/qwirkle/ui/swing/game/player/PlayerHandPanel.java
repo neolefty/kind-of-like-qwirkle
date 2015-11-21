@@ -4,10 +4,16 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
-import qwirkle.control.GameController;
-import qwirkle.event.*;
-import qwirkle.game.*;
-import qwirkle.game.impl.QwirkleGridImpl;
+import qwirkle.game.base.*;
+import qwirkle.game.base.impl.QwirkleGridImpl;
+import qwirkle.game.event.DrawPieces;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.TurnCompleted;
+import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.ui.event.PassOver;
+import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
 import java.util.ArrayList;
@@ -26,8 +32,8 @@ import java.util.List;
  *  <p>Note that there are two event buses involved: A local one for this panel, with internal events,
  *  and a global one that receives events from the game at large.</p>*/
 public class PlayerHandPanel extends QwirkleGridPanel {
-    private GameController control;
-    private AsyncPlayer player;
+    private QwirkleUIController control;
+    private QwirklePlayer player;
     // what pieces did the player draw last?
     private List<QwirklePiece> lastDraw;
     // what pieces has the player placed on the board but not finalized as a play?
@@ -43,7 +49,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
 
     private boolean vertical;
 
-    public PlayerHandPanel(final GameController control, AsyncPlayer player) {
+    public PlayerHandPanel(final QwirkleUIController control, QwirklePlayer player) {
         super(new EventBus(new SubscriberExceptionHandler() {
             @Override
             public void handleException(Throwable exception, SubscriberExceptionContext context) {

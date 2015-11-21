@@ -1,26 +1,26 @@
 package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.control.HypotheticalPlay;
-import qwirkle.event.DragPiece;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.control.HypotheticalPlay;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirkleGrid;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 import qwirkle.ui.swing.colors.ColorSet;
 import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 
 import java.util.Collection;
 
 // TODO make playable spots pulse
-// TODO abstract this from Swing and move to qwirkle.control, like PieceDropWatcher?
+// TODO abstract this from Swing and move to qwirkle.game.control, like PieceDropWatcher?
 /** A listener that highlights playable spots on a board. */
 public class PlayableHighlighter {
     private QwirkleGridPanel gridPanel;
     private HypotheticalPlay hypo;
 
-    public PlayableHighlighter(GameController control, QwirkleGridPanel gridPanel) {
+    public PlayableHighlighter(QwirkleUIController control, QwirkleGridPanel gridPanel) {
         control.register(this);
         this.gridPanel = gridPanel;
         this.hypo = control.getInteraction().getHypotheticalPlay();

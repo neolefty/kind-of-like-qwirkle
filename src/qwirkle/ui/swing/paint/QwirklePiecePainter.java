@@ -1,8 +1,8 @@
 package qwirkle.ui.swing.paint;
 
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
-import qwirkle.game.QwirkleShape;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
+import qwirkle.game.base.QwirkleShape;
 import qwirkle.ui.swing.paint.impl.*;
 import qwirkle.ui.swing.util.HasTransparency;
 
@@ -30,14 +30,16 @@ public class QwirklePiecePainter implements HasTransparency {
         register(new PaintAnotherStar());
         register(new PaintRotate(QwirkleShape.diamond, new PaintSquare(), Math.PI / 4));
         register(new PaintStar(8, QwirkleShape.star8));
+        register(new PaintStar(5, QwirkleShape.star5, 2.3));
+        register(new PaintPolygon(5, QwirkleShape.pentagon));
         register(new PaintStar(4, QwirkleShape.star4));
-        register(new PaintStar(3, QwirkleShape.triangle));
+        register(new PaintPolygon(3, QwirkleShape.triangle));
         register(new PaintFlower());
         register(new PaintSmiley());
         register(new PaintA());
         register(new PaintGaga());
         register(new PaintHeart());
-        register(new PaintStar5());
+//        register(new PaintStar5());
         register(new PaintButterfly());
     }
 

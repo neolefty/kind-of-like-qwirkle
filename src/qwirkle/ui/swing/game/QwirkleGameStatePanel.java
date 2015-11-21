@@ -1,9 +1,9 @@
 package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.event.GameStarted;
-import qwirkle.game.AsyncPlayer;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.event.GameStarted;
+import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.board.PlayableHighlighter;
 import qwirkle.ui.swing.game.board.QwirklePlayableGridPanel;
@@ -18,10 +18,10 @@ import java.util.Map;
 /** A JPanel that shows the state of a game: players and board. */
 public class QwirkleGameStatePanel extends JPanel {
     // synchronize on this before making any changes
-    private final Map<AsyncPlayer, PlayerPanel> playerPanelMap = new LinkedHashMap<>();
-    private GameController control;
+    private final Map<QwirklePlayer, PlayerPanel> playerPanelMap = new LinkedHashMap<>();
+    private QwirkleUIController control;
 
-    public QwirkleGameStatePanel(GameController control) {
+    public QwirkleGameStatePanel(QwirkleUIController control) {
         super(new QwirkleGameLayout());
         this.control = control;
 
@@ -40,14 +40,14 @@ public class QwirkleGameStatePanel extends JPanel {
         });
     }
 
-    private void updatePlayers(List<AsyncPlayer> players) {
+    private void updatePlayers(List<QwirklePlayer> players) {
         removePlayerPanels();
         addPlayerPanels(players);
     }
 
-    private void addPlayerPanels(List<AsyncPlayer> players) {
+    private void addPlayerPanels(List<QwirklePlayer> players) {
         synchronized (playerPanelMap) {
-            for (AsyncPlayer player : players) {
+            for (QwirklePlayer player : players) {
                 PlayerPanel pp = new PlayerPanel(control, player);
                 playerPanelMap.put(player, pp);
                 // set an invisible border now to take up the space so the size doesn't change later

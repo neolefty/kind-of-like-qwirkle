@@ -1,8 +1,8 @@
 package qwirkle.ui.swing.game.board;
 
-import qwirkle.game.HasQwirkleLocation;
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirkleLocation;
+import qwirkle.game.base.HasQwirkleLocation;
+import qwirkle.game.base.QwirkleGrid;
+import qwirkle.game.base.QwirkleLocation;
 import qwirkle.ui.swing.util.LayoutBase;
 
 import java.awt.*;

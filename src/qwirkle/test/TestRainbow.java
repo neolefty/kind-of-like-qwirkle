@@ -1,16 +1,16 @@
 package qwirkle.test;
 
-import qwirkle.game.*;
-import qwirkle.game.impl.QwirkleBoardImpl;
-import qwirkle.players.Rainbow;
-import qwirkle.players.RainbowPlayer;
+import qwirkle.game.base.*;
+import qwirkle.game.base.impl.QwirkleBoardImpl;
+import qwirkle.game.control.players.Rainbow;
+import qwirkle.game.control.players.RainbowAI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** Test {@link RainbowPlayer} */
+/** Test {@link RainbowAI} */
 public class TestRainbow {
     public static void main(String[] args) {
         TestMain.checkAssert();
@@ -46,7 +46,7 @@ public class TestRainbow {
     }
 
     private static void testMinibow() {
-        RainbowPlayer player = new RainbowPlayer(QwirkleColor.DEFAULT_COLORS);
+        RainbowAI player = new RainbowAI(QwirkleColor.DEFAULT_COLORS);
         QwirkleSettings settings = new QwirkleSettings();
         QwirkleBoard board = new QwirkleBoardImpl(settings);
         // hand: three in a mini-rainbow
@@ -83,7 +83,7 @@ public class TestRainbow {
     }
 
     private static void testDegenerateColors() {
-        RainbowPlayer player = new RainbowPlayer(QwirkleColor.DEFAULT_COLORS);
+        RainbowAI player = new RainbowAI(QwirkleColor.DEFAULT_COLORS);
         QwirkleSettings settings = new QwirkleSettings();
         QwirkleBoard board = new QwirkleBoardImpl(settings);
         QwirklePiece rf = new QwirklePiece("rf"); // red flower

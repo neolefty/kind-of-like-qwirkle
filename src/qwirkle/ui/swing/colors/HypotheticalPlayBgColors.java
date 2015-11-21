@@ -1,8 +1,8 @@
 package qwirkle.ui.swing.colors;
 
-import qwirkle.game.QwirkleColor;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.base.QwirkleColor;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 
 import java.awt.*;
 

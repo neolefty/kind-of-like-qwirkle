@@ -2,14 +2,15 @@ package qwirkle.test;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.AnnotatedGame;
-import qwirkle.event.GameOver;
-import qwirkle.event.GameStarted;
-import qwirkle.event.TurnCompleted;
-import qwirkle.game.*;
-import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.test.scripted.ScriptedGameModel;
-import qwirkle.test.scripted.ScriptedPlayer;
+import qwirkle.game.base.QwirkleLocation;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.control.AnnotatedGame;
+import qwirkle.game.event.GameOver;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.TurnCompleted;
+import qwirkle.test.scripted.ScriptedAI;
+import qwirkle.test.scripted.ScriptedGameController;
 import qwirkle.test.scripted.ScriptedSettings;
 
 import java.util.Arrays;
@@ -38,14 +39,14 @@ public class TestScripted {
         h2 += "rh,2,1,rd,2,2;"; // p2 plays 2
         // turn 6 -- p1 MaxPlayer plays 2 to complete a set
 
-        AsyncPlayer p1 = new AsyncPlayerWrapper(new ScriptedPlayer("p1", h1));
-        AsyncPlayer p2 = new AsyncPlayerWrapper(new ScriptedPlayer("p2", h2));
-        List<AsyncPlayer> players = Arrays.asList(p1, p2);
+        QwirklePlayer p1 = new QwirklePlayer(new ScriptedAI("p1", h1));
+        QwirklePlayer p2 = new QwirklePlayer(new ScriptedAI("p2", h2));
+        List<QwirklePlayer> players = Arrays.asList(p1, p2);
         ScriptedSettings settings = new ScriptedSettings(players);
         // add two pieces to test that MaxPlayer knows what to do
         settings.setDeckPrefix("bc,yc");
         EventBus bus = new EventBus();
-        final ScriptedGameModel mgr = new ScriptedGameModel(bus);
+        final ScriptedGameController mgr = new ScriptedGameController(bus);
 
         // listen for the game to start, end, and each turn to pass
         final int[] receivedGameStarted = { 0 };
@@ -77,7 +78,7 @@ public class TestScripted {
         assert firstAnnotated[0] != null;
 
         // turn 0
-        mgr.step(); // p1 plays 4 for 4 points
+        mgr.stepAI(); // p1 plays 4 for 4 points
         assert turnCount[0] == 1;
         if (printDebug) debugPrint(mgr);
         AnnotatedGame ag = mgr.getStatus().getAnnotatedGame();
@@ -85,31 +86,31 @@ public class TestScripted {
         assert ag.getScore(p2) == 0;
 
         // turn 1
-        mgr.step(); // p2 plays 3 for 4 points
+        mgr.stepAI(); // p2 plays 3 for 4 points
         assert turnCount[0] == 2;
         if (printDebug) debugPrint(mgr);
         assert ag.getScore(p2) == 4;
         assert mgr.getBoard().get(new QwirkleLocation(-1, 0)).equals(new QwirklePiece("gc"));
 
         // turn 2
-        mgr.step(); // p1 plays 3 for 7 points (total 11)
+        mgr.stepAI(); // p1 plays 3 for 7 points (total 11)
         assert turnCount[0] == 3;
         if (printDebug) debugPrint(mgr);
         assert ag.getScore(p1) == 11;
 
         // turn 3
-        mgr.step(); // p2 discards 2 (still 4)
+        mgr.stepAI(); // p2 discards 2 (still 4)
         assert turnCount[0] == 4;
         if (printDebug) debugPrint(mgr);
         assert ag.getScore(p2) == 4;
 
         // turn 4
-        mgr.step(); // p1 discards 2 (still 11)
+        mgr.stepAI(); // p1 discards 2 (still 11)
         assert turnCount[0] == 5;
         if (printDebug) debugPrint(mgr);
 
         // turn 5
-        mgr.step(); // p2 plays 2 for 9 (13)
+        mgr.stepAI(); // p2 plays 2 for 9 (13)
         assert turnCount[0] == 6;
         if (printDebug) debugPrint(mgr);
         assert ag.getScore(p2) == 13;
@@ -119,7 +120,7 @@ public class TestScripted {
         assert ag.getBestTurn().containsLocation(2, 2);
 
         // turn 6 -- automated
-        mgr.step(); // p1 plays 2 to complete a set for 12 (23) (controlled by MaxPlayer)
+        mgr.stepAI(); // p1 plays 2 to complete a set for 12 (23) (controlled by MaxPlayer)
         assert turnCount[0] == 7;
         if (printDebug) debugPrint(mgr);
         assert ag.getScore(p1) == 23;
@@ -131,7 +132,7 @@ public class TestScripted {
         // march to end and make sure we heard about it through our listener
         while (!mgr.isFinished()) {
             int prev = turnCount[0];
-            mgr.step();
+            mgr.stepAI();
             if (printDebug) debugPrint(mgr);
             else System.out.print(turnCount[0] + " ");
             assert turnCount[0] == prev + 1;
@@ -160,12 +161,13 @@ public class TestScripted {
         assert newAnnotated.getTurns().size() == 0; // no real side effects
     }
 
-    public static void debugPrint(ScriptedGameModel mgr) {
+    public static void debugPrint(ScriptedGameController mgr) {
         System.out.println();
         System.out.println("Turn #" + (mgr.getStatus().getAnnotatedGame().getTurns().size() - 1) + ":");
         System.out.println(mgr);
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     static void testScoring(boolean debug) {
         // shapes: csd; colors: rgby
 
@@ -195,14 +197,15 @@ public class TestScripted {
         h2 += "yc,8,-2,bc,8,1;";
 
         // initialize game
-        AsyncPlayer p1 = new AsyncPlayerWrapper(new ScriptedPlayer("p1", h1));
-        AsyncPlayer p2 = new AsyncPlayerWrapper(new ScriptedPlayer("p2", h2));
-        List<AsyncPlayer> players = Arrays.asList(p1, p2);
+        QwirklePlayer p1 = new QwirklePlayer(new ScriptedAI("p1", h1));
+        QwirklePlayer p2 = new QwirklePlayer(new ScriptedAI("p2", h2));
+        List<QwirklePlayer> players = Arrays.asList(p1, p2);
         // simple deck with 3 shapes & 4 colors
+        //noinspection SpellCheckingInspection
         ScriptedSettings settings
                 = new ScriptedSettings(players, "csd", "rgby");
         EventBus bus = new EventBus();
-        ScriptedGameModel mgr = new ScriptedGameModel(bus);
+        ScriptedGameController mgr = new ScriptedGameController(bus);
         mgr.start(settings);
 
         // before turn 0
@@ -210,54 +213,54 @@ public class TestScripted {
         assert mgr.getHand(p2).size() == 4;
 
         // turn 0 -- p1 plays 3 for 3
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getScore(p1) == 3;
 
         // turn 1 -- p2 plays 2 for 6
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getScore(p2) == 6;
 
         // turn 2 -- p1 plays 3 for 14
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getBestTurn().getScore() == 14;
         assert mgr.getStatus().getAnnotatedGame().getScore(p1) == 17;
 
         // turn 3 -- p2 plays 3 for 8
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 8;
 
         // turn 4 -- p1 plays 2 for 3
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 3;
 
         // turn 5 -- p2 plays 3 for 8
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 11;
 
         // turn 6 -- p1 plays 3 for 20
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 20;
 
         // turn 7 -- p2 plays 3 for 10
-        mgr.step();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 10;
 
-        mgr.step();
-        mgr.step();
-        mgr.step();
-        mgr.step();
-        mgr.step();
+        mgr.stepAI();
+        mgr.stepAI();
+        mgr.stepAI();
+        mgr.stepAI();
+        mgr.stepAI();
         if (debug) debugPrint(mgr);
 
-        mgr.step();
+        mgr.stepAI();
 //        if (debug)
             debugPrint(mgr);
         assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 16;

@@ -1,38 +1,37 @@
 package qwirkle.test;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.control.GameModel;
-import qwirkle.control.impl.SingleThreadedStrict;
-import qwirkle.game.AsyncPlayer;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.QwirkleSettings;
-import qwirkle.game.impl.AsyncPlayerWrapper;
+import qwirkle.game.base.QwirkleAI;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.control.GameController;
+import qwirkle.game.control.impl.SingleThreadedStrict;
 
 import java.util.Collection;
 
 public class PlayTester {
-    private final GameModel game;
+    private final GameController game;
 
     public PlayTester(QwirkleSettings settings) {
-        this.game = new GameModel(new EventBus(), settings, new SingleThreadedStrict());
+        this.game = new GameController(new EventBus(), settings, new SingleThreadedStrict());
     }
 
-    public PlayTester(Collection<QwirklePlayer> players) {
-        this(new QwirkleSettings(AsyncPlayerWrapper.wrap(players)));
+    public PlayTester(Collection<QwirkleAI> players) {
+        this(new QwirkleSettings(QwirklePlayer.wrap(players)));
     }
 
     /** Play once and return the winner. */
-    public AsyncPlayer play() {
+    public QwirklePlayer play() {
         return play(3);
     }
 
-    public GameModel getGame() {
+    public GameController getGame() {
         return game;
     }
 
     /** Play once and return the winner.
      *  @param nDecks the number of sets of tiles to use (default 3). */
-    public AsyncPlayer play(int nDecks) {
+    public QwirklePlayer play(int nDecks) {
         QwirkleSettings settings = game.getSettings();
         settings = new QwirkleSettings(nDecks, settings.getShapes(),
                 settings.getColors(), settings.getPlayers());
@@ -43,9 +42,9 @@ public class PlayTester {
     private void play(QwirkleSettings settings) {
         game.start(settings);
         while (!game.isFinished()) {
-            game.step();
+            game.stepAI();
 //            QwirklePlayer cur = game.getCurrentPlayer().get();
-//            List<QwirklePlacement> play = game.step();
+//            List<QwirklePlacement> play = game.stepAI();
 //            QwirkleBoard board = game.getBoard().get();
 //            System.out.println("Player \"" + cur.getName() + "\" plays: " + play
 //                    + " for " + board.getLastScore() + " points:");

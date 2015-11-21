@@ -1,7 +1,7 @@
 package qwirkle.attic.swing;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.game.QwirkleGrid;
+import qwirkle.game.base.QwirkleGrid;
 import qwirkle.ui.swing.game.board.QwirklePiecePanel;
 import qwirkle.ui.swing.colors.Colors;
 

@@ -1,7 +1,7 @@
 package qwirkle.ui;
 
-import qwirkle.game.QwirkleColor;
-import qwirkle.players.Rainbow;
+import qwirkle.game.base.QwirkleColor;
+import qwirkle.game.control.players.Rainbow;
 
 import java.util.*;
 

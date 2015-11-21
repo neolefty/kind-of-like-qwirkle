@@ -1,15 +1,14 @@
 package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.control.QwirkleThreads;
-import qwirkle.control.impl.NewThreadEachTime;
-import qwirkle.event.GameOver;
-import qwirkle.game.*;
-import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.players.MaxPlayer;
-import qwirkle.players.RainbowPlayer;
-import qwirkle.players.StupidPlayer;
+import qwirkle.game.base.*;
+import qwirkle.game.control.QwirkleThreads;
+import qwirkle.game.control.impl.NewThreadEachTime;
+import qwirkle.game.control.players.MaxAI;
+import qwirkle.game.control.players.RainbowAI;
+import qwirkle.game.control.players.StupidAI;
+import qwirkle.game.event.GameOver;
+import qwirkle.ui.control.QwirkleUIController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,11 +40,11 @@ public class TestThreads {
     {
         final long delay = Math.max(clockDelay, playerDelay);
         // a default game with 3 stupid players
-        final List<AsyncPlayer> players = new ArrayList<>();
+        final List<QwirklePlayer> players = new ArrayList<>();
         for (int i = 0; i < 3; ++i)
-            players.add(new AsyncPlayerWrapper(new DelayPlayer(playerDelay)));
+            players.add(new QwirklePlayer(new DelayAI(playerDelay)));
         QwirkleSettings settings = new QwirkleSettings(players);
-        GameController control = new GameController(settings, new NewThreadEachTime());
+        QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
         control.getThreads().setStepMillis(clockDelay);
         control.getThreads().setGameOverMillis(clockDelay);
         final CountDownLatch waiting = new CountDownLatch(nGames);
@@ -57,7 +56,7 @@ public class TestThreads {
             @Subscribe public void gameOver(GameOver event) {
                 int played = event.getStatus().getBoard().size();
                 long expectedTime = played * delay;
-                long slop = expectedTime / 7;
+                long slop = expectedTime / 5;
                 long now = System.currentTimeMillis();
                 long elapsed = now - start[0];
                 count[0]++;
@@ -78,10 +77,10 @@ public class TestThreads {
         assert count[0] == nGames  : count[0] + " games (expected " + nGames + ")";
     }
 
-    private static class DelayPlayer extends StupidPlayer {
+    private static class DelayAI extends StupidAI {
         private static int serial = 1;
         private long msDelay;
-        public DelayPlayer(long msDelay) {
+        public DelayAI(long msDelay) {
             super("" + serial++);
             this.msDelay = msDelay;
         }
@@ -102,11 +101,11 @@ public class TestThreads {
         final Stopwatch w = new Stopwatch();
         Collection<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
         Collection<QwirkleShape> shapes = QwirkleShape.FIVE_SHAPES;
-        List<AsyncPlayer> players = new ArrayList<>();
-        players.add(new AsyncPlayerWrapper(new RainbowPlayer("Rainbow", colors)));
-        players.add(new AsyncPlayerWrapper(new MaxPlayer("Max")));
+        List<QwirklePlayer> players = new ArrayList<>();
+        players.add(new QwirklePlayer(new RainbowAI("Rainbow", colors)));
+        players.add(new QwirklePlayer(new MaxAI("Max")));
         QwirkleSettings settings = new QwirkleSettings(1, shapes, colors, players);
-        GameController control = new GameController(settings, new NewThreadEachTime());
+        QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
         QwirkleThreads threads = control.getThreads();
         threads.setStepMillis(10);
         threads.setGameOverMillis(10);

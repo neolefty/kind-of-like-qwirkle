@@ -1,6 +1,6 @@
 package qwirkle.ui.swing.game.board;
 
-import qwirkle.event.PassOver;
+import qwirkle.ui.event.PassOver;
 import qwirkle.ui.swing.colors.ColorSet;
 
 import javax.swing.*;

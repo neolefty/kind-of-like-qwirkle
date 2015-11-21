@@ -1,6 +1,6 @@
 package qwirkle.attic.swing;
 
-import qwirkle.control.InteractionController;
+import qwirkle.ui.control.InteractionController;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
 import javax.swing.*;

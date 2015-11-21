@@ -1,7 +1,7 @@
 package qwirkle.ui.swing.main;
 
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirkleSettings;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirkleSettings;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 
 import javax.swing.*;

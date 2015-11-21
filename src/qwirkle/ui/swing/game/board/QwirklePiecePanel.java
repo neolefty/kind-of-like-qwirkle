@@ -2,12 +2,12 @@ package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.event.DragPiece;
-import qwirkle.event.HighlightTurn;
-import qwirkle.event.PassOver;
-import qwirkle.event.PlayPiece;
-import qwirkle.game.*;
+import qwirkle.game.base.*;
 import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.ui.event.HighlightTurn;
+import qwirkle.ui.event.PassOver;
+import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
@@ -149,7 +149,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
      *  @param player the player who will be doing the dragging
      *  @param context is this piece part of a hypothetical play that might be canceled, or what?
      *                      (null if no context) */
-    public void makeDraggable(AsyncPlayer player, PlayPiece context) {
+    public void makeDraggable(QwirklePlayer player, PlayPiece context) {
         if (dragHelper == null)
             initDragHelper(player, context);
         else
@@ -161,7 +161,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
             dragHelper.makeUndraggable();
     }
 
-    private void initDragHelper(final AsyncPlayer player, final PlayPiece context) {
+    private void initDragHelper(final QwirklePlayer player, final PlayPiece context) {
         if (context != null && !context.isAccept())
             throw new IllegalArgumentException("Unsupported state: " + context);
         dragHelper = new DragHelper(this, new DragHelper.DragHandler() {

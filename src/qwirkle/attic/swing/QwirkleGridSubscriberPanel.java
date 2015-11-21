@@ -2,8 +2,8 @@ package qwirkle.attic.swing;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirkleGrid;
+import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirkleGrid;
 
 import javax.swing.*;
 

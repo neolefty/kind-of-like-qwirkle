@@ -1,12 +1,12 @@
 package qwirkle.test;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.control.GameModel;
-import qwirkle.control.impl.SingleThreadedStrict;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.QwirkleSettings;
-import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.players.MaxPlayer;
+import qwirkle.game.base.QwirkleAI;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.control.GameController;
+import qwirkle.game.control.impl.SingleThreadedStrict;
+import qwirkle.game.control.players.MaxAI;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -33,18 +33,18 @@ public class TestPerformance {
     }
 
     private static long playMax(int nPlayers, int nDecks, int nGames) {
-        List<QwirklePlayer> players = new ArrayList<>();
+        List<QwirkleAI> players = new ArrayList<>();
         for (int i = 0; i < nPlayers; ++i)
-            players.add(new MaxPlayer("Player " + i));
-        QwirkleSettings settings = new QwirkleSettings(AsyncPlayerWrapper.wrap(players), nDecks);
-        GameModel mgr = new GameModel(new EventBus(), settings, new SingleThreadedStrict());
+            players.add(new MaxAI("Player " + i));
+        QwirkleSettings settings = new QwirkleSettings(QwirklePlayer.wrap(players), nDecks);
+        GameController mgr = new GameController(new EventBus(), settings, new SingleThreadedStrict());
         System.out.println("Playing " + nGames + " games:");
         long start = System.currentTimeMillis();
         long lap = start;
         for (int i = 0; i < nGames; ++i) {
             mgr.start();
             while (!mgr.isFinished())
-                mgr.step();
+                mgr.stepAI();
             long end = System.currentTimeMillis();
             System.out.println("  " + i + " (" + (end - lap) + " ms): " + mgr.getFinishedMessage());
             lap = end;

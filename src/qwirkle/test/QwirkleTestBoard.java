@@ -1,8 +1,8 @@
 package qwirkle.test;
 
-import qwirkle.game.QwirklePlacement;
-import qwirkle.game.QwirkleSettings;
-import qwirkle.game.impl.QwirkleBoardImpl;
+import qwirkle.game.base.QwirklePlacement;
+import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.base.impl.QwirkleBoardImpl;
 
 /** Add a convenience method for testing. */
 public class QwirkleTestBoard extends QwirkleBoardImpl {

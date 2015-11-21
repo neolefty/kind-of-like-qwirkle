@@ -1,6 +1,6 @@
 package qwirkle.test.visual;
 
-import qwirkle.game.QwirkleShape;
+import qwirkle.game.base.QwirkleShape;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.colors.Colors;
 

@@ -1,9 +1,12 @@
 package qwirkle.ui.swing.util;
 
-import qwirkle.game.AsyncPlayer;
+import qwirkle.game.base.QwirklePlayer;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 
 /** Supports dragging stuff. */
 public class DragHelper {
@@ -22,7 +25,7 @@ public class DragHelper {
     private DragHandler handler;
 
     // the player who is acting
-    private AsyncPlayer player;
+    private QwirklePlayer player;
 
     /** Implement this and pass it to {@link #DragHelper}. */
     public interface DragHandler {
@@ -104,7 +107,7 @@ public class DragHelper {
     public boolean isDragging() { return dragging; }
 
     /** The player making an action. */
-    public AsyncPlayer getPlayer() { return player; }
+    public QwirklePlayer getPlayer() { return player; }
 
     /** Are we currently mid-drag? */
     private void setDragging(boolean dragging) {
@@ -112,7 +115,7 @@ public class DragHelper {
     }
 
     /** Make this draggable. */
-    public void makeDraggable(AsyncPlayer player) {
+    public void makeDraggable(QwirklePlayer player) {
         this.player = player;
         this.draggable = true;
     }

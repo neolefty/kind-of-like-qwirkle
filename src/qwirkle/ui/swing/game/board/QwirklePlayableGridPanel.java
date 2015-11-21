@@ -1,12 +1,12 @@
 package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.control.HypotheticalPlay;
-import qwirkle.event.DragPiece;
-import qwirkle.event.PlayPiece;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.control.HypotheticalPlay;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.ui.event.PlayPiece;
+import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirklePlacement;
 import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 
 // TODO show points of hypothetical placement in highlight
@@ -16,7 +16,7 @@ public class QwirklePlayableGridPanel extends QwirkleGridPanel {
     // The play the player is currently making
     public HypotheticalPlay hypoPlay;
 
-    public QwirklePlayableGridPanel(final GameController control) {
+    public QwirklePlayableGridPanel(final QwirkleUIController control) {
         super(control.getEventBus());
         control.register(new Object() {
             /** When a placement is confirmed or canceled, update our display of the hypothetical play. */

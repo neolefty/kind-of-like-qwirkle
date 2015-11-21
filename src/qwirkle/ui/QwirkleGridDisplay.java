@@ -1,6 +1,6 @@
 package qwirkle.ui;
 
-import qwirkle.game.QwirkleGrid;
+import qwirkle.game.base.QwirkleGrid;
 
 /** A UI element that displays a {@link QwirkleGrid}. */
 public interface QwirkleGridDisplay {

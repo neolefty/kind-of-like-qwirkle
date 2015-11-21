@@ -2,12 +2,12 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.control.GameStatus;
-import qwirkle.event.GameOver;
-import qwirkle.event.GameStarted;
-import qwirkle.event.TurnCompleted;
-import qwirkle.event.TurnStarting;
+import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.game.control.GameStatus;
+import qwirkle.game.event.GameOver;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.TurnCompleted;
+import qwirkle.game.event.TurnStarting;
 
 import javax.swing.*;
 import java.util.concurrent.Callable;
@@ -18,7 +18,7 @@ public class GameStatusPanel extends Box {
     private TurnHighlightingLabel turnLabel, bestTurnLabel;
     private TurnCompleted bestTurn, lastTurn;
 
-    public GameStatusPanel(GameController control) {
+    public GameStatusPanel(QwirkleUIController control) {
         super(BoxLayout.X_AXIS);
 
         EventBus bus = control.getEventBus();

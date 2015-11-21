@@ -1,9 +1,9 @@
 package qwirkle.test.scripted;
 
 import com.google.common.base.Splitter;
-import qwirkle.game.AsyncPlayer;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirkleSettings;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.QwirkleSettings;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +15,7 @@ public class ScriptedSettings extends QwirkleSettings {
 
     /** When you use this, make sure that the first player actually deserves to go first
      *  (has the best first play) by the rules of the game. */
-    public ScriptedSettings(Collection<AsyncPlayer> players) {
+    public ScriptedSettings(Collection<QwirklePlayer> players) {
         super(players, 1);
     }
 
@@ -40,7 +40,7 @@ public class ScriptedSettings extends QwirkleSettings {
     }
 
     /** Same thing, but with a custom set of shapes and colors. */
-    public ScriptedSettings(Collection<AsyncPlayer> players, String shapes, String colors) {
+    public ScriptedSettings(Collection<QwirklePlayer> players, String shapes, String colors) {
         super(1, shapes, colors, players);
     }
 }

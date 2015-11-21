@@ -2,12 +2,12 @@ package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.event.GameStarted;
-import qwirkle.game.AsyncPlayer;
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirkleLocation;
-import qwirkle.game.QwirklePlacement;
-import qwirkle.event.TurnCompleted;
+import qwirkle.game.base.QwirkleGrid;
+import qwirkle.game.base.QwirkleLocation;
+import qwirkle.game.base.QwirklePlacement;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.QwirkleGridDisplay;
 import qwirkle.ui.QwirklePieceDisplay;
 
@@ -27,7 +27,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private EventBus eventBus;
 
     private boolean draggable = false;
-    private AsyncPlayer dragPlayer = null;
+    private QwirklePlayer dragPlayer = null;
 
     public QwirkleGridPanel(EventBus bus) {
         this.eventBus = bus;
@@ -114,7 +114,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     /** Enable drag-and-drop operations starting from this grid. */
-    public void makeDraggable(AsyncPlayer player) {
+    public void makeDraggable(QwirklePlayer player) {
         synchronized (getTreeLock()) {
             this.dragPlayer = player;
             this.draggable = true;

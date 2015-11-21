@@ -1,6 +1,6 @@
 package qwirkle.ui.swing.paint.impl;
 
-import qwirkle.game.QwirkleShape;
+import qwirkle.game.base.QwirkleShape;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.paint.QwirkleShapePainter;
 

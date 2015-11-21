@@ -1,11 +1,11 @@
 package qwirkle.ui.swing.game.player;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.event.GameStarted;
-import qwirkle.event.TurnCompleted;
-import qwirkle.event.TurnStarting;
-import qwirkle.game.AsyncPlayer;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.TurnCompleted;
+import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+// TODO add coach option for human player ("Rainbow suggests ...")
 /** Show the current state of a player. Their hand, name, score, best play so far in the game. */
 public class PlayerPanel extends JPanel implements HasAspectRatio {
     /** If vertical, this is the ideal width-to-height ratio. */
@@ -25,7 +26,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     /** If horizontal, this is the ideal width-to-height ratio. */
     public static final double HORIZONTAL_ASPECT_RATIO = 5;
 
-    private AsyncPlayer player;
+    private QwirklePlayer player;
 
     private PlayerHandPanel handPanel;
     private AutoSizeLabel nameLabel, scoreLabel, scoreSeparatorLabel;
@@ -37,7 +38,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
 
-    public PlayerPanel(final GameController control, final AsyncPlayer player) {
+    public PlayerPanel(final QwirkleUIController control, final QwirklePlayer player) {
         this.player = player;
         this.handPanel = new PlayerHandPanel(control, player);
 

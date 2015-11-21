@@ -1,12 +1,12 @@
 package qwirkle.attic.swing;
 
-import qwirkle.control.GameController;
-import qwirkle.control.impl.NewThreadEachTime;
-import qwirkle.game.QwirkleSettings;
-import qwirkle.game.QwirklePlayer;
-import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.players.MaxPlayer;
-import qwirkle.control.GameModel;
+import qwirkle.game.base.QwirkleAI;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.control.GameController;
+import qwirkle.game.control.impl.NewThreadEachTime;
+import qwirkle.game.control.players.MaxAI;
+import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.main.QwirkleFrame;
 import qwirkle.ui.swing.util.SwingSetup;
 
@@ -19,17 +19,17 @@ public class SwingOldMain {
 
     public static void main(String[] args) {
         // game model
-        List<QwirklePlayer> players = new ArrayList<>();
+        List<QwirkleAI> players = new ArrayList<>();
 //        players.add(new StupidPlayer("1"));
-        players.add(new MaxPlayer());
+        players.add(new MaxAI());
 //        players.add(new StupidPlayer("2"));
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
-        QwirkleSettings settings = new QwirkleSettings(AsyncPlayerWrapper.wrap(players));
-        final GameController control = new GameController(settings, new NewThreadEachTime());
+        players.add(new MaxAI());
+        players.add(new MaxAI());
+        players.add(new MaxAI());
+        players.add(new MaxAI());
+        players.add(new MaxAI());
+        QwirkleSettings settings = new QwirkleSettings(QwirklePlayer.wrap(players));
+        final QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
         control.getGame().start();
 
         // display
@@ -50,7 +50,7 @@ public class SwingOldMain {
                     //noinspection InfiniteLoopStatement
                     while (true) {
                         long start = System.currentTimeMillis();
-                        GameModel game = control.getGame();
+                        GameController game = control.getGame();
                         if (game.isFinished()) {
                             if (game.getBoard() != null && game.getBoard().size() > 0) {
                                 System.out.println(game);
@@ -58,7 +58,7 @@ public class SwingOldMain {
                             }
                             game.start(new QwirkleSettings(20));
                         }
-                        game.step();
+                        game.stepAI();
 //                        System.out.println(game.getBoard());
                         long elapsed = System.currentTimeMillis() - start;
                         long sleep = STEP_MILLIS - elapsed;

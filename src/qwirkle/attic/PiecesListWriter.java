@@ -1,7 +1,7 @@
 package qwirkle.attic;
 
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 
 import java.util.Collection;
 import java.util.List;

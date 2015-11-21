@@ -1,9 +1,9 @@
 package qwirkle.attic;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.control.GameStatus;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.control.GameStatus;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 
 import java.util.ArrayList;
 import java.util.Collection;

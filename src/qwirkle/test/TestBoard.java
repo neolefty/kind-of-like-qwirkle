@@ -1,15 +1,14 @@
 package qwirkle.test;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.GameController;
-import qwirkle.control.GameModel;
-import qwirkle.control.impl.SingleThreadedStrict;
-import qwirkle.event.TurnStarting;
-import qwirkle.game.*;
-import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.game.impl.QwirkleBoardImpl;
-import qwirkle.players.MaxPlayer;
-import qwirkle.players.StupidPlayer;
+import qwirkle.game.base.*;
+import qwirkle.game.base.impl.QwirkleBoardImpl;
+import qwirkle.game.control.GameController;
+import qwirkle.game.control.impl.SingleThreadedStrict;
+import qwirkle.game.control.players.MaxAI;
+import qwirkle.game.control.players.StupidAI;
+import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.control.QwirkleUIController;
 
 import java.util.*;
 
@@ -57,8 +56,8 @@ public class TestBoard {
         int trials = 50; // run N times to make sure nothing random is going wrong
         QwirkleShape[] shapes = {QwirkleShape.heart, QwirkleShape.star8, QwirkleShape.diamond};
         QwirkleColor[] colors = {QwirkleColor.blue, QwirkleColor.purple};
-        QwirklePlayer[] rawPlayers = { new MaxPlayer(), new StupidPlayer("duh") };
-        List<AsyncPlayer> players = AsyncPlayerWrapper.wrap(Arrays.asList(rawPlayers));
+        QwirkleAI[] rawPlayers = { new MaxAI(), new StupidAI("duh") };
+        List<QwirklePlayer> players = QwirklePlayer.wrap(Arrays.asList(rawPlayers));
 
         // a deck should include one of each card
         for (int i = 0; i < trials; ++i) {
@@ -91,7 +90,7 @@ public class TestBoard {
         // try a few times to make sure game works every time
         for (int n = 0; n < trials; ++n) {
             // play a few rounds of a game
-            GameController control = new GameController(settings, new SingleThreadedStrict());
+            QwirkleUIController control = new QwirkleUIController(settings, new SingleThreadedStrict());
             final boolean[] boardChanged = { false }, turnStarted = { false };
             control.register(new Object() {
                 @Subscribe
@@ -108,21 +107,21 @@ public class TestBoard {
             assert !turnStarted[0];
             control.getGame().start();
             // advance to player #0
-            GameModel game = control.getGame();
+            GameController game = control.getGame();
             if (game.getCurrentPlayer() == players.get(1)) {
-                game.step();
+                game.stepAI();
 //                System.out.println(mgr);
             }
             // ensure that we're alternating between players
             //noinspection AssertWithSideEffects
             assert game.getCurrentPlayer() == players.get(0);
-            game.step();
+            game.stepAI();
 //            System.out.println(mgr);
             assert boardChanged[0];
             assert turnStarted[0];
             //noinspection AssertWithSideEffects
             assert game.getCurrentPlayer() == players.get(1);
-            game.step();
+            game.stepAI();
 //            System.out.println(mgr);
             //noinspection AssertWithSideEffects
             assert game.getCurrentPlayer() == players.get(0);

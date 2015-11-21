@@ -1,7 +1,7 @@
 package qwirkle.test;
 
-import qwirkle.game.QwirklePlayer;
-import qwirkle.players.MaxPlayer;
+import qwirkle.game.base.QwirkleAI;
+import qwirkle.game.control.players.MaxAI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +12,11 @@ public class PlayTest {
 
     public static void main(String[] args) {
 //        try { Thread.sleep(10000); } catch(InterruptedException ignored) {}
-        List<QwirklePlayer> players = new ArrayList<>();
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
-        players.add(new MaxPlayer());
+        List<QwirkleAI> players = new ArrayList<>();
+        players.add(new MaxAI());
+        players.add(new MaxAI());
+        players.add(new MaxAI());
+        players.add(new MaxAI());
 //        players.add(new StupidPlayer("2"));
         PlayTester tester = new PlayTester(players);
         List<Long> times = new ArrayList<>();

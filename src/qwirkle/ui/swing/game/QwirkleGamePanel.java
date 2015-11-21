@@ -1,14 +1,16 @@
 package qwirkle.ui.swing.game;
 
-import qwirkle.control.GameController;
+import qwirkle.ui.control.QwirkleUIController;
 
 import javax.swing.*;
 import java.awt.*;
 
 /** A JPanel that shows a complete Qwirkle game, with board, players, controls, and status. */
 public class QwirkleGamePanel extends JPanel {
-    public QwirkleGamePanel(GameController control) {
+    public QwirkleGamePanel(QwirkleUIController control) {
         super(new BorderLayout());
+
+//        JLayeredPane
 
         // center: board & players
         add(new QwirkleGameStatePanel(control), BorderLayout.CENTER);

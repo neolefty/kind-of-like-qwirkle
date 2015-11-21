@@ -1,14 +1,14 @@
 package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.control.*;
-import qwirkle.event.GameOver;
-import qwirkle.event.GameStarted;
-import qwirkle.event.ThreadStatus;
-import qwirkle.game.QwirkleBoard;
-import qwirkle.event.TurnCompleted;
+import qwirkle.game.event.GameOver;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.ThreadStatus;
+import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.swing.util.AutoSizeButton;
 import qwirkle.ui.swing.util.AutoSizeLabel;
+import qwirkle.ui.control.QwirkleUIController;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -23,7 +23,7 @@ public class GameControlPanel extends JPanel {
 
     public static final double FONT_PROPORTION = 0.03;
 
-    public GameControlPanel(final GameController control) {
+    public GameControlPanel(final QwirkleUIController control) {
         // label: the number of remaining cards
         final JLabel remaining = new AutoSizeLabel(this, "108", FONT_PROPORTION);
         // button: new game
@@ -63,7 +63,7 @@ public class GameControlPanel extends JPanel {
                     turnTaker.submit(new Runnable() {
                         @Override
                         public void run() {
-                            control.getGame().step();
+                            control.getGame().stepAI();
                         }
                     });
             }

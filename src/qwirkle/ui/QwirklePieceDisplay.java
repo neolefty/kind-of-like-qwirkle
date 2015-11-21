@@ -1,7 +1,7 @@
 package qwirkle.ui;
 
-import qwirkle.game.HasQwirkleLocation;
-import qwirkle.game.QwirklePiece;
+import qwirkle.game.base.HasQwirkleLocation;
+import qwirkle.game.base.QwirklePiece;
 
 /** A UI component that displays a {@link QwirklePiece}. */
 public interface QwirklePieceDisplay extends HasQwirkleLocation {

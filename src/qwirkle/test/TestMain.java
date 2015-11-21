@@ -6,13 +6,14 @@ import java.util.Set;
 
 // TODO test PlayerKit functions
 public class TestMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         checkAssert();
 
         TestBoard.main(args);
         TestRainbow.main(args);
         TestScripted.main(args);
         TestPerformance.main(args);
+        TestThreads.main(args);
 
         System.out.println();
         System.out.println("All tests pass.");

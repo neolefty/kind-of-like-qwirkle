@@ -1,10 +1,10 @@
 package qwirkle.attic.swing;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.game.QwirkleGrid;
-import qwirkle.game.QwirkleLocation;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirklePlacement;
+import qwirkle.game.base.QwirkleGrid;
+import qwirkle.game.base.QwirkleLocation;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.colors.Colors;
 

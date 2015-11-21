@@ -1,7 +1,7 @@
 package qwirkle.attic.swing;
 
-import qwirkle.control.GameController;
-import qwirkle.game.AsyncPlayer;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.swing.game.player.PlayerPanel;
 
@@ -11,7 +11,7 @@ import java.awt.*;
 /** A JPanel that shows the state of a game, including players and status.
  *  Uses GridBagLayout; replaced with our own layout, QwirkleGameLayout. */
 public class QwirkleGamePanelGBL extends JPanel {
-    public QwirkleGamePanelGBL(GameController control) {
+    public QwirkleGamePanelGBL(QwirkleUIController control) {
         setLayout(new GridBagLayout());
         Insets zeroInsets = new Insets(0, 0, 0, 0);
         GridBagConstraints constraints = new GridBagConstraints
@@ -26,7 +26,7 @@ public class QwirkleGamePanelGBL extends JPanel {
         // player panels
         constraints.gridy = 0;
         constraints.weightx = .25;
-        for (AsyncPlayer player : control.getGame().getPlayers()) {
+        for (QwirklePlayer player : control.getGame().getPlayers()) {
             add(new PlayerPanel(control, player), constraints);
             constraints.gridx++;
         }

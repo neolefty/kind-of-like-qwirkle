@@ -1,6 +1,6 @@
 package qwirkle.ui.swing.paint;
 
-import qwirkle.game.QwirkleShape;
+import qwirkle.game.base.QwirkleShape;
 
 import java.awt.*;
 

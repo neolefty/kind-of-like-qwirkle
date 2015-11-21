@@ -2,9 +2,9 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.event.PassOver;
-import qwirkle.event.DragPiece;
-import qwirkle.game.QwirklePiece;
+import qwirkle.ui.event.PassOver;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.game.base.QwirklePiece;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 
 import javax.swing.*;

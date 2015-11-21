@@ -1,12 +1,12 @@
 package qwirkle.ui.swing.main;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.control.GameModel;
-import qwirkle.control.impl.SingleThreadedStrict;
-import qwirkle.game.QwirkleColor;
-import qwirkle.game.QwirklePiece;
-import qwirkle.game.QwirkleSettings;
-import qwirkle.game.QwirkleShape;
+import qwirkle.game.control.GameController;
+import qwirkle.game.control.impl.SingleThreadedStrict;
+import qwirkle.game.base.QwirkleColor;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.base.QwirkleShape;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.util.HasTransparency;
@@ -67,7 +67,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
 
     private long lastUpdate = System.currentTimeMillis();
 
-    public ShapeBouncer(GameModel game) {
+    public ShapeBouncer(GameController game) {
         // idea: move this to scatter to keep it up to date with the game
         this(generatePieces(game));
     }
@@ -116,7 +116,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
         this.stepMillis = stepMillis;
     }
 
-    private static Collection<QwirklePiece> generatePieces(GameModel game) {
+    private static Collection<QwirklePiece> generatePieces(GameController game) {
         QwirkleSettings settings = game.getSettings();
         QwirkleSettings oneDeck = new QwirkleSettings
                 (1, settings.getShapes(), settings.getColors(), settings.getPlayers());
@@ -370,6 +370,7 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
         boolean allShapes = false;
 
         ShapeBouncer bouncer;
+        //noinspection ConstantConditions
         if (allShapes) {
             int copies = 3;
             List<QwirkleShape> shapes = new ArrayList<>();
@@ -379,8 +380,8 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
             bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
         }
         else {
-            GameModel justForDeck
-                    = new GameModel(new EventBus(), new QwirkleSettings(), new SingleThreadedStrict());
+            GameController justForDeck
+                    = new GameController(new EventBus(), new QwirkleSettings(), new SingleThreadedStrict());
             bouncer = new ShapeBouncer(justForDeck);
             bouncer.changeColors = false;
         }

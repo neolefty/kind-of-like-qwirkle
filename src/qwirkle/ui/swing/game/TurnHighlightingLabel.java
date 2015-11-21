@@ -1,8 +1,8 @@
 package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.event.HighlightTurn;
-import qwirkle.event.TurnCompleted;
+import qwirkle.ui.event.HighlightTurn;
+import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.util.HighlightLabel;
 

@@ -1,12 +1,11 @@
 package qwirkle.attic.swing;
 
-import qwirkle.control.GameController;
-import qwirkle.control.impl.NewThreadEachTime;
-import qwirkle.game.AsyncPlayer;
-import qwirkle.game.QwirkleSettings;
-import qwirkle.game.impl.AsyncPlayerWrapper;
-import qwirkle.players.MaxPlayer;
-import qwirkle.players.StupidPlayer;
+import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.control.impl.NewThreadEachTime;
+import qwirkle.game.control.players.MaxAI;
+import qwirkle.game.control.players.StupidAI;
+import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.QwirkleGamePanel;
 import qwirkle.ui.swing.main.QwirkleFrame;
@@ -23,12 +22,12 @@ public class SwingMainSimple {
             @Override
             public void run() {
                 // set up a game
-                List<AsyncPlayer> players = new ArrayList<>();
-                players.add(new AsyncPlayerWrapper(new MaxPlayer("Sam")));
-                players.add(new AsyncPlayerWrapper(new MaxPlayer("Gilly")));
-                players.add(new AsyncPlayerWrapper(new StupidPlayer("1")));
+                List<QwirklePlayer> players = new ArrayList<>();
+                players.add(new QwirklePlayer(new MaxAI("Sam")));
+                players.add(new QwirklePlayer(new MaxAI("Gilly")));
+                players.add(new QwirklePlayer(new StupidAI("1")));
                 QwirkleSettings settings = new QwirkleSettings(players);
-                GameController control = new GameController(settings, new NewThreadEachTime());
+                QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
                 control.getGame().start();
 
                 // make a window frame
