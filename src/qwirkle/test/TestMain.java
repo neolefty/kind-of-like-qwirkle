@@ -12,8 +12,8 @@ public class TestMain {
         TestBoard.main(args);
         TestRainbow.main(args);
         TestScripted.main(args);
-        TestPerformance.main(args);
         TestThreads.main(args);
+        TestPerformance.main(args);
 
         System.out.println();
         System.out.println("All tests pass.");

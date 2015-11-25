@@ -1,13 +1,16 @@
 package qwirkle.test;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.*;
+import qwirkle.game.control.GameController;
 import qwirkle.game.control.QwirkleThreads;
 import qwirkle.game.control.impl.NewThreadEachTime;
 import qwirkle.game.control.players.MaxAI;
 import qwirkle.game.control.players.RainbowAI;
 import qwirkle.game.control.players.StupidAI;
 import qwirkle.game.event.GameOver;
+import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.control.QwirkleUIController;
 
 import java.util.ArrayList;
@@ -21,21 +24,65 @@ public class TestThreads {
     public static void main(String[] args) throws InterruptedException {
         TestMain.checkAssert();
         Stopwatch w = new Stopwatch();
-        int nGames = 8;
-        testPreventClobber(nGames);
-        w.mark("prevent clobber");
-        testGamePace(nGames, 7, 0); // slow clock, fast players
-        w.mark("clock limited");
-        testGamePace(nGames, 1, 6); // fast clock, slow players
-        w.mark("player limited");
-        testGamePace(nGames, 5, 5); // slow both
-        w.mark("both slow");
-        System.out.println("Thread testing complete: " + w);
+        int nGames = 5;
+
+        try {
+            testGamePace(nGames, 1, 1, 3); // warmup
+            w.mark("warmup");
+            testGamePace(nGames, 1, 6, 0.3); // fast clock, slow players
+            w.mark("player limited");
+            testGamePace(nGames, 5, 5, 1000.); // slow both
+            w.mark("both slow");
+            testSlow(nGames * 500);
+            w.mark("test slow game");
+            testPreventClobber(nGames * 2);
+            w.mark("prevent clobber");
+            testGamePace(nGames, 7, 0, 0.2); // slow clock, fast players
+            w.mark("clock limited");
+            testGamePace(nGames, 5, 5, 0.3); // slow both
+            w.mark("both slow");
+        } finally {
+            System.out.println("Thread testing: " + w);
+        }
+        System.out.println("Thread testing complete.");
+    }
+
+    private static void testSlow(long duration) throws InterruptedException {
+        Collection<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
+        Collection<QwirkleShape> shapes = QwirkleShape.FOUR_SHAPES;
+        int decks = 1;
+
+        long delay = 0;
+        List<QwirklePlayer> players = new ArrayList<>();
+        players.add(new QwirklePlayer(new DelayAI(delay, new MaxAI())));
+        players.add(new QwirklePlayer(new DelayAI(delay, new RainbowAI(colors))));
+        players.add(new QwirklePlayer(new StupidAI()));
+
+        QwirkleSettings settings = new QwirkleSettings(decks, shapes, colors, players);
+        GameController game = new GameController(new EventBus(), settings, new NewThreadEachTime());
+        QwirkleThreads threads = new QwirkleThreads(game);
+        threads.setStepMillis(10);
+        threads.setGameOverMillis(10);
+        threads.setAutoRestart(true);
+        game.getEventBus().register(new Object() {
+            @Subscribe public void turn(TurnCompleted event) { System.out.print("."); }
+            @Subscribe public void game(GameOver event) {
+                System.out.println(event.getStatus().getFinishedMessage());
+            }
+        });
+        System.out.println("Running for " + duration + " ms");
+        threads.go();
+        Thread.sleep(duration);
+        threads.stop();
+        System.out.println();
     }
 
     /** Control how long the players take and how long the clock ticks are, independently.
-     *  Whichever is longer should control the pace of the game (with simple players that minimize computation). */
-    private static void testGamePace(final int nGames, final long clockDelay, final long playerDelay)
+     *  Whichever is longer should control the pace of the game (with simple players that
+     *  minimize computation).
+     *  @param leniency how much extra time to allow beyond minimum theoretical possible. 0.3 is good. */
+    private static void testGamePace
+            (final int nGames, final long clockDelay, final long playerDelay, final double leniency)
             throws InterruptedException
     {
         final long delay = Math.max(clockDelay, playerDelay);
@@ -45,55 +92,76 @@ public class TestThreads {
             players.add(new QwirklePlayer(new DelayAI(playerDelay)));
         QwirkleSettings settings = new QwirkleSettings(players);
         QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
+//        QwirkleUIController control = new QwirkleUIController(settings, new SingleThreadedStrict());
+//        QwirkleUIController control = new QwirkleUIController(settings, new SingleThreadedForgiving());
         control.getThreads().setStepMillis(clockDelay);
         control.getThreads().setGameOverMillis(clockDelay);
         final CountDownLatch waiting = new CountDownLatch(nGames);
         final long[] start = { System.currentTimeMillis() };
         final int[] count = { 0 };
-        System.out.println("Playing " + nGames + " with " + settings.getDeckSize()
-                + " pieces. Clock " + clockDelay + " ms; player " + playerDelay + " ms.");
+        long expect = (int) (settings.getDeckSize() * delay * (1+leniency)) * nGames;
+        System.out.println("Playing " + nGames + " games with " + settings.getDeckSize()
+                + " pieces. Clock " + clockDelay + " ms; player " + playerDelay + " ms. Allowing " + expect + " ms total.");
         control.register(new Object() {
             @Subscribe public void gameOver(GameOver event) {
                 int played = event.getStatus().getBoard().size();
                 long expectedTime = played * delay;
-                long slop = expectedTime / 5;
+                long slop = (long) (expectedTime * leniency);
                 long now = System.currentTimeMillis();
                 long elapsed = now - start[0];
+                if (played == 0)
+                    System.out.println("---> 0 played, " + elapsed + " ms elapsed <---");
                 count[0]++;
                 start[0] = now;
-                String msg = "  > Game " + count[0] + "/" + nGames + ": pieces played: " + played
+                String msg = "Game " + count[0] + "/" + nGames + ": pieces played: " + played
                         + "; elapsed: " + elapsed + " (expected " + expectedTime
-                        + "; allow " + (expectedTime + slop) + ")";
-                assert elapsed < (expectedTime + slop);
+                        + "; allow " + (expectedTime + slop) + ") <" + waiting.getCount() + ">";
+                assert elapsed <= (expectedTime + slop) : msg;
                 assert event.getStatus().isFinished() : "concurrency failure";
-                System.out.println(msg);
+                System.out.println("  > " + msg);
                 waiting.countDown();
             }
         });
         control.getThreads().go();
-        int expect = (int) (settings.getDeckSize() * delay * 1.5) * nGames;
         waiting.await(expect, TimeUnit.MILLISECONDS);
         control.getThreads().stop();
         assert count[0] == nGames  : count[0] + " games (expected " + nGames + ")";
     }
 
-    private static class DelayAI extends StupidAI {
-        private static int serial = 1;
+    private static class DelayAI implements QwirkleAI {
+        private QwirkleAI wrapped;
         private long msDelay;
-        public DelayAI(long msDelay) {
-            super("" + serial++);
+
+        public DelayAI(long msDelay, QwirkleAI wrapped) {
             this.msDelay = msDelay;
+            this.wrapped = wrapped;
+        }
+
+        public DelayAI(long msDelay) {
+            this(msDelay, new StupidAI());
         }
 
         @Override
-        public List<QwirklePlacement> play(QwirkleBoard board, List<QwirklePiece> hand) {
+        public String getName() {
+            return wrapped.getName() + " + " + msDelay + " ms";
+        }
+
+        @Override
+        public Collection<QwirklePlacement> play(QwirkleBoard board, List<QwirklePiece> hand) {
             long start = System.currentTimeMillis();
-            List<QwirklePlacement> result = super.play(board, hand);
+            Collection<QwirklePlacement> result = wrapped.play(board, hand);
             long remain = msDelay - (System.currentTimeMillis() - start);
             if (remain > 0)
                 try { Thread.sleep(remain); } catch (InterruptedException ignored) { }
             return result;
         }
+
+        @Override
+        public Collection<QwirklePiece> discard(QwirkleBoard board, List<QwirklePiece> hand) {
+            return wrapped.discard(board, hand);
+        }
+
+        @Override public String toString() { return getName(); }
     }
 
     /** Play 10 short games without errors occurring, in less than 30 seconds. */
@@ -120,7 +188,7 @@ public class TestThreads {
 //            }
             @Subscribe
             public void over(GameOver over) {
-                System.out.print(over.getStatus().getLeader() + " ");
+                System.out.print(over.getStatus().getAnnotated().getLeader() + " ");
 //                System.out.println(over.getStatus().getBoard());
                 waiting.countDown();
                 w.mark("game " + i[0]++);

@@ -58,7 +58,7 @@ public class TestScripted {
             public void gameStarted(GameStarted started) {
                 receivedGameStarted[0]++;
                 if (firstAnnotated[0] == null) // only grab it the first time
-                    firstAnnotated[0] = started.getStatus().getAnnotatedGame();
+                    firstAnnotated[0] = started.getStatus().getAnnotated();
             }
 
             @Subscribe
@@ -81,7 +81,7 @@ public class TestScripted {
         mgr.stepAI(); // p1 plays 4 for 4 points
         assert turnCount[0] == 1;
         if (printDebug) debugPrint(mgr);
-        AnnotatedGame ag = mgr.getStatus().getAnnotatedGame();
+        AnnotatedGame ag = mgr.getAnnotated();
         assert ag.getScore(p1) == 4;
         assert ag.getScore(p2) == 0;
 
@@ -155,7 +155,7 @@ public class TestScripted {
         assert nextStarted[0] == null;
         mgr.start();
         assert nextStarted[0] != null;
-        AnnotatedGame newAnnotated = nextStarted[0].getStatus().getAnnotatedGame();
+        AnnotatedGame newAnnotated = nextStarted[0].getStatus().getAnnotated();
         assert newAnnotated != firstAnnotated[0] : "old annotated game didn't detach when game ended";
         //noinspection AssertWithSideEffects
         assert newAnnotated.getTurns().size() == 0; // no real side effects
@@ -163,7 +163,7 @@ public class TestScripted {
 
     public static void debugPrint(ScriptedGameController mgr) {
         System.out.println();
-        System.out.println("Turn #" + (mgr.getStatus().getAnnotatedGame().getTurns().size() - 1) + ":");
+        System.out.println("Turn #" + (mgr.getAnnotated().getTurns().size() - 1) + ":");
         System.out.println(mgr);
     }
 
@@ -215,43 +215,43 @@ public class TestScripted {
         // turn 0 -- p1 plays 3 for 3
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getScore(p1) == 3;
+        assert mgr.getAnnotated().getScore(p1) == 3;
 
         // turn 1 -- p2 plays 2 for 6
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getScore(p2) == 6;
+        assert mgr.getAnnotated().getScore(p2) == 6;
 
         // turn 2 -- p1 plays 3 for 14
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getBestTurn().getScore() == 14;
-        assert mgr.getStatus().getAnnotatedGame().getScore(p1) == 17;
+        assert mgr.getAnnotated().getBestTurn().getScore() == 14;
+        assert mgr.getAnnotated().getScore(p1) == 17;
 
         // turn 3 -- p2 plays 3 for 8
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 8;
+        assert mgr.getAnnotated().getMostRecentTurn().getScore() == 8;
 
         // turn 4 -- p1 plays 2 for 3
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 3;
+        assert mgr.getAnnotated().getMostRecentTurn().getScore() == 3;
 
         // turn 5 -- p2 plays 3 for 8
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 11;
+        assert mgr.getAnnotated().getMostRecentTurn().getScore() == 11;
 
         // turn 6 -- p1 plays 3 for 20
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 20;
+        assert mgr.getAnnotated().getMostRecentTurn().getScore() == 20;
 
         // turn 7 -- p2 plays 3 for 10
         mgr.stepAI();
         if (debug) debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 10;
+        assert mgr.getAnnotated().getMostRecentTurn().getScore() == 10;
 
         mgr.stepAI();
         mgr.stepAI();
@@ -263,6 +263,6 @@ public class TestScripted {
         mgr.stepAI();
 //        if (debug)
             debugPrint(mgr);
-        assert mgr.getStatus().getAnnotatedGame().getMostRecentTurn().getScore() == 16;
+        assert mgr.getAnnotated().getMostRecentTurn().getScore() == 16;
     }
 }

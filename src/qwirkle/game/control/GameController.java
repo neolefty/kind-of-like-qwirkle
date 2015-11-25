@@ -1,11 +1,13 @@
 package qwirkle.game.control;
 
 import com.google.common.eventbus.EventBus;
-import qwirkle.game.event.*;
 import qwirkle.game.base.*;
 import qwirkle.game.base.impl.QwirkleBoardImpl;
+import qwirkle.game.event.*;
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 // TODO consider switching to an immutable GameModel
 /** Model a group of Qwirkle players playing a game.
@@ -27,7 +29,7 @@ import java.util.*;
  *  such as AnnotatedGame and second, normally, for GUI etc.</p>*/
 public class GameController {
     // long-lived things
-    private GameStatus status;
+    private AnnotatedGame annotated;
     private EventBus bus;
     private ThreadingStrategy threading;
 
@@ -53,7 +55,6 @@ public class GameController {
         this.bus = bus;
         this.settings = settings;
         this.threading = threading;
-        status = new GameStatus(bus, this);
         deck = new ArrayList<>();
     }
 
@@ -62,7 +63,8 @@ public class GameController {
         this(bus, new QwirkleSettings(), threading);
     }
 
-    public GameStatus getStatus() { return status; }
+    /** The event bus. */
+    public EventBus getEventBus() { return bus; }
 
     /** What are the settings currently being used? */
     public QwirkleSettings getSettings() { return settings; }
@@ -73,6 +75,11 @@ public class GameController {
     protected void setRandomDealing(boolean random) { this.randomDeal = random; }
 
     public String getFinishedMessage() { return finishedMessage; }
+
+    /** The annotated version of this game, kept live.
+     *  It will stop updating when the current game ends
+     *  (and you'll have to make a new call to getAnnotated()). */
+    public AnnotatedGame getAnnotated() { return annotated; }
 
     public QwirkleBoard getBoard() { return board; }
 
@@ -87,16 +94,24 @@ public class GameController {
      *  Or if everyone has passed and there are no cards left to draw,
      *  it's because no moves are possible, and, the game is over. */
     public boolean isStalled() {
-        return nPasses >= playerHands.size() * 3
-                || (nPasses == playerHands.size() && deck.isEmpty());
+        synchronized (playerHands) {
+            return nPasses >= playerHands.size() * 3
+                    || (nPasses == playerHands.size() && deck.isEmpty());
+        }
     }
 
     private void checkStalled() {
         if (!isFinished()) {
-            if (nPasses >= playerHands.size() * 3)
-                finished("All players passed 3 times in a row. Game is stalled.");
-            else if (deck.isEmpty() && nPasses == playerHands.size())
-                finished("No more tiles to draw, and all players have passed.");
+            String msg = null;
+
+            synchronized (playerHands) {
+                if (nPasses >= playerHands.size() * 3)
+                    msg = "All players passed 3 times in a row. Game is stalled.";
+                else if (deck.isEmpty() && nPasses == playerHands.size())
+                    msg = "No more tiles to draw, and all players have passed.";
+            }
+
+            if (msg != null) finished(msg);
         }
     }
 
@@ -110,7 +125,7 @@ public class GameController {
             throw new NullPointerException("Reason is null.");
         else
             finishedMessage = reason;
-        post(new GameOver(status));
+        post(new GameOver(new GameStatus(this)));
     }
 
     /** Has the current game finished? */
@@ -137,29 +152,30 @@ public class GameController {
         if (settings == null)
             throw new NullPointerException("GameSettings is null.");
 
-        // clear old game state
-        for (List<QwirklePiece> hand : playerHands.values())
-            hand.clear();
-        playerHands.clear();
+        // set up players' hands
+        synchronized (playerHands) {
+            for (List<QwirklePiece> hand : playerHands.values())
+                hand.clear();
+            playerHands.clear();
+            for (QwirklePlayer player : settings.getPlayers())
+                playerHands.put(player, new ArrayList<QwirklePiece>());
+        }
+
         nPasses = 0;
         finishedMessage = null;
-        this.deck.clear();
 
         // set up new game
+        this.deck.clear();
         setBoard(new QwirkleBoardImpl(settings));
+        annotated = new AnnotatedGame(bus);
         this.deck.addAll(settings.generate());
-        for (QwirklePlayer player : settings.getPlayers())
-            addPlayer(player);
 
         // game is ready to start -- make sure everybody knows
-        post(new GameStarted(status));
+        post(new GameStarted(new GameStatus(this)));
 
         // deal first cards -- propagated as a QwirkleTurn
         deal();
         chooseFirstPlayer();
-
-        // signal that the first turn is starting
-        post(new TurnStarting(status));
     }
 
     /** Has this game started? True if any pieces have been dealt to players or if anything is played on the board. */
@@ -167,55 +183,98 @@ public class GameController {
         if (board != null && board.size() > 0)
             return true;
         else
-            for (List<QwirklePiece> hand : playerHands.values())
-                if (!hand.isEmpty())
-                    return true;
+            synchronized (playerHands) {
+                for (List<QwirklePiece> hand : playerHands.values())
+                    if (!hand.isEmpty())
+                        return true;
+            }
         return false;
     }
 
     /** Choose who should go first, based on who has the best possible start
-     *  (most pieces that can be played all together). */
+     *  (most pieces that can be played all together).
+     *  Post an event announcing that their turn is starting. */
     private void chooseFirstPlayer() {
         int max = -1;
         QwirklePlayer best = getCurrentPlayer();
         // figure out who has the best initial play
-        for (QwirklePlayer p : playerHands.keySet()) {
-            int matches = QwirkleKit.countMatches(getHand(p));
-            if (matches > max) {
-                max = matches;
-                best = p;
+        synchronized (playerHands) {
+            for (QwirklePlayer p : playerHands.keySet()) {
+                int matches = QwirkleKit.countMatches(getHand(p));
+                if (matches > max) {
+                    max = matches;
+                    best = p;
+                }
             }
         }
         // advance until they're the first player
         while (getCurrentPlayer() != best)
             advance(false);
+        // okay, we found the right one. Announce their turn.
+        postTurnStarting();
     }
 
-    /** The current player takes a turn, draws to fill hand, then advance to the next player. */
+    private final Semaphore aiRunning = new Semaphore(1);
+
+    /** The current player takes a turn, draws to fill hand, then advance to the next player.
+     *  Note: the AI is run asynchronously using ThreadingStrategy,
+     *  since AIs can take a while to think, so don't call this again
+     *  until the turn finishes ({@link TurnCompleted} event). */
     public void stepAI() {
         final QwirklePlayer cur = getCurrentPlayer();
         if (cur.isHuman())
             throw new IllegalStateException("Must wait for human to take a turn.");
 
+//            try {
+//                Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
+//                if (placements == null || placements.size() == 0)
+//                    // an empty play means pass, which means give a chance to discard and re-draw
+//                    stepDiscard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
+//                else
+//                    play(cur, placements);
+//            } catch(IllegalStateException e) {
+//                e.printStackTrace();
+//                System.err.println(board);
+//                e.fillInStackTrace();
+//                throw e;
+//            }
+
         try {
-            Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
-            if (placements == null || placements.size() == 0)
-                // an empty play means pass, which means give a chance to discard and re-draw
-                stepDiscard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
-            else
-                play(cur, placements);
-        } catch(IllegalStateException e) {
-            e.printStackTrace();
-            System.err.println(board);
-            e.fillInStackTrace();
-            throw e;
+            // make sure it's not called again while the AI is thinking
+            aiRunning.tryAcquire(1, 0, TimeUnit.DAYS);
+            threading.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
+                        if (placements == null || placements.size() == 0)
+                            // an empty play means pass, which means give a chance to discard and re-draw
+                            stepDiscard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
+                        else
+                            play(cur, placements);
+                    } catch(IllegalStateException e) {
+                        e.printStackTrace();
+                        System.err.println(board);
+                        e.fillInStackTrace();
+                        throw e;
+                    } finally {
+                        aiRunning.release();
+                    }
+                }
+            });
+        }
+        catch(InterruptedException e) { // somebody got impatient calling stepAI
+            throw new IllegalStateException("stepAI called before turn completed.", e);
         }
     }
 
     /** A player takes a turn by playing some pieces, and the game advances. */
     public void play(QwirklePlayer cur, Collection<QwirklePlacement> play) {
         checkCurrent(cur, "play");
-        List<QwirklePiece> hand = playerHands.get(cur);
+        List<QwirklePiece> hand;
+        synchronized (playerHands) {
+            hand = playerHands.get(cur);
+        }
         TurnCompleted turn; // the turn object -- used for event signalling
         if (play == null || play.isEmpty())
             throw new IllegalStateException("Play is empty (" + play + ").");
@@ -226,7 +285,7 @@ public class GameController {
             hand.remove(placement.getPiece()); // remove played pieces from the player's hand
         setBoard(board.play(play)); // update the board
         // initialize the turn object, for event signalling
-        turn = TurnCompleted.play(status, play, cur, board.getLastScore());
+        turn = TurnCompleted.play(new GameStatus(this), play, cur, board.getLastScore());
 
         stepFinish(cur, turn);
     }
@@ -236,7 +295,10 @@ public class GameController {
         checkCurrent(cur, "discard");
         ++nPasses; // increment the pass counter
         if (discards != null && discards.size() > 0) { // do the discard
-            List<QwirklePiece> hand = playerHands.get(cur);
+            List<QwirklePiece> hand;
+            synchronized (playerHands) {
+                hand = playerHands.get(cur);
+            }
             if (!hand.containsAll(discards)) // validate discards
                 throw new IllegalArgumentException(cur.getName() + " cannot discard "
                         + QwirklePiece.abbrev(discards) + " from hand (" + QwirklePiece.abbrev(hand) + ").");
@@ -246,7 +308,7 @@ public class GameController {
         }
 
         // initialize the turn object, for event signalling
-        TurnCompleted turn = TurnCompleted.discard(status, cur, discards == null ? 0 : discards.size());
+        TurnCompleted turn = TurnCompleted.discard(new GameStatus(this), cur, discards == null ? 0 : discards.size());
 
         stepFinish(cur, turn);
     }
@@ -260,8 +322,10 @@ public class GameController {
         if (getHand(cur).isEmpty() && deck.isEmpty()) {
             itsOver = true;
             // bonus points for other players' remaining pieces
-            for (List<QwirklePiece> otherHand : playerHands.values())
-                bonus += otherHand.size();
+            synchronized (playerHands) {
+                for (List<QwirklePiece> otherHand : playerHands.values())
+                    bonus += otherHand.size();
+            }
             turn = turn.bonus(bonus);
         }
 
@@ -299,37 +363,39 @@ public class GameController {
                             + " because their hand only has " + getHand(cur));
     }
 
-    /** Add a player and return a changer that will monitor its hand.
-     *  Players are actually controlled via QwirkleSettings. */
-    private void addPlayer(QwirklePlayer player) {
-        playerHands.put(player, new ArrayList<QwirklePiece>());
-    }
-
     /** Deal tiles to the players, filling their hands up to <tt>handSize</tt>, if
      * there are enough tiles, starting with the current player (the first in the map). */
     public void deal() {
-        for (QwirklePlayer player : playerHands.keySet()) {
-            List<QwirklePiece> dealt = deal(player, getHand(player));
-            if (dealt.size() > 0) {
-                playerHands.get(player).addAll(dealt);
-                post(new DrawPieces(player, dealt));
+        // save event broadcasting for later to avoid concurrent mod exceptions
+        List<DrawPieces> events = new ArrayList<>();
+        synchronized (playerHands) {
+            for (QwirklePlayer player : playerHands.keySet()) {
+                List<QwirklePiece> dealt = pickToDeal(player, getHand(player));
+                if (dealt.size() > 0) {
+                    playerHands.get(player).addAll(dealt);
+                    events.add(new DrawPieces(player, dealt));
+                }
             }
         }
+        // do this outside the synchronized section
+        for (DrawPieces event : events)
+            post(event);
     }
 
-    /** Deal as many new tiles as needed to <tt>player</tt>.
+    /** Choose as many new tiles as needed to <tt>player</tt> and remove them from the deck.
+     *  Would be private except it's used in testing.
      *  @param hand the player's current hand.
      *  @return the cards to be dealt, empty if none. */
-    public List<QwirklePiece> deal(QwirklePlayer player, Collection<QwirklePiece> hand) {
-        List<QwirklePiece> dealt = new ArrayList<>();
+    protected List<QwirklePiece> pickToDeal(QwirklePlayer player, Collection<QwirklePiece> hand) {
+        List<QwirklePiece> result = new ArrayList<>();
         if (deck.size() > 0 && hand.size() < settings.getHandSize()) {
             int nToDeal = settings.getHandSize() - hand.size();
             for (int i = 0; i < nToDeal && deck.size() > 0; ++i) {
                 int x = randomDeal ? r.nextInt(deck.size()) : 0;
-                dealt.add(deck.remove(x));
+                result.add(deck.remove(x));
             }
         }
-        return Collections.unmodifiableList(dealt);
+        return result;
     }
 
     private void post(Object event) {
@@ -341,7 +407,10 @@ public class GameController {
     public List<QwirklePiece> getHand(QwirklePlayer player) {
         if (!getPlayers().contains(player))
             throw new IllegalArgumentException(player + " is not in this game.");
-        List<QwirklePiece> hand = playerHands.get(player);
+        List<QwirklePiece> hand;
+        synchronized (playerHands) {
+            hand = playerHands.get(player);
+        }
         return (hand == null) ? null : Collections.unmodifiableList(hand);
     }
 
@@ -353,7 +422,9 @@ public class GameController {
 
     /** Look in the map for the player currently first in the sequence. */
     private QwirklePlayer findCurrentPlayer() {
-        return playerHands.keySet().iterator().next();
+        synchronized (playerHands) {
+            return playerHands.keySet().iterator().next();
+        }
     }
 
     /** Move the current player to the end of the line. */
@@ -361,13 +432,20 @@ public class GameController {
         if (!isFinished()) {
             QwirklePlayer cur = getCurrentPlayer();
             // move current player to the back of the map
-            playerHands.put(cur, playerHands.remove(cur));
+            synchronized (playerHands) {
+                playerHands.put(cur, playerHands.remove(cur));
+            }
             // update the reference to the current player
             curPlayer = findCurrentPlayer();
             // notify everyone that we're ready for a new turn
             if (postEvent)
-                post(new TurnStarting(status));
+                postTurnStarting();
         }
+    }
+
+    /** Post that a turn is starting for the current player. */
+    private void postTurnStarting() {
+        post(new TurnStarting(new GameStatus(this)));
     }
 
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
@@ -391,23 +469,22 @@ public class GameController {
             result.append(finishedMessage + "\n");
         else
             result.append("  - Next player: " + getCurrentPlayer().getName() + "\n");
-        AnnotatedGame noted = status.getAnnotatedGame();
-        TurnCompleted best = noted.getBestTurn();
+        TurnCompleted best = annotated.getBestTurn();
         if (best != null) {
             result.append("  - Best play (" + best.getScore() + "): " + best.getPlacements() + "\n");
-            QwirklePlayer leader = noted.getLeader();
+            QwirklePlayer leader = annotated.getLeader();
             result.append((isFinished() ? "Winner" : "Current leader") + ": "
-                    + leader.getName() + " (" + noted.getScore(leader) + ")\n");
+                    + leader.getName() + " (" + annotated.getScore(leader) + ")\n");
         }
 
         // 3. Players - score & current pieces in hand
         for (QwirklePlayer player : getPlayers()) {
             List<QwirklePiece> hand = getHand(player);
-            result.append("  - " + player.getName() + ": " + noted.getScore(player) + " points");
+            result.append("  - " + player.getName() + ": " + annotated.getScore(player) + " points");
             result.append(" - holds " + ((hand == null || hand.size() == 0) ? "nothing" : QwirklePiece.abbrev(hand)));
             result.append("\n");
         }
-        result.append(" -- Total of all scores: " + noted.getTotalScore() + "\n");
+        result.append(" -- Total of all scores: " + annotated.getTotalScore() + "\n");
 
         // 4. Is the game stalled?
         if (isStalled()) {

@@ -1,10 +1,9 @@
 package qwirkle.game.control;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.event.GameOver;
-import qwirkle.game.event.TurnStarting;
 import qwirkle.game.event.ThreadStatus;
+import qwirkle.game.event.TurnStarting;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -26,7 +25,6 @@ public class QwirkleThreads {
     // how often to check for an interrupt request
     private static final long TICK_MILLIS = 15;
 
-    private EventBus bus;
     private GameController game;
     private long stepMillis = DEFAULT_STEP_MILLIS;
     private long gameOverMillis = DEFAULT_GAME_OVER_MILLIS;
@@ -49,14 +47,11 @@ public class QwirkleThreads {
         waitForTurn.reset();
     }
 
-    public QwirkleThreads(final EventBus bus, final GameController game) {
-        if (bus == null)
-            throw new NullPointerException("event bus is null");
-        this.bus = bus;
+    public QwirkleThreads(final GameController game) {
         if (game == null)
             throw new NullPointerException("game controller is null");
         this.game = game;
-        bus.register(new Object() {
+        game.getEventBus().register(new Object() {
             // these two things are what punctuate our steps and trigger us to act (once enough time has elapsed)
             // when a turn is starting, we can play
             @Subscribe public void turnStarting(TurnStarting event) { eventArrived(event); }
@@ -90,7 +85,7 @@ public class QwirkleThreads {
         if (filament == null) {
             filament = new Filament();
             filament.start();
-            bus.post(new ThreadStatus(true));
+            game.getEventBus().post(new ThreadStatus(true));
         }
     }
 
@@ -158,7 +153,7 @@ public class QwirkleThreads {
                     doTheNextThing();
 //                    debugln("Game over? " + control.getGame().isFinished());
                     // wait until it's time for the next turn
-                    sleepFrom(start);
+                    waitForTurnFrom(start);
                 }
             } catch (InterruptedException ignored) {
             } catch (Exception e) {
@@ -169,7 +164,7 @@ public class QwirkleThreads {
                     filament = null;
                 }
                 // events are sloppy -- could get out of order since we're not synced
-                bus.post(new ThreadStatus(false));
+                game.getEventBus().post(new ThreadStatus(false));
             }
         }
 
@@ -191,7 +186,12 @@ public class QwirkleThreads {
                 game.stepAI();
         }
 
-        private void sleepFrom(long start) throws InterruptedException {
+        /** Wait until the next turn, starting at <tt>start</tt> returning no sooner
+         *  than the step time. Waits for the current turn to complete, as well, so
+         *  it may take longer than the step time.
+         *  @param start when the current step began
+         *  @throws InterruptedException if our thread gets interrupted */
+        private void waitForTurnFrom(long start) throws InterruptedException {
             debug("<<< waiting until current player finishes");
             try {
                 // wait for the current player to finish
@@ -248,7 +248,7 @@ public class QwirkleThreads {
         }
     }
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = false; // true;
     private transient long beginning = System.currentTimeMillis();
     private String ts() { return "-=[" + (System.currentTimeMillis() - beginning) + "]=-"; }
     private void debug(String s) { if (DEBUG) System.out.print(ts() + " " + s + " "); }

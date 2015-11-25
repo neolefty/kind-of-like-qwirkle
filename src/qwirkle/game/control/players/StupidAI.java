@@ -11,7 +11,9 @@ import java.util.List;
 
 public class StupidAI implements QwirkleAI {
     private String name;
+    private static final int[] serial = { 1 };
 
+    public StupidAI() { this("" + serial[0]++); }
     public StupidAI(String name) { this.name = name; }
 
     @Override

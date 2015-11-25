@@ -36,7 +36,7 @@ public class PlayTester {
         settings = new QwirkleSettings(nDecks, settings.getShapes(),
                 settings.getColors(), settings.getPlayers());
         play(settings);
-        return game.getStatus().getLeader();
+        return game.getAnnotated().getLeader();
     }
 
     private void play(QwirkleSettings settings) {

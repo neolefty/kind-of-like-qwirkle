@@ -28,7 +28,7 @@ public class UserActivityTimeout {
 
     /** Wait for the user to be quiescent by watching keyboard & mouse activity.
      *  @param watched the component to monitor
-     *  @param bus where to fire events
+     *  @param bus where to receive & fire events
      *  @param timeoutMillis how long before firing an event
      *  @param resolutionMillis how often to check */
     public UserActivityTimeout(Component watched, EventBus bus,

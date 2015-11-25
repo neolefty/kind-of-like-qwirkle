@@ -2,6 +2,7 @@ package qwirkle.ui.swing.game.player;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.control.AnnotatedGame;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
@@ -59,8 +60,9 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         control.register(new Object() {
             @Subscribe
             public void turnCompleted(TurnCompleted event) {
-                scoreLabel.setText("" + event.getStatus().getScore(player));
-                setBestMove(event.getStatus().getAnnotatedGame().getBestTurn(player));
+                AnnotatedGame annotated = event.getStatus().getAnnotated();
+                scoreLabel.setText("" + annotated.getScore(player));
+                setBestMove(annotated.getBestTurn(player));
             }
 
             @Subscribe

@@ -27,8 +27,8 @@ public class ScreenSaverPane extends JPanel {
         layout.addLayoutComponent(main, KEY_MAIN);
         layout.addLayoutComponent(screensaver, KEY_SS);
 
-        EventBus bus = new EventBus();
-        timeout = new UserActivityTimeout(main, bus, sleepMillis, 150);
+        EventBus localBus = new EventBus(); // a bus just for screen saver events
+        timeout = new UserActivityTimeout(main, localBus, sleepMillis, 150);
         timeout.addWatched(screensaver);
         timeout.setDebugging(false);
 
@@ -36,7 +36,7 @@ public class ScreenSaverPane extends JPanel {
         watchControls(main);
         watchControls(screensaver);
 
-        bus.register(new Object() {
+        localBus.register(new Object() {
             @Subscribe public void timeout(UserActivityTimeout.TimeoutEvent event) {
                 layout.show(ScreenSaverPane.this, KEY_SS);
             }
@@ -51,6 +51,12 @@ public class ScreenSaverPane extends JPanel {
                     showMain();
             }
         });
+    }
+
+    /** Call this whenever there is activity that should reset the sleep timer
+     *  or break out of the screensaver. */
+    public void activityDetected() {
+        timeout.activityDetected();
     }
 
     public void showMain() {

@@ -16,19 +16,19 @@ public class ScriptedGameController extends GameController {
     }
 
     @Override
-    public List<QwirklePiece> deal(QwirklePlayer player, Collection<QwirklePiece> hand) {
+    public List<QwirklePiece> pickToDeal(QwirklePlayer player, Collection<QwirklePiece> hand) {
         ScriptedAI puppet = null;
         if (player.getAi() != null && player.getAi() instanceof ScriptedAI)
             puppet = (ScriptedAI) player.getAi();
 
         if (puppet == null)
-            return super.deal(player, hand);
+            return super.pickToDeal(player, hand);
         else {
             List<QwirklePiece> needed = lookAhead(puppet, hand);
             List<QwirklePiece> handWithNeeds = new ArrayList<>(hand);
             handWithNeeds.addAll(needed);
             // do we still need more pieces?
-            List<QwirklePiece> more = super.deal(player, handWithNeeds);
+            List<QwirklePiece> more = super.pickToDeal(player, handWithNeeds);
             // put the two deals together
             List<QwirklePiece> result = new ArrayList<>(needed);
             result.addAll(more);

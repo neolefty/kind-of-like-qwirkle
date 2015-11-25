@@ -23,7 +23,7 @@ public class QwirkleUIController {
                 game.play(game.getCurrentPlayer(), turn.getPlacements());
             }
         });
-        threads = new QwirkleThreads(getEventBus(), game);
+        threads = new QwirkleThreads(game);
     }
 
     public QwirkleUIController(GameController game, InteractionController interact) {

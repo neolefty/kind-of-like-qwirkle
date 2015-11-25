@@ -1,12 +1,17 @@
 package qwirkle.ui.swing.main;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirkleColor;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.base.QwirkleSettings;
 import qwirkle.game.base.QwirkleShape;
 import qwirkle.game.control.impl.NewThreadEachTime;
 import qwirkle.game.control.players.RainbowAI;
+import qwirkle.game.event.*;
 import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.ui.event.HighlightTurn;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.QwirkleDragPane;
 import qwirkle.ui.swing.game.QwirkleGamePanel;
@@ -23,7 +28,6 @@ public class SwingMain {
     // TODO add taunts
     // TODO add designing your own shape / color
     // TODO choose shapes & colors to use
-    // TODO start new game automatically if playing continuously
     // TODO disable screensaver if playing continuously
     // TODO add slide-out sidebar with game meta-controls & history
 
@@ -45,7 +49,7 @@ public class SwingMain {
 //                List<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
 //                List<QwirkleShape> shapes = QwirkleShape.FIVE_SHAPES;
                 List<QwirkleShape> shapes = QwirkleShape.FOUR_SHAPES;
-                int decks = 6;
+                int decks = 1;
 
                 // players
                 List<QwirklePlayer> players = new ArrayList<>();
@@ -96,6 +100,7 @@ public class SwingMain {
                 ScreenSaverPane.Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
                 ScreenSaverPane ssp = new ScreenSaverPane
                         (gamePanel, screensaver, fader, UIConstants.SCREENSAVER_TIMEOUT);
+                wakeOnGameEvents(ssp, control.getEventBus());
 //                ssp.setFadeMillis(5000);
                 frame.setContentPane(ssp);
 
@@ -106,6 +111,18 @@ public class SwingMain {
                 control.getGame().start();
                 frame.setVisible(true);
             }
+        });
+    }
+
+    private static void wakeOnGameEvents(final ScreenSaverPane ssp, EventBus bus) {
+        bus.register(new Object() {
+            @Subscribe public void turnPlayed(TurnCompleted event) { ssp.activityDetected(); }
+            @Subscribe public void turnStart(TurnStarting event) { ssp.activityDetected(); }
+            @Subscribe public void gameOver(GameOver event) { ssp.activityDetected(); }
+            @Subscribe public void gameStart(GameStarted event) { ssp.activityDetected(); }
+            @Subscribe public void draw(DrawPieces event) { ssp.activityDetected(); }
+            @Subscribe public void drag(DragPiece event) { ssp.activityDetected(); }
+            @Subscribe public void highlight(HighlightTurn event) { ssp.activityDetected(); }
         });
     }
 }

@@ -1,60 +1,46 @@
 package qwirkle.game.control;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import qwirkle.game.base.QwirklePlayer;
-import qwirkle.game.event.GameStarted;
-import qwirkle.game.event.PreEvent;
 import qwirkle.game.base.QwirkleBoard;
-import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.base.QwirkleSettings;
 
-import java.util.List;
-
-/** The read-only, but live & changing, current state of a game.
- *  Gives a view of the game without giving access to GameManager. */
+// TODO make AnnotatedGame immutable but ugh that's a big change
+/** A read-only snapshot of a game state.
+ *  Gives a view of the game without giving access to GameController. */
 public class GameStatus {
-    private GameController game;
     private AnnotatedGame annotatedGame;
 
+    private String finishedMessage;
+    private QwirkleSettings settings;
+    private QwirkleBoard board;
+    private QwirklePlayer curPlayer;
+
     /** Use Prestarter for a public constructor. */
-    public GameStatus(final EventBus bus, final GameController game) {
-        this.game = game;
-        bus.register(new Object() {
-            // start a new AnnotatedGame each time a game begins
-            @Subscribe
-            public void gameStarted(PreEvent pre) {
-                if (pre.getEvent() instanceof GameStarted)
-                    // note: AnnotatedGame will handle announcing itself
-                    annotatedGame = new AnnotatedGame(bus);
-            }
-        });
+    public GameStatus(final GameController game) {
+        this.annotatedGame = game.getAnnotated();
+        finishedMessage = game.getFinishedMessage();
+        settings = game.getSettings();
+        board = game.getBoard();
+        curPlayer = game.getCurrentPlayer();
     }
 
     /** What does the playing surface look like? */
-    public QwirkleBoard getBoard() { return game.getBoard(); }
+    public QwirkleBoard getBoard() { return board; }
 
     /** What was the reason the game ended? Null if the game hasn't ended yet. */
-    public String getFinishedMessage() { return game.getFinishedMessage(); }
+    public String getFinishedMessage() { return finishedMessage; }
 
     /** Who is the current player? */
-    public QwirklePlayer getCurPlayer() { return game.getCurrentPlayer(); }
-
-    /** What pieces remain to be drawn? */
-    public List<QwirklePiece> getDeck() { return game.getDeck(); }
-
-    /** What is a player's score? */
-    public int getScore(QwirklePlayer player) { return annotatedGame.getScore(player); }
+    public QwirklePlayer getCurPlayer() { return curPlayer; }
 
     /** What are the current settings for this game? */
-    public QwirkleSettings getSettings() { return game.getSettings(); }
+    public QwirkleSettings getSettings() { return settings; }
 
     /** Is the game finished? */
-    public boolean isFinished() { return game.isFinished(); }
+    public boolean isFinished() { return finishedMessage != null; }
 
-    /** The current game, annotated with scores etc. Created anew every time a game starts. */
-    public AnnotatedGame getAnnotatedGame() { return annotatedGame; }
-
-    /** The current leader. */
-    public QwirklePlayer getLeader() { return annotatedGame.getLeader(); }
+    /** The current game, annotated with scores etc.
+     *  Unlike the rest of this status object, it is live until the current game ends,
+     *  when it stops updating. Created anew every time a game starts. */
+    public AnnotatedGame getAnnotated() { return annotatedGame; }
 }

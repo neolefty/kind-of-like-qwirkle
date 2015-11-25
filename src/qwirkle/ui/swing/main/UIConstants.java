@@ -7,4 +7,5 @@ public class UIConstants {
 
     public static final long SCREENSAVER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 //    public static final long SCREENSAVER_TIMEOUT = 3 * 1000; // 3 seconds
+//    public static final long SCREENSAVER_TIMEOUT = 1000; // 1 second
 }

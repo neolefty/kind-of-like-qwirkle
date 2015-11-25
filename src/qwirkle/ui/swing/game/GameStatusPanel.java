@@ -49,9 +49,9 @@ public class GameStatusPanel extends Box {
             @Subscribe
             public void turn(TurnStarting starting) {
                 GameStatus status = starting.getStatus();
-                if (status.getAnnotatedGame() != null
-                        && status.getAnnotatedGame().getBestTurn() != null) {
-                    bestTurn = status.getAnnotatedGame().getBestTurn();
+                if (status.getAnnotated() != null
+                        && status.getAnnotated().getBestTurn() != null) {
+                    bestTurn = status.getAnnotated().getBestTurn();
                     // note spaces at left & right -- cosmetic
                     bestTurnLabel.setText(" Best: " + bestTurn.getSummary(true) + " ");
                     bestTurnLabel.setToolTipText("Best turn so far in this game: " + bestTurn.getSummary(false));
