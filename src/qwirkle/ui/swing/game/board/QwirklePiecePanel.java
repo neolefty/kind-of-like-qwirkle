@@ -183,7 +183,6 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
                     event = post(event.sustain());
             }
 
-            // TODO change the location to be the destination -- do we need both source & dest?
             @Override
             public void endDrag(MouseEvent e) {
                 event = post(event.drop());

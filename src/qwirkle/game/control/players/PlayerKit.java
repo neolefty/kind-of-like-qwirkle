@@ -5,7 +5,7 @@ import com.google.common.collect.TreeMultimap;
 import qwirkle.game.base.QwirkleBoard;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
-import qwirkle.test.Stopwatch;
+import qwirkle.util.Stopwatch;
 
 import java.util.*;
 
@@ -48,7 +48,6 @@ public class PlayerKit {
     };
 
     // TODO add limits such as time and result count
-    // TODO write multithreaded version?
     /** Find all possible plays on this board for this hand.
      * @param includeShorties if true, include plays that are suboptimal because they're short
      *                         (that is, their supersets are also present)
@@ -69,6 +68,7 @@ public class PlayerKit {
 //        System.out.println(getName() + " found " + plays.size() + " moves in " + (end - start) + " ms.");
     }
 
+    // TODO thread collection of all possible plays
     /** Recursively build up a set of all possible moves (depth-first tree search).
      *   Note: Be sure to balance modifications of collections that come from above,
      *   except for adding to <tt>plays</tt>. Note the use of HashSets -- they need to

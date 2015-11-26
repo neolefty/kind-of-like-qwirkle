@@ -132,7 +132,6 @@ public class QwirkleThreads {
         }
     }
 
-    // TODO make this actually work -- currently it uses stepMillis for everything
     /** How long to pause when a game ends before starting a new one (if autoplay is on). */
     public long getGameOverMillis() { return gameOverMillis; }
     public void setGameOverMillis(long gameOverMillis) {

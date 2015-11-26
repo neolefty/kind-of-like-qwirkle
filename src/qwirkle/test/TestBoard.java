@@ -8,7 +8,9 @@ import qwirkle.game.control.impl.SingleThreadedStrict;
 import qwirkle.game.control.players.MaxAI;
 import qwirkle.game.control.players.StupidAI;
 import qwirkle.game.event.TurnStarting;
+import qwirkle.test.support.QwirkleTestBoard;
 import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.util.Stopwatch;
 
 import java.util.*;
 
@@ -18,24 +20,34 @@ public class TestBoard {
     private static final Random r = new Random();
 
     public static void main(String[] args) {
+        System.out.print("Testing board: ");
         TestMain.checkAssert();
+        Stopwatch w = new Stopwatch(true);
 
         TestBoard.testLogic();
+        w.mark("logic");
+
         TestBoard.testInit();
+        w.mark("init");
+
         TestBoard.testLegal();
+        w.mark("legality");
 
         int i = 0;
         while (i < 100) // succeed 100 times
-            if (TestBoard.testIndividual(1, false))
+            if (TestBoard.testIndividual(1, 0))
                 ++i;
+        w.mark("individual");
 
         TestBoard.testGroup();
+        w.mark("group");
+
+        System.out.println(" -- Completed board test: " + w.getTotal());
     }
 
     /** Test some miscellaneous logical things. */
     private static void testLogic() {
         testCountMatches();
-        System.out.println("Logic passes");
     }
 
     /** Test counting the number of matching pieces a player has. Used to determine who goes first. */
@@ -141,34 +153,34 @@ public class TestBoard {
         assert !board.isLegal(first);
         first.remove(3);
         board = board.play(first);
-        System.out.println(board);
+//        System.out.println(board);
 
         // a column crossing the middle
         List<QwirklePlacement> second = new ArrayList<>();
         second.add(new QwirklePlacement("o8", 0, 1));
         second.add(new QwirklePlacement("of", 0, -1));
         board = board.play(second);
-        System.out.println(board);
+//        System.out.println(board);
 
         // a piece at the right end of the first play
         List<QwirklePlacement> third = new ArrayList<>();
         third.add(new QwirklePlacement("od", 2, 0));
         board = board.play(third);
-        System.out.println(board);
+//        System.out.println(board);
 
         // now the second color
         List<QwirklePlacement> fourth = new ArrayList<>();
         fourth.add(new QwirklePlacement("rd", 2, 2));
         fourth.add(new QwirklePlacement("pd", 2, 1));
         board = board.play(fourth);
-        System.out.println(board);
+//        System.out.println(board);
 
         QwirkleBoard afterFourth = board;
         QwirklePlacement qp = new QwirklePlacement("od", 0, 2);
         List<QwirklePlacement> qpl = new ArrayList<>();
         qpl.add(qp);
         board = board.play(qp);
-        System.out.println(board);
+//        System.out.println(board);
         TestMain.checkContentsMatch(qpl, board.getLastPlay());
         assert afterFourth == board.getUndo();
 
@@ -195,7 +207,7 @@ public class TestBoard {
         assert !board.isLegal(sixth);
         sixth.remove(4);
         board = board.play(sixth);
-        System.out.println(board);
+//        System.out.println(board);
 
         // illegal: gap
 
@@ -224,9 +236,9 @@ public class TestBoard {
                 .play("oc", 0, 0).play("rc", 0, 1).play("pc", 0, 2)
                 .play("ps", 1, 2)
                 .play("pd", 2, 2).play("rd", 2, 1).play("gd", 2, 0);
-        System.out.println(board);
+//        System.out.println(board);
         assert !board.isLegal(new QwirklePlacement("od", 1, 0));
-        System.out.println();
+//        System.out.println();
 
         // dunno what was wrong here, but it's fixed now
         board = new QwirkleTestBoard()
@@ -243,10 +255,10 @@ public class TestBoard {
         } catch(NullPointerException ignored) {}
         play = Arrays.asList(new QwirklePlacement("rs", 4, 3), new QwirklePlacement("ps", 4, 5),
                 new QwirklePlacement("ys", 4, 4), new QwirklePlacement("os", 4, 6));
-        System.out.println(board);
+//        System.out.println(board);
         assert board.isLegal(play);
-        System.out.println(board.play(play));
-        System.out.println();
+//        System.out.println(board.play(play));
+//        System.out.println();
 
         // a divided play that should be legal
         board = new QwirkleTestBoard()
@@ -254,23 +266,25 @@ public class TestBoard {
                 .play("gd", 4, -6).play("od", 3, -6).play("rd", 5, -6);
         play = Arrays.asList(new QwirklePlacement("yf", 2, -8),
                 new QwirklePlacement("of", 3, -8), new QwirklePlacement("pf", 5, -8));
-        System.out.println(board);
+//        System.out.println(board);
         assert board.isLegal(play);
 
         // a joining play that should be legal
         QwirkleBoard nextBoard = board.play(play.get(0)).play(play.get(2));
         assert nextBoard.isLegal(play.get(1));
 
-        System.out.println(board.play(play));
+//        System.out.println(board.play(play));
     }
 
     /** Test playing individual tiles.
      *  @return true if successfully plays all pieces,
      *      false if unable to play the last 1 or more pieces. */
-    private static boolean testIndividual(int n, boolean print) {
+    private static boolean testIndividual(int n, int printLevel) {
         QwirkleBoard board = new QwirkleTestBoard();
         List<QwirklePiece> pieces = new QwirkleSettings(n).generate();
         int initialSize = pieces.size();
+        boolean verbose = printLevel >= 2;
+        boolean discrete = printLevel >= 1;
 
         int noLegal = 0; // total times we couldn't find a legal move in a game
         int noLegalInaRow = 0;
@@ -281,9 +295,11 @@ public class TestBoard {
                 pieces.add(piece);
                 ++noLegalInaRow;
                 if (noLegalInaRow > pieces.size()) { // couldn't find a legal spot for any piece
-                    System.out.println("Failed to finish game -- no legal moves remain.");
-                    System.out.println(board);
-                    System.out.println("Remaining pieces: " + pieces);
+                    if (discrete) {
+                        System.out.println("Failed to finish game -- no legal moves remain.");
+                        System.out.println(board);
+                        System.out.println("Remaining pieces: " + pieces);
+                    }
                     return false; // failed to finish game
                 }
             }
@@ -293,7 +309,7 @@ public class TestBoard {
                 board = board.play(movesList.get(r.nextInt(movesList.size())));
                 assert pieces.size() + board.size() == initialSize;
 
-                if (print) {
+                if (verbose) {
                     System.out.print(board);
                     System.out.println("Remaining (" + pieces.size() + "): " + QwirklePiece.abbrev(pieces));
                 }
@@ -301,14 +317,15 @@ public class TestBoard {
                 for (QwirkleLine line : board.getLines())
                     if (line.size() > longest.size())
                         longest = line;
-                if (print) {
+                if (verbose) {
                     System.out.println("Longest line (" + longest.size() + "): " + longest);
                     System.out.println();
                 }
             }
             noLegal += noLegalInaRow;
         }
-        System.out.println("Couldn't play chosen piece " + noLegal + " times");
+        if (discrete)
+            System.out.println("Couldn't play chosen piece " + noLegal + " times");
         return true;
     }
 }

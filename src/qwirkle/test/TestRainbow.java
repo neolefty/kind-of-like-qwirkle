@@ -4,6 +4,7 @@ import qwirkle.game.base.*;
 import qwirkle.game.base.impl.QwirkleBoardImpl;
 import qwirkle.game.control.players.Rainbow;
 import qwirkle.game.control.players.RainbowAI;
+import qwirkle.util.Stopwatch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,14 +14,24 @@ import java.util.List;
 /** Test {@link RainbowAI} */
 public class TestRainbow {
     public static void main(String[] args) {
+        System.out.print("Testing rainbow player: ");
         TestMain.checkAssert();
-        testRainbow();
+        Stopwatch w = new Stopwatch(true);
+
+        testRainbow(false);
+        w.mark("rainbow");
+
         testDegenerateColors();
+        w.mark("degenerate colors");
+
         testMinibow();
+        w.mark("minibow");
+
+        System.out.println(" -- Completed rainbow test: " + w.getTotal());
     }
 
     // TODO test with smaller numbers of colors, including 1-3
-    private static void testRainbow() {
+    private static void testRainbow(boolean print) {
         QwirkleSettings settings = new QwirkleSettings();
         Rainbow r = new Rainbow(settings.getColors());
         r.setDislikeRainbow(0);
@@ -41,7 +52,8 @@ public class TestRainbow {
         board = board.play(Collections.singletonList(new QwirklePlacement("bs", 2, 5)));
         assert r.computeRainbowDeviation(board) == 26 : r.computeRainbowDeviation(board);
         r.setDislikeRainbow(1);
-        System.out.println(board);
+        if (print)
+            System.out.println(board);
         assert r.computeRainbowDeviation(board) == 34 : r.computeRainbowDeviation(board);
     }
 
@@ -79,6 +91,7 @@ public class TestRainbow {
         miniBow = new ArrayList<>(miniBow);
         List<QwirklePiece> miniBack = new ArrayList<>(miniBow);
         Collections.reverse(miniBack);
+        // TODO fix this -- it fails sometimes
         assert played.equals(miniBack) || played.equals(miniBow) : "Not in rainbow order: " + played;
     }
 

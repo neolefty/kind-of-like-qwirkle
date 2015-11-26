@@ -7,7 +7,6 @@ import qwirkle.game.base.QwirkleAI;
 import java.util.*;
 
 /** Looks for the play with the best score. */
-// TODO prefer to play duplicates
 public class MaxAI implements QwirkleAI {
     private final static String[] PREFIXES_1 = { "M", "H", "P", "St", "B", "Gr", "Sn", "C", "D", "Fl", "R", "McM" };
     private final static String[] PREFIXES_2 = { "m", "h", "p", "st", "b", "gr", "sn", "c", "d", "fl", "r" };
@@ -19,8 +18,6 @@ public class MaxAI implements QwirkleAI {
         this.name = name;
     }
 
-    // TODO thread the search for the best play
-
     public MaxAI() {
         String suffix = SUFFIXES[r.nextInt(SUFFIXES.length)];
         name = PREFIXES_1[r.nextInt(PREFIXES_1.length)] + suffix + "le"
@@ -31,6 +28,7 @@ public class MaxAI implements QwirkleAI {
     public Collection<QwirklePlacement> play(QwirkleBoard board, List<QwirklePiece> hand) {
         Multimap<Integer, Set<QwirklePlacement>> moves = PlayerKit.rankAllMoves(board, hand, true, false);
         int bestScore = moves.keySet().iterator().next();
+        // TODO tie-break, e.g. prefer to play duplicates, play more pieces, leave with good other options
         return moves.get(bestScore).iterator().next(); // randomly choose one of the best
     }
 

@@ -4,7 +4,6 @@ import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirklePlayer;
 
-// TODO when all the plays have been chosen for a turn, bundle them up into a single event
 /** Someone plays a piece interactively. */
 public class PlayPiece {
     private QwirklePlacement placement;
@@ -52,7 +51,6 @@ public class PlayPiece {
     /** Convenience. */
     public QwirklePiece getPiece() { return placement.getPiece(); }
 
-    // TODO do we need to add a QwirkleGrid to this -- the grid it was played on?
     /** A player proposes playing a piece, probably by dragging it to the board. */
     public static PlayPiece propose(QwirklePlayer player, QwirklePlacement placement) {
         return new PlayPiece(placement, player);

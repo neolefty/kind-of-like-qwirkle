@@ -1,4 +1,4 @@
-package qwirkle.test;
+package qwirkle.attic;
 
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;

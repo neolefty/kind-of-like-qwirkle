@@ -12,6 +12,7 @@ import qwirkle.game.control.players.StupidAI;
 import qwirkle.game.event.GameOver;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.util.Stopwatch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,32 +23,34 @@ import java.util.concurrent.TimeUnit;
 /** Test QwirkleThreads, which can run a game with machine players on a clock. */
 public class TestThreads {
     public static void main(String[] args) throws InterruptedException {
+        System.out.print("Testing threads: ");
         TestMain.checkAssert();
-        Stopwatch w = new Stopwatch();
+        Stopwatch w = new Stopwatch(true);
         int nGames = 5;
 
         try {
-            testGamePace(nGames, 1, 1, 3); // warmup
+            int printLevel = 0;
+
+            testGamePace(nGames, 1, 1, 3, printLevel); // warmup
             w.mark("warmup");
-            testGamePace(nGames, 1, 6, 0.3); // fast clock, slow players
-            w.mark("player limited");
-            testGamePace(nGames, 5, 5, 1000.); // slow both
-            w.mark("both slow");
-            testSlow(nGames * 500);
-            w.mark("test slow game");
-            testPreventClobber(nGames * 2);
+            testPreventClobber(nGames * 2, printLevel);
             w.mark("prevent clobber");
-            testGamePace(nGames, 7, 0, 0.2); // slow clock, fast players
-            w.mark("clock limited");
-            testGamePace(nGames, 5, 5, 0.3); // slow both
+            testFixedTime(nGames * 300, printLevel);
+            w.mark("fixed time");
+            testGamePace(nGames, 1, 6, 0.3, printLevel); // fast clock, slow players
+            w.mark("player slow");
+            testGamePace(nGames, 7, 0, 0.2, printLevel); // slow clock, fast players
+            w.mark("clock slow");
+            testGamePace(nGames, 5, 5, 0.3, printLevel); // slow both
             w.mark("both slow");
+            System.out.print(" -- Completed");
         } finally {
-            System.out.println("Thread testing: " + w);
+            System.out.println(" thread test: " + w.getTotal());
         }
-        System.out.println("Thread testing complete.");
     }
 
-    private static void testSlow(long duration) throws InterruptedException {
+    private static void testFixedTime(long duration, int printLevel) throws InterruptedException {
+        final boolean verbose = printLevel >= 2, discrete = printLevel >= 1;
         Collection<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
         Collection<QwirkleShape> shapes = QwirkleShape.FOUR_SHAPES;
         int decks = 1;
@@ -65,16 +68,18 @@ public class TestThreads {
         threads.setGameOverMillis(10);
         threads.setAutoRestart(true);
         game.getEventBus().register(new Object() {
-            @Subscribe public void turn(TurnCompleted event) { System.out.print("."); }
+            @Subscribe public void turn(TurnCompleted event) { if (verbose) System.out.print("."); }
             @Subscribe public void game(GameOver event) {
-                System.out.println(event.getStatus().getFinishedMessage());
+                if (verbose) System.out.println(event.getStatus().getFinishedMessage());
             }
         });
-        System.out.println("Running for " + duration + " ms");
+        if (discrete)
+            System.out.println("Running for " + duration + " ms");
         threads.go();
         Thread.sleep(duration);
         threads.stop();
-        System.out.println();
+        if (verbose)
+            System.out.println();
     }
 
     /** Control how long the players take and how long the clock ticks are, independently.
@@ -82,9 +87,10 @@ public class TestThreads {
      *  minimize computation).
      *  @param leniency how much extra time to allow beyond minimum theoretical possible. 0.3 is good. */
     private static void testGamePace
-            (final int nGames, final long clockDelay, final long playerDelay, final double leniency)
+            (final int nGames, final long clockDelay, final long playerDelay, final double leniency, int printLevel)
             throws InterruptedException
     {
+        final boolean verbose = printLevel >= 2, discrete = printLevel >= 1;
         final long delay = Math.max(clockDelay, playerDelay);
         // a default game with 3 stupid players
         final List<QwirklePlayer> players = new ArrayList<>();
@@ -100,8 +106,9 @@ public class TestThreads {
         final long[] start = { System.currentTimeMillis() };
         final int[] count = { 0 };
         long expect = (int) (settings.getDeckSize() * delay * (1+leniency)) * nGames;
-        System.out.println("Playing " + nGames + " games with " + settings.getDeckSize()
-                + " pieces. Clock " + clockDelay + " ms; player " + playerDelay + " ms. Allowing " + expect + " ms total.");
+        if (discrete)
+            System.out.println("Playing " + nGames + " games with " + settings.getDeckSize()
+                    + " pieces. Clock " + clockDelay + " ms; player " + playerDelay + " ms. Allowing " + expect + " ms total.");
         control.register(new Object() {
             @Subscribe public void gameOver(GameOver event) {
                 int played = event.getStatus().getBoard().size();
@@ -118,7 +125,8 @@ public class TestThreads {
                         + "; allow " + (expectedTime + slop) + ") <" + waiting.getCount() + ">";
                 assert elapsed <= (expectedTime + slop) : msg;
                 assert event.getStatus().isFinished() : "concurrency failure";
-                System.out.println("  > " + msg);
+                if (verbose)
+                    System.out.println("  > " + msg);
                 waiting.countDown();
             }
         });
@@ -165,7 +173,8 @@ public class TestThreads {
     }
 
     /** Play 10 short games without errors occurring, in less than 30 seconds. */
-    private static void testPreventClobber(int nGames) throws InterruptedException {
+    private static void testPreventClobber(int nGames, int printLevel) throws InterruptedException {
+        final boolean verbose = printLevel >= 2, discrete = printLevel >= 1;
         final Stopwatch w = new Stopwatch();
         Collection<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
         Collection<QwirkleShape> shapes = QwirkleShape.FIVE_SHAPES;
@@ -180,7 +189,8 @@ public class TestThreads {
         threads.go();
         final CountDownLatch waiting = new CountDownLatch(nGames);
         final int[] i = { 0 };
-        System.out.print("Prevent concurrent clobbering. Winners: ");
+        if (discrete)
+            System.out.print("Prevent concurrent clobbering. Winners: ");
         control.register(new Object() {
 //            @Subscribe
 //            public void turn(TurnCompleted event) {
@@ -188,7 +198,8 @@ public class TestThreads {
 //            }
             @Subscribe
             public void over(GameOver over) {
-                System.out.print(over.getStatus().getAnnotated().getLeader() + " ");
+                if (discrete)
+                    System.out.print(over.getStatus().getAnnotated().getLeader() + " ");
 //                System.out.println(over.getStatus().getBoard());
                 waiting.countDown();
                 w.mark("game " + i[0]++);
@@ -196,7 +207,9 @@ public class TestThreads {
         });
         waiting.await(nGames, TimeUnit.SECONDS);
         threads.stop();
-        System.out.println();
-        System.out.println("Prevent clobber: " + w);
+        if (verbose) {
+            System.out.println();
+            System.out.println("Prevent clobber: " + w);
+        }
     }
 }

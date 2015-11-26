@@ -1,4 +1,4 @@
-package qwirkle.test;
+package qwirkle.test.support;
 
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirkleSettings;

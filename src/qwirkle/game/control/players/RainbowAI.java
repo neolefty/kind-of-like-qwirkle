@@ -2,7 +2,7 @@ package qwirkle.game.control.players;
 
 import com.google.common.collect.Multimap;
 import qwirkle.game.base.*;
-import qwirkle.test.Stopwatch;
+import qwirkle.util.Stopwatch;
 import qwirkle.game.base.QwirkleAI;
 
 import java.util.*;

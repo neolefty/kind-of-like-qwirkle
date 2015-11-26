@@ -4,9 +4,10 @@ import qwirkle.game.base.QwirkleBoard;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.base.QwirkleSettings;
 
-// TODO make AnnotatedGame immutable but ugh that's a big change
 /** A read-only snapshot of a game state.
- *  Gives a view of the game without giving access to GameController. */
+ *  Gives a view of the game without giving access to GameController.
+ *  Note that annotatedGame continues to update in real time, up to the end
+ *  of the current game but not beyond it. */
 public class GameStatus {
     private AnnotatedGame annotatedGame;
 

@@ -12,6 +12,7 @@ import qwirkle.game.event.TurnCompleted;
 import qwirkle.test.scripted.ScriptedAI;
 import qwirkle.test.scripted.ScriptedGameController;
 import qwirkle.test.scripted.ScriptedSettings;
+import qwirkle.util.Stopwatch;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,12 +20,77 @@ import java.util.List;
 /** Use a scripted game to test events, scoring, GameStatus, and AnnotatedGame. */
 public class TestScripted {
     public static void main(String[] args) {
+        System.out.print("Testing scripted: ");
         TestMain.checkAssert();
-        testScoring(false);
-        testAnnotatedGame(false);
+        Stopwatch w = new Stopwatch(true);
+
+        testLocked(20);
+        w.mark("locked game");
+
+        testScoring(0);
+        w.mark("scoring");
+
+        testAnnotatedGame(0);
+        w.mark("annotated game");
+
+        System.out.println(" -- Completed scripted test: " + w.getTotal());
     }
 
-    private static void testAnnotatedGame(boolean printDebug) {
+    /** Post-lock draws are random, so run more than once to be sure. */
+    private static void testLocked(int n) {
+        for (int i = 0; i < n; ++i)
+            testLocked();
+    }
+
+    /** Create a fully blocked board and ensure that the GameController figures out. */
+    private static void testLocked() {
+        String h1 = "r3,0,0,r4,0,1,r5,0,2;";
+        String h2 = "g3,1,0,g4,1,1,g5,1,2;";
+        h1 += "b3,2,0,b4,2,1,b5,2,2;";
+        QwirklePlayer p1 = new QwirklePlayer(new ScriptedAI("p1", h1));
+        QwirklePlayer p2 = new QwirklePlayer(new ScriptedAI("p2", h2));
+        List<QwirklePlayer> players = Arrays.asList(p1, p2);
+        ScriptedSettings settings = new ScriptedSettings(players, "345", "rgb");
+        ScriptedGameController mgr = new ScriptedGameController(new EventBus());
+        mgr.start(settings);
+        final int[] turns = { 0 };
+        final int[] discards = { 0 };
+        final GameOver[] over = { null };
+        mgr.getEventBus().register(new Object() {
+            @Subscribe public void turn(TurnCompleted event) {
+                if (event.isDiscard()) discards[0]++;
+                else turns[0]++;
+            }
+            @Subscribe public void over(GameOver event) {
+                over[0] = event;
+            }
+        });
+        // 1. play three turns that will lock up the board in a 3x3 pattern that can't be extended
+        mgr.stepAI();
+        mgr.stepAI();
+        mgr.stepAI();
+        assert turns[0] == 3;
+        assert discards[0] == 0;
+        // 2. try to play, but everyone passes because no plays are possible
+        mgr.stepAI();
+        assert discards[0] == 1;
+        mgr.stepAI();
+        mgr.stepAI();
+        mgr.stepAI();
+        mgr.stepAI();
+        assert discards[0] == 5;
+        assert over[0] == null;
+        assert !mgr.isFinished();
+        assert !mgr.isStalled();
+        // 3. the third pass by everyone in a row should end the game
+        mgr.stepAI();
+        assert over[0] != null;
+        assert discards[0] == 6;
+        assert mgr.isFinished();
+        assert mgr.isStalled();
+    }
+
+    private static void testAnnotatedGame(int debugLevel) {
         // turn 0
         String h1 = "pc,0,0,ph,0,1,pd,0,2,p4,0,3;"; // p1 plays 4
         // turn 1
@@ -80,7 +146,9 @@ public class TestScripted {
         // turn 0
         mgr.stepAI(); // p1 plays 4 for 4 points
         assert turnCount[0] == 1;
-        if (printDebug) debugPrint(mgr);
+        boolean verbose = debugLevel >= 2;
+        boolean discrete = debugLevel >= 1;
+        if (verbose) debugPrint(mgr);
         AnnotatedGame ag = mgr.getAnnotated();
         assert ag.getScore(p1) == 4;
         assert ag.getScore(p2) == 0;
@@ -88,31 +156,31 @@ public class TestScripted {
         // turn 1
         mgr.stepAI(); // p2 plays 3 for 4 points
         assert turnCount[0] == 2;
-        if (printDebug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert ag.getScore(p2) == 4;
         assert mgr.getBoard().get(new QwirkleLocation(-1, 0)).equals(new QwirklePiece("gc"));
 
         // turn 2
         mgr.stepAI(); // p1 plays 3 for 7 points (total 11)
         assert turnCount[0] == 3;
-        if (printDebug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert ag.getScore(p1) == 11;
 
         // turn 3
         mgr.stepAI(); // p2 discards 2 (still 4)
         assert turnCount[0] == 4;
-        if (printDebug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert ag.getScore(p2) == 4;
 
         // turn 4
         mgr.stepAI(); // p1 discards 2 (still 11)
         assert turnCount[0] == 5;
-        if (printDebug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
 
         // turn 5
         mgr.stepAI(); // p2 plays 2 for 9 (13)
         assert turnCount[0] == 6;
-        if (printDebug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert ag.getScore(p2) == 13;
         assert ag.getScore(p1) == 11;
         assert ag.getBestTurn().getScore() == 9;
@@ -122,7 +190,7 @@ public class TestScripted {
         // turn 6 -- automated
         mgr.stepAI(); // p1 plays 2 to complete a set for 12 (23) (controlled by MaxPlayer)
         assert turnCount[0] == 7;
-        if (printDebug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert ag.getScore(p1) == 23;
         assert ag.getBestTurn().getScore() == 12;
 
@@ -133,8 +201,9 @@ public class TestScripted {
         while (!mgr.isFinished()) {
             int prev = turnCount[0];
             mgr.stepAI();
-            if (printDebug) debugPrint(mgr);
-            else System.out.print(turnCount[0] + " ");
+            if (verbose) debugPrint(mgr);
+            else if (discrete)
+                System.out.print(turnCount[0] + " ");
             assert turnCount[0] == prev + 1;
         }
         //noinspection AssertWithSideEffects
@@ -142,7 +211,7 @@ public class TestScripted {
 
         // check that we received the game-over event
         assert receivedGameOver[0] == 1;
-        if (!printDebug)
+        if (discrete)
             System.out.println("Scripted game ended");
 
         // check that we can start a new game
@@ -168,7 +237,7 @@ public class TestScripted {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    static void testScoring(boolean debug) {
+    static void testScoring(int debugLevel) {
         // shapes: csd; colors: rgby
 
         // turn 0 -- p1 plays only 3 (could play 4)
@@ -214,43 +283,45 @@ public class TestScripted {
 
         // turn 0 -- p1 plays 3 for 3
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        boolean verbose = debugLevel >= 2;
+        boolean discrete = debugLevel >= 1;
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getScore(p1) == 3;
 
         // turn 1 -- p2 plays 2 for 6
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getScore(p2) == 6;
 
         // turn 2 -- p1 plays 3 for 14
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getBestTurn().getScore() == 14;
         assert mgr.getAnnotated().getScore(p1) == 17;
 
         // turn 3 -- p2 plays 3 for 8
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getMostRecentTurn().getScore() == 8;
 
         // turn 4 -- p1 plays 2 for 3
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getMostRecentTurn().getScore() == 3;
 
         // turn 5 -- p2 plays 3 for 8
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getMostRecentTurn().getScore() == 11;
 
         // turn 6 -- p1 plays 3 for 20
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getMostRecentTurn().getScore() == 20;
 
         // turn 7 -- p2 plays 3 for 10
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
         assert mgr.getAnnotated().getMostRecentTurn().getScore() == 10;
 
         mgr.stepAI();
@@ -258,10 +329,10 @@ public class TestScripted {
         mgr.stepAI();
         mgr.stepAI();
         mgr.stepAI();
-        if (debug) debugPrint(mgr);
+        if (verbose) debugPrint(mgr);
 
         mgr.stepAI();
-//        if (debug)
+        if (discrete)
             debugPrint(mgr);
         assert mgr.getAnnotated().getMostRecentTurn().getScore() == 16;
     }

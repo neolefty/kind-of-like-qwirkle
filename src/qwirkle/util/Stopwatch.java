@@ -1,4 +1,4 @@
-package qwirkle.test;
+package qwirkle.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import java.util.Map;
 public class Stopwatch {
     private final long start = System.currentTimeMillis();
     private long latest = start;
+    private boolean printLive = false;
+    private boolean firstTime = true;
 
     // raw timestamps, in sequential order of mark() calls
     private List<Long> markTimes = new ArrayList<>();
@@ -17,13 +19,25 @@ public class Stopwatch {
     // duplicate labels are overwritten -- not preserved
     private Map<String, Long> markMap = new HashMap<>();
 
+    public Stopwatch() {}
+    public Stopwatch(boolean printLive) { this.printLive = printLive; }
+
     /** Mark that something has completed. */
     public synchronized void mark(String label) {
         long prev = latest;
         latest = System.currentTimeMillis();
         markTimes.add(latest);
         markLabels.add(label);
-        markMap.put(label, latest - prev);
+        long elapsed = latest - prev;
+        markMap.put(label, elapsed);
+        if (printLive) {
+            System.out.print((firstTime ? "" : ", ") + label + ": " + elapsed);
+            firstTime = false;
+        }
+    }
+
+    public synchronized void mark (long i) {
+        mark("" + i);
     }
 
     /** The time elapsed since the Stopwatch started. */
@@ -37,6 +51,9 @@ public class Stopwatch {
             throw new IllegalArgumentException("unknown label: \"" + label + "\"");
         return markMap.get(label);
     }
+
+    /** Should we <tt>System.out.print(".")</tt> every time {@link #mark} is called? Default false. */
+    public void setPrintLive(boolean printLive) { this.printLive = printLive; }
 
     /** Maybe not what you expect: If any marks have been made, then the time to the last one.
      *  Otherwise -- if no marks have been made -- the time until now. */
@@ -60,5 +77,9 @@ public class Stopwatch {
         result.append(markTimes.isEmpty() ? "" : "; total ")
                 .append(getTotal()).append(" ms");
         return result.toString();
+    }
+
+    public double getAverage() {
+        return ((double) (getTotal())) / markTimes.size();
     }
 }

@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-// TODO consider switching to an immutable GameModel
 /** Model a group of Qwirkle players playing a game.
  *  To receive updates, register for events on EventBus.
  *

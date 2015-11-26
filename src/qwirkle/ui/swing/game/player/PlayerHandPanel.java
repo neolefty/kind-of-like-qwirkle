@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO allow dragging to reorder pieces
-// TODO allow cancelling by dragging off of the board
 // TODO highlight playable pieces, on your turn, with colored bg?
 // TODO highlight destinations on mouseover?
 

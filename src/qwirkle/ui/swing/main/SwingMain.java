@@ -28,7 +28,6 @@ public class SwingMain {
     // TODO add taunts
     // TODO add designing your own shape / color
     // TODO choose shapes & colors to use
-    // TODO disable screensaver if playing continuously
     // TODO add slide-out sidebar with game meta-controls & history
 
     private static QwirklePlayer createRainbowPlayer(String s, Collection<QwirkleColor> colors) {

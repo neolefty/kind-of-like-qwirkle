@@ -1,4 +1,4 @@
-package qwirkle.test;
+package qwirkle.test.support;
 
 import com.google.common.eventbus.EventBus;
 import qwirkle.game.base.QwirkleAI;
