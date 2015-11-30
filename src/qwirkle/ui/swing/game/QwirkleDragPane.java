@@ -74,7 +74,7 @@ public class QwirkleDragPane extends JComponent {
                 g2.translate(-50, -50); // mouse at center of shape
 
                 // 3 paint
-                new QwirklePiecePainter().paint(g2, pickup.getPlacement());
+                new QwirklePiecePainter().paint(g2, pickup.getSourcePlacement());
 
                 // 4 cleanup
                 g2.setTransform(t);

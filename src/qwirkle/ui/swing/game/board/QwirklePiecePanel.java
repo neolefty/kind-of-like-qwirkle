@@ -163,7 +163,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
 
             @Override
             public void endDrag(MouseEvent e) {
-                event = post(event.drop());
+                event = post(event.drop(grid, location));
             }
 
             @Override

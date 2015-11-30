@@ -15,6 +15,7 @@ public class GameStatus {
     private QwirkleSettings settings;
     private QwirkleBoard board;
     private QwirklePlayer curPlayer;
+    private int deckRemaining;
 
     /** Use Prestarter for a public constructor. */
     public GameStatus(final GameController game) {
@@ -23,6 +24,7 @@ public class GameStatus {
         finishedShort = game.getFinishedMessageShort();
         settings = game.getSettings();
         board = game.getBoard();
+        deckRemaining = game.getDeck().size();
         curPlayer = game.getCurrentPlayer();
     }
 
@@ -40,6 +42,9 @@ public class GameStatus {
 
     /** What are the current settings for this game? */
     public QwirkleSettings getSettings() { return settings; }
+
+    /** How many pieces remain to be drawn? */
+    public int getDeckRemaining() { return deckRemaining; }
 
     /** Is the game finished? */
     public boolean isFinished() { return finishedLong != null; }

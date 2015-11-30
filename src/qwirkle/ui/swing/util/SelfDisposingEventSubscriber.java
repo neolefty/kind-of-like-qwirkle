@@ -15,19 +15,16 @@ public class SelfDisposingEventSubscriber {
         home.addAncestorListener(new AncestorListener() {
             @Override public void ancestorRemoved(AncestorEvent event) {
                 try {
-//                    Class declaring = getClass().getDeclaringClass();
-//                    System.out.println("class " + getClass().getCanonicalName() + " declared in "
-//                            + (declaring == null ? "unknown" : declaring.getSimpleName()));
                     bus.unregister(SelfDisposingEventSubscriber.this);
-                    System.out.println("--- " + home.getClass().getSimpleName()
-                            + " hidden or removed from " + event.getAncestor().getClass().getSimpleName());
+//                    System.out.println("--- " + home.getClass().getSimpleName()
+//                            + " hidden or removed from " + event.getAncestor().getClass().getSimpleName());
                 }
                 catch (IllegalArgumentException ignored) {} // sometimes double-removed because of events
             }
             @Override public void ancestorAdded(AncestorEvent event) {
                 bus.register(SelfDisposingEventSubscriber.this);
-                System.out.println("+++ " + home.getClass().getSimpleName()
-                        + " visible or added to " + event.getAncestor().getClass().getSimpleName());
+//                System.out.println("+++ " + home.getClass().getSimpleName()
+//                        + " visible or added to " + event.getAncestor().getClass().getSimpleName());
             }
             @Override public void ancestorMoved(AncestorEvent event) { }
         });

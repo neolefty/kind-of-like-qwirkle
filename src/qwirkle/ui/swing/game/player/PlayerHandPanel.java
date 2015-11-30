@@ -85,16 +85,18 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         public GameListener(EventBus bus, JComponent home) { super(bus, home); }
 
         // listen for dragging pieces in and out
-        // note: this is all kind of a hack, with special cases and shortcuts and glitch-avoidance and stuff
         @Subscribe public void drag(DragPiece event) {
             if (event.getPlayer() == player) {
+                // note: this is a hack special case with a shortcut to avoid glitches
+                // ugh I don't remember all the reasons
+
                 // if picking up from somewhere else, drag it out
                 // (if picking up from here, don't need to because PiecePanel will hide it)
-                if (event.isPickup() && event.getGrid() != getGrid())
-                    dragOut(event.getPlacement());
+                if (event.isPickup() && event.getSourceGrid() != getGrid())
+                    dragOut(event.getSourcePlacement());
                 // if cancelling or dropping, undo the drag out
                 if (event.isCancel() || event.isDrop())
-                    undragOut(event.getPlacement());
+                    undragOut(event.getSourcePlacement());
             }
         }
 

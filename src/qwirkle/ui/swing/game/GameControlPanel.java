@@ -1,15 +1,11 @@
 package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.game.event.GameOver;
-import qwirkle.game.event.GameStarted;
-import qwirkle.game.event.ThreadStatus;
-import qwirkle.game.base.QwirkleBoard;
-import qwirkle.game.event.TurnCompleted;
+import qwirkle.game.event.*;
+import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.util.AutoSizeButton;
 import qwirkle.ui.swing.util.AutoSizeLabel;
-import qwirkle.ui.control.QwirkleUIController;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -115,8 +111,8 @@ public class GameControlPanel extends JPanel {
 
             // display the number of cards remaining
             @Subscribe
-            public void update(QwirkleBoard board) {
-                remaining.setText(control.getGame().getDeck().size() + "");
+            public void update(TurnStarting event) {
+                remaining.setText(event.getStatus().getDeckRemaining() + "");
             }
 
             // after a turn has been taken, enable the take-a-turn button

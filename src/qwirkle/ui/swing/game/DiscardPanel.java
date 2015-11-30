@@ -11,6 +11,7 @@ import java.awt.*;
 public class DiscardPanel extends JPanel {
     private DiscardGridPanel gridPanel;
     private AutoSizeLabel label;
+    private int spots = 0;
 
     private Boolean vertical = null; // use an object to induce full layout first time
 
