@@ -2,10 +2,7 @@ package qwirkle.ui.control;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.game.base.QwirkleBoard;
-import qwirkle.game.base.QwirklePiece;
-import qwirkle.game.base.QwirklePlacement;
-import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.*;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.PreEvent;
 import qwirkle.game.event.TurnCompleted;
@@ -31,6 +28,9 @@ public class HypotheticalPlay {
 
     // The accepted plays, in the order they were placed
     private List<PlayPiece> acceptedPlays = new ArrayList<>();
+
+    // What was the last play that was canceled? Null if none.
+    private PlayPiece lastCancel;
 
     public HypotheticalPlay(final EventBus bus) {
         this.bus = bus;
@@ -80,7 +80,8 @@ public class HypotheticalPlay {
                     hypoBoard = getBoard().play(getPlacements());
                     if (!removed) throw new IllegalStateException
                             ("Couldn't remove " + event.getPrevious() + " from accepted plays.");
-                    bus.post(event.cancel());
+                    lastCancel = event.cancel();
+                    bus.post(lastCancel);
                 }
                 // sorry, we would need to remove other pieces first and cascade to this one
                 else
@@ -97,6 +98,17 @@ public class HypotheticalPlay {
 //        if (getBoard() == null)
 //            return Collections.singletonList(new QwirklePlacement(piece, 0, 0));
 //        else
+        // special case: moving the only piece on the board
+        if (lastCancel != null && getBoard().size() == 0 && piece == lastCancel.getPiece()) {
+            List<QwirklePlacement> result = new ArrayList<>();
+            QwirkleLocation center = lastCancel.getPlacement().getLocation();
+            result.add(new QwirklePlacement(piece, center.getAbove()));
+            result.add(new QwirklePlacement(piece, center.getBelow()));
+            result.add(new QwirklePlacement(piece, center.getLeft()));
+            result.add(new QwirklePlacement(piece, center.getRight()));
+            return result;
+        }
+        else
             return getBoard().getLegalPlacements(getPlacements(), piece);
     }
 

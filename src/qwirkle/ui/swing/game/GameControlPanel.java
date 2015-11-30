@@ -108,9 +108,9 @@ public class GameControlPanel extends JPanel {
             // change text of turn button when a human is playing
             @Subscribe
             public void updateHumanPlay(PlayPiece event) {
-                if (event.isAccept() || event.getPlay().size() > 0)
+                if (event.isAccept())
                     stepButton.setText(STEP_FINISH_HUMAN);
-                else
+                else if (event.isUnpropose() && event.getPlay().size() == 0)
                     stepButton.setText(STEP_AI);
             }
 
