@@ -3,6 +3,7 @@ package qwirkle.ui.event;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirklePlayer;
+import qwirkle.ui.control.HypotheticalPlay;
 
 /** Someone plays a piece interactively. */
 public class PlayPiece {
@@ -10,6 +11,9 @@ public class PlayPiece {
     private QwirklePlayer player;
     private Phase phase;
     private PlayPiece previous;
+
+    // The play being contemplated
+    private HypotheticalPlay play;
 
     /** A player {@link Phase#propose}s a play by dragging a piece.
      *  The game {@link Phase#accept}s or {@link Phase#reject}s it.
@@ -43,6 +47,7 @@ public class PlayPiece {
         this.player = previous.getPlayer();
         this.phase = newPhase;
         this.previous = previous;
+        this.play = previous.play;
     }
 
     /** Which player is playing? */
@@ -57,7 +62,11 @@ public class PlayPiece {
     }
 
     /** Accept a single placement. */
-    public PlayPiece accept() { return new PlayPiece(this, Phase.propose, Phase.accept); }
+    public PlayPiece accept(HypotheticalPlay play) {
+        PlayPiece result = new PlayPiece(this, Phase.propose, Phase.accept);
+        result.play = play;
+        return result;
+    }
 
     /** Reject a single placement. */
     public PlayPiece reject() { return new PlayPiece(this, Phase.propose, Phase.reject); }
@@ -69,6 +78,9 @@ public class PlayPiece {
     /** Cancel an already-accepted play, usually a response to an un-proposal,
      *  but may be part of an unpropose cascade. */
      public PlayPiece cancel() { return new PlayPiece(this, Phase.unpropose, Phase.cancel); }
+
+    /** The whole play being contemplated. Null if it's the first play and hasn't been accepted yet. */
+    public HypotheticalPlay getPlay() { return play; }
 
     public QwirklePlacement getPlacement() { return placement; }
 

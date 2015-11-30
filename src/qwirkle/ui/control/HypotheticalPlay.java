@@ -61,7 +61,7 @@ public class HypotheticalPlay {
         if (event.isPropose()) {
             // if it's legal, accept it
             if (isLegalMove(event.getPlacement())) {
-                PlayPiece accept = event.accept();
+                PlayPiece accept = event.accept(this);
                 acceptedPlays.add(accept);
                 hypoBoard = getBoard().play(getPlacements());
                 bus.post(accept);

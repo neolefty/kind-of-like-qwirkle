@@ -11,7 +11,7 @@ import qwirkle.game.base.QwirkleSettings;
 public class GameStatus {
     private AnnotatedGame annotatedGame;
 
-    private String finishedMessage;
+    private String finishedLong, finishedShort;
     private QwirkleSettings settings;
     private QwirkleBoard board;
     private QwirklePlayer curPlayer;
@@ -19,7 +19,8 @@ public class GameStatus {
     /** Use Prestarter for a public constructor. */
     public GameStatus(final GameController game) {
         this.annotatedGame = game.getAnnotated();
-        finishedMessage = game.getFinishedMessage();
+        finishedLong = game.getFinishedMessageLong();
+        finishedShort = game.getFinishedMessageShort();
         settings = game.getSettings();
         board = game.getBoard();
         curPlayer = game.getCurrentPlayer();
@@ -28,8 +29,11 @@ public class GameStatus {
     /** What does the playing surface look like? */
     public QwirkleBoard getBoard() { return board; }
 
-    /** What was the reason the game ended? Null if the game hasn't ended yet. */
-    public String getFinishedMessage() { return finishedMessage; }
+    /** A detailed explanation of how the game ended. Null if the game hasn't ended yet. */
+    public String getFinishedLong() { return finishedLong; }
+
+    /** A short summary of how the game ended. Null if the game hasn't ended yet. */
+    public String getFinishedShort() { return finishedShort; }
 
     /** Who is the current player? */
     public QwirklePlayer getCurPlayer() { return curPlayer; }
@@ -38,7 +42,7 @@ public class GameStatus {
     public QwirkleSettings getSettings() { return settings; }
 
     /** Is the game finished? */
-    public boolean isFinished() { return finishedMessage != null; }
+    public boolean isFinished() { return finishedLong != null; }
 
     /** The current game, annotated with scores etc.
      *  Unlike the rest of this status object, it is live until the current game ends,

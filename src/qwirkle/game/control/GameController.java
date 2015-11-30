@@ -42,7 +42,7 @@ public class GameController {
     // References to board, current player, finished message
     private QwirkleBoard board;
     private QwirklePlayer curPlayer;
-    private String finishedMessage;
+    private String finishedLong, finishedShort;
     private List<QwirklePiece> deck;
 
     private int nPasses; // number of passes in a row
@@ -73,7 +73,10 @@ public class GameController {
     /** For testing. By default, deal randomly. But for testing we want to script things. */
     protected void setRandomDealing(boolean random) { this.randomDeal = random; }
 
-    public String getFinishedMessage() { return finishedMessage; }
+    /** Short summary of how the game finished. Null if not finished. */
+    public String getFinishedMessageShort() { return finishedShort; }
+    /** Detailed description of how the game finished. Null if not finished. */
+    public String getFinishedMessageLong() { return finishedLong; }
 
     /** The annotated version of this game, kept live.
      *  It will stop updating when the current game ends
@@ -101,34 +104,41 @@ public class GameController {
 
     private void checkStalled() {
         if (!isFinished()) {
-            String msg = null;
+            String longMsg = null, shortMsg = null;
 
             synchronized (playerHands) {
-                if (nPasses >= playerHands.size() * 3)
-                    msg = "All players passed 3 times in a row. Game is stalled.";
-                else if (deck.isEmpty() && nPasses == playerHands.size())
-                    msg = "No more tiles to draw, and all players have passed.";
+                if (nPasses >= playerHands.size() * 3) {
+                    longMsg = "All players passed 3 times in a row. Game is stalled.";
+                    shortMsg = longMsg;
+                }
+                else if (deck.isEmpty() && nPasses == playerHands.size()) {
+                    longMsg = "No more tiles to draw, and all players have passed.";
+                    shortMsg = longMsg;
+                }
             }
 
-            if (msg != null) finished(msg);
+            if (longMsg != null) finished(longMsg, shortMsg);
         }
     }
 
     /** Mark the game as over. */
-    private void finished(String reason) {
+    private void finished(String longMessage, String shortMessage) {
         //noinspection StringEquality
-        if (finishedMessage != null)
-            throw new IllegalStateException("Already finished: " + finishedMessage
-                    + "; can't finish again (" + reason + ").");
-        else if (reason == null)
-            throw new NullPointerException("Reason is null.");
-        else
-            finishedMessage = reason;
+        if (this.finishedLong != null || this.finishedShort != null)
+            throw new IllegalStateException("Already finished: "
+                    + longMessage + " / " + shortMessage
+                    + "; can't finish again (" + longMessage + ").");
+        else if (longMessage == null || shortMessage == null)
+            throw new NullPointerException("Message is null.");
+        else {
+            finishedLong = longMessage;
+            finishedShort = shortMessage;
+        }
         post(new GameOver(new GameStatus(this)));
     }
 
     /** Has the current game finished? */
-    public boolean isFinished() { return finishedMessage != null; }
+    public boolean isFinished() { return finishedLong != null; }
 
     /** The number of passes in a row. Resets to zero whenever a player
      *  makes a normal turn and doesn't pass.  */
@@ -145,7 +155,7 @@ public class GameController {
     public void start(QwirkleSettings settings) {
         // end the old game
         if (isStarted() && !isFinished())
-            finished("The game was cancelled.");
+            finished("The game was cancelled.", "The game was cancelled.");
 
         this.settings = settings;
         if (settings == null)
@@ -161,7 +171,7 @@ public class GameController {
         }
 
         nPasses = 0;
-        finishedMessage = null;
+        clearFinished();
 
         // set up new game
         this.deck.clear();
@@ -175,6 +185,11 @@ public class GameController {
         // deal first cards -- propagated as a QwirkleTurn
         deal();
         chooseFirstPlayer();
+    }
+
+    private void clearFinished() {
+        finishedLong = null;
+        finishedShort = null;
     }
 
     /** Has this game started? True if any pieces have been dealt to players or if anything is played on the board. */
@@ -333,7 +348,9 @@ public class GameController {
         post(turn);
         // announce the end only after we broadcast the last turn
         if (itsOver)
-            finished(cur.getName() + " went out. Bonus " + bonus + " for other players' tiles.");
+            finished(cur.getName() + " plays " + turn.getPlacements().size() + " to go out. Bonus "
+                    + bonus + " for other players' tiles. Total " + turn.getScore() + " points."
+                    , cur.getName() + " goes out for " + turn.getScore());
 
         // did the game stall (broadcasts game finished events)
         checkStalled();
@@ -465,7 +482,7 @@ public class GameController {
 
         // 2. Some statistics -- whose turn, how many pieces played so far, etc.
         if (isFinished())
-            result.append(finishedMessage + "\n");
+            result.append(finishedLong + "\n");
         else
             result.append("  - Next player: " + getCurrentPlayer().getName() + "\n");
         TurnCompleted best = annotated.getBestTurn();

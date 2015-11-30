@@ -70,7 +70,7 @@ public class TestThreads {
         game.getEventBus().register(new Object() {
             @Subscribe public void turn(TurnCompleted event) { if (verbose) System.out.print("."); }
             @Subscribe public void game(GameOver event) {
-                if (verbose) System.out.println(event.getStatus().getFinishedMessage());
+                if (verbose) System.out.println(event.getStatus().getFinishedLong());
             }
         });
         if (discrete)

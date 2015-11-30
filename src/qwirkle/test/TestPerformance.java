@@ -62,7 +62,7 @@ public class TestPerformance {
             w.mark(i);
             long end = System.currentTimeMillis();
             if (verbose)
-                System.out.println("  " + i + " (" + (end - lap) + " ms): " + mgr.getFinishedMessage());
+                System.out.println("  " + i + " (" + (end - lap) + " ms): " + mgr.getFinishedMessageLong());
             lap = end;
         }
         long end = System.currentTimeMillis();

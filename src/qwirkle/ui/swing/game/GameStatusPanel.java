@@ -70,7 +70,7 @@ public class GameStatusPanel extends Box {
 
     private void finished(GameStatus status) {
         // TODO add a label that only pops up when the game ends. Maybe below the two turn labels?
-        turnLabel.setText(" Game Over: " + status.getFinishedMessage() + " ");
-        turnLabel.setToolTipText("Game Over: " + status.getFinishedMessage());
+        turnLabel.setText(" Game Over: " + status.getFinishedShort() + " ");
+        turnLabel.setToolTipText("Game Over: " + status.getFinishedLong());
     }
 }

@@ -6,6 +6,7 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.ThreadStatus;
 import qwirkle.game.base.QwirkleBoard;
 import qwirkle.game.event.TurnCompleted;
+import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.util.AutoSizeButton;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.control.QwirkleUIController;
@@ -19,9 +20,11 @@ import java.util.concurrent.Executors;
 /** Start, stop, take a turn. */
 public class GameControlPanel extends JPanel {
     private static final String PAUSE = "  | |  ", PLAY = "  >>  ",
-        STEP = "Turn", NEW_GAME = "New Game", RESTART = "New Game";
+        STEP_AI = "AI Turn", NEW_GAME = "New Game", RESTART = "New Game",
+        PASS = "Pass",
+        STEP_FINISH_HUMAN = "Finished Turn";
 
-    public static final double FONT_PROPORTION = 0.03;
+    public static final double FONT_PROPORTION = 0.027;
 
     public GameControlPanel(final QwirkleUIController control) {
         // label: the number of remaining cards
@@ -29,7 +32,7 @@ public class GameControlPanel extends JPanel {
         // button: new game
         final JButton newGame = new AutoSizeButton(this, NEW_GAME, FONT_PROPORTION);
         // button: take a single turn
-        final JButton stepButton = new AutoSizeButton(this, STEP, FONT_PROPORTION);
+        final JButton stepButton = new AutoSizeButton(this, STEP_AI, FONT_PROPORTION);
         // button: start/pause a game running
         final JButton runButton = new AutoSizeButton(this, PLAY, FONT_PROPORTION);
 
@@ -102,6 +105,15 @@ public class GameControlPanel extends JPanel {
                 });
             }
 
+            // change text of turn button when a human is playing
+            @Subscribe
+            public void updateHumanPlay(PlayPiece event) {
+                if (event.isAccept() || event.getPlay().size() > 0)
+                    stepButton.setText(STEP_FINISH_HUMAN);
+                else
+                    stepButton.setText(STEP_AI);
+            }
+
             // display the number of cards remaining
             @Subscribe
             public void update(QwirkleBoard board) {
@@ -117,6 +129,7 @@ public class GameControlPanel extends JPanel {
                         if (!control.getThreads().isRunning()) {
                             stepButton.setEnabled(true);
                             stepButton.grabFocus();
+                            stepButton.setText(STEP_AI);
                         }
                     }
                 });

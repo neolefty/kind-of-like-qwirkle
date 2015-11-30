@@ -9,7 +9,4 @@ public class GameOver {
     public GameOver(GameStatus status) { this.status = status; }
 
     public GameStatus getStatus() { return status; }
-
-    /** The game-over message about who won. */
-    public String getMessage() { return status.getFinishedMessage(); }
 }
