@@ -32,6 +32,8 @@ public class HypotheticalPlay {
 
     // If the last action was to cancel a play, and we're still mid-drag, what was it? Null if none.
     private PlayPiece lastCancel;
+    // The last set of legal moves reported
+    private Collection<QwirklePlacement> lastLegal;
 
     public HypotheticalPlay(final EventBus bus) {
         this.bus = bus;
@@ -59,8 +61,7 @@ public class HypotheticalPlay {
     @Subscribe
     public synchronized void dragComplete(DragPiece event) {
         if (event.isCancel() || event.isDrop()) {
-            lastCancel = null;
-//            System.out.println("Drag complete: " + event);
+            lastLegal = null;
         }
     }
 
@@ -104,22 +105,28 @@ public class HypotheticalPlay {
     public int size() { return acceptedPlays.size(); }
 
     /** Where can this piece be placed legally? */
-    public Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
+    public synchronized Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
 //        if (getBoard() == null)
 //            return Collections.singletonList(new QwirklePlacement(piece, 0, 0));
 //        else
         // special case: moving the only piece on the board
-        if (lastCancel != null && getHypotheticalBoard().size() == 0 && piece == lastCancel.getPiece()) {
-            List<QwirklePlacement> result = new ArrayList<>();
+        Collection<QwirklePlacement> result;
+        if (lastCancel != null && getHypotheticalBoard() != null && getHypotheticalBoard().size() == 0
+                && piece == lastCancel.getPiece())
+        {
+            List<QwirklePlacement> temp = new ArrayList<>();
             QwirkleLocation center = lastCancel.getPlacement().getLocation();
-            result.add(new QwirklePlacement(piece, center.getAbove()));
-            result.add(new QwirklePlacement(piece, center.getBelow()));
-            result.add(new QwirklePlacement(piece, center.getLeft()));
-            result.add(new QwirklePlacement(piece, center.getRight()));
-            return result;
+            temp.add(new QwirklePlacement(piece, center.getAbove()));
+            temp.add(new QwirklePlacement(piece, center.getBelow()));
+            temp.add(new QwirklePlacement(piece, center.getLeft()));
+            temp.add(new QwirklePlacement(piece, center.getRight()));
+            result = Collections.unmodifiableList(temp);
         }
         else
-            return getBoard().getLegalPlacements(getPlacements(), piece);
+            result = getBoard().getLegalPlacements(getPlacements(), piece);
+        this.lastLegal = result;
+//        System.out.println("Legal moves: " + result);
+        return result;
     }
 
     /** The placements so far accepted from the player. */
@@ -136,11 +143,18 @@ public class HypotheticalPlay {
     }
 
     /** Is <tt>placement</tt> legal, considering the other accepted moves so far? */
+    // TODO only accept highlighted drops? Remember the last legal moves?
     public synchronized boolean isLegalMove(QwirklePlacement placement) {
-        List<QwirklePlacement> placements = new ArrayList<>();
-        placements.add(placement);
-        placements.addAll(getPlacements());
-        return board.isLegal(placements);
+        if (lastLegal == null) {
+            List<QwirklePlacement> placements = new ArrayList<>(getPlacements());
+            placements.add(placement);
+//            System.out.println("Is " + placement + " legal for " + getPlacements() + "?");
+            return board.isLegal(placements);
+        }
+        else {
+//            System.out.println("Is " + placement + " in " + lastLegal + "?");
+            return lastLegal.contains(placement);
+        }
     }
 
     /** The board not including hypothetical plays. */
@@ -162,6 +176,8 @@ public class HypotheticalPlay {
         hypoBoard = null;
         currentPlayer = null;
         acceptedPlays.clear();
+        lastCancel = null;
+        lastLegal = null;
         this.board = board;
     }
 
