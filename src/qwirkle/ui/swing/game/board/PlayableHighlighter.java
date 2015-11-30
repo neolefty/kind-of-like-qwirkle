@@ -35,7 +35,7 @@ public class PlayableHighlighter {
     }
 
     private void unhighlight(DragPiece event) {
-        forEachLegalQPP(event.getPiece(), new QPPer() {
+        forEachLegalQPP(event.getPiece(), false, new QPPer() {
             @Override
             public void go(QwirklePiecePanel panel) {
                 panel.getBackgroundManager().popColors();
@@ -46,7 +46,7 @@ public class PlayableHighlighter {
     // TODO draw inverted shape in each possible square
     private void highlightPlayable(DragPiece event) {
         final ColorSet colors = new HypotheticalPlayBgColors(event.getPiece());
-        forEachLegalQPP(event.getPiece(), new QPPer() {
+        forEachLegalQPP(event.getPiece(), true, new QPPer() {
             @Override
             public void go(QwirklePiecePanel panel) {
                 panel.getBackgroundManager().pushColors(colors);
@@ -60,15 +60,22 @@ public class PlayableHighlighter {
     }
 
     /** Loop over all the legal placements for <tt>goer</tt>
-     *  and do something to each corresponding {@link QwirklePiecePanel}. */
-    private void forEachLegalQPP(QwirklePiece piece, QPPer goer) {
+     *  and do something to each corresponding {@link QwirklePiecePanel}.
+     *  @param strict If true, do this for every legal move and throw a NPE if the panel can't be found.
+     *                If false, just skip it if the panel can't be found. */
+    private void forEachLegalQPP(QwirklePiece piece, boolean strict, QPPer goer) {
         QwirkleBoard board = getBoard();
         if (board != null) {
             Collection<QwirklePlacement> legalMoves = hypo.getLegalMoves(piece);
             for (QwirklePlacement move : legalMoves) {
-                // do we need to check for null? hypothetically no ...
+                // do we need to check for null? yes because of race conditions
+                // (that hopefully haven't messed up legality -- practice they're related
+                // to re-zeroing the board by dragging the very first piece.)
                 QwirklePiecePanel panel = gridPanel.getPiecePanel(move.getLocation());
-                goer.go(panel);
+                if (strict)
+                    goer.go(panel);
+                else if (panel != null)
+                    goer.go(panel);
             }
         }
     }

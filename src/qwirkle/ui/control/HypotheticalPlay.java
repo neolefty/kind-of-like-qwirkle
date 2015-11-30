@@ -7,6 +7,7 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.PreEvent;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.event.PlayTurn;
 
@@ -29,7 +30,7 @@ public class HypotheticalPlay {
     // The accepted plays, in the order they were placed
     private List<PlayPiece> acceptedPlays = new ArrayList<>();
 
-    // What was the last play that was canceled? Null if none.
+    // If the last action was to cancel a play, and we're still mid-drag, what was it? Null if none.
     private PlayPiece lastCancel;
 
     public HypotheticalPlay(final EventBus bus) {
@@ -53,6 +54,15 @@ public class HypotheticalPlay {
     /** When a new turn starts, update our notion of the current player. */
     @Subscribe
     public void turnStarting(TurnStarting event) { currentPlayer = event.getCurPlayer(); }
+
+    /** When a drag completes, forget the last cancel. */
+    @Subscribe
+    public synchronized void dragComplete(DragPiece event) {
+        if (event.isCancel() || event.isDrop()) {
+            lastCancel = null;
+//            System.out.println("Drag complete: " + event);
+        }
+    }
 
     /** Respond player interactions -- proposing a piece to play or unplay. */
     @Subscribe
@@ -99,7 +109,7 @@ public class HypotheticalPlay {
 //            return Collections.singletonList(new QwirklePlacement(piece, 0, 0));
 //        else
         // special case: moving the only piece on the board
-        if (lastCancel != null && getBoard().size() == 0 && piece == lastCancel.getPiece()) {
+        if (lastCancel != null && getHypotheticalBoard().size() == 0 && piece == lastCancel.getPiece()) {
             List<QwirklePlacement> result = new ArrayList<>();
             QwirkleLocation center = lastCancel.getPlacement().getLocation();
             result.add(new QwirklePlacement(piece, center.getAbove()));
