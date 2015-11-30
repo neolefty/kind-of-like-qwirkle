@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 public class GameControlPanel extends JPanel {
     private static final String PAUSE = "  | |  ", PLAY = "  >>  ",
         STEP_AI = "AI Turn", NEW_GAME = "New Game", RESTART = "New Game",
-        PASS = "Pass",
         STEP_FINISH_HUMAN = "Finished Turn";
 
     public static final double FONT_PROPORTION = 0.027;

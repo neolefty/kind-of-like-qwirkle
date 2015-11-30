@@ -12,10 +12,9 @@ import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.util.DragHelper;
+import qwirkle.ui.swing.util.SelfDisposingEventSubscriber;
 
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -65,29 +64,15 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     private void initEvents() {
-        // unsubscribe from bus on destruction
-        if (bus != null) {
-            // question: why do we register and deregister when hidden and shown?
-            // answer: it's a hack, but it's the best I could figure out. The only
-            // event I can find that you receive when you are removed from a container
-            // is also fired when you are hidden from view (like, when the idle screen activates).
-            // Plus, it works.
-            addAncestorListener(new AncestorListener() {
-                // be sure to unsubscribe when we're discarded
-                @Override
-                public void ancestorRemoved(AncestorEvent event) {
-                    try {
-                        bus.unregister(QwirklePiecePanel.this);
-                    } catch(IllegalArgumentException ignored) {} // sometimes double-removed because of events
+        if (bus != null)
+            new SelfDisposingEventSubscriber(bus, this) {
+                /** Highlight this piece if it is part of the {@link HighlightTurn}. */
+                @Subscribe public void highlight(HighlightTurn hl) {
+                    // we can tell based on location
+                    if (hl.getTurn().containsLocation(location))
+                        bgMgr.setHighlighted(hl.isHighlighted());
                 }
-
-                @Override public void ancestorAdded(AncestorEvent event) {
-                    bus.register(QwirklePiecePanel.this);
-                }
-
-                @Override public void ancestorMoved(AncestorEvent event) { }
-            });
-        }
+            };
 
         // post PassOver events
         if (bus != null) {
@@ -106,13 +91,6 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     public BackgroundManager getBackgroundManager() { return bgMgr; }
-
-    /** Highlight this piece if it is part of the {@link HighlightTurn}. */
-    @Subscribe public void highlight(HighlightTurn hl) {
-        // we can tell based on location
-        if (hl.getTurn().containsLocation(location))
-            bgMgr.setHighlighted(hl.isHighlighted());
-    }
 
     @Override
     public void paint(Graphics g) {

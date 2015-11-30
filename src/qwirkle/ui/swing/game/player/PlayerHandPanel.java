@@ -15,7 +15,9 @@ import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PassOver;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
+import qwirkle.ui.swing.util.SelfDisposingEventSubscriber;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -60,12 +62,14 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         setBlankIncluded(false);
 
         this.player = player;
-        control.register(new GameListener());
-        getEventBus().register(new Object() {
-            // forward mouse events from the local bus to the parent bus
+        new GameListener(control.getEventBus(), this);
+
+        // forward mouse events from the local bus to the parent bus
+        new SelfDisposingEventSubscriber(getEventBus(), this) {
             @Subscribe public void dragPosted(DragPiece event) { control.post(event); }
             @Subscribe public void passedOver(PassOver event) { control.post(event); }
-        });
+        };
+
         setVertical(true);
     }
 
@@ -77,12 +81,19 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         }
     }
 
-    private class GameListener {
+    private class GameListener extends SelfDisposingEventSubscriber {
+        public GameListener(EventBus bus, JComponent home) { super(bus, home); }
+
+        // listen for dragging pieces in and out
+        // note: this is all kind of a hack, with special cases and shortcuts and glitch-avoidance and stuff
         @Subscribe public void drag(DragPiece event) {
             if (event.getPlayer() == player) {
+                // if picking up from somewhere else, drag it out
+                // (if picking up from here, don't need to because PiecePanel will hide it)
                 if (event.isPickup() && event.getGrid() != getGrid())
                     dragOut(event.getPlacement());
-                else if (event.isCancel() || event.isDrop())
+                // if cancelling or dropping, undo the drag out
+                if (event.isCancel() || event.isDrop())
                     undragOut(event.getPlacement());
             }
         }
@@ -131,13 +142,6 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         }
     }
 
-    /** A piece was dragged out of our hand. */
-    private void dragOut(QwirklePlacement place) {
-        QwirklePlacement handPlacement = getHandPlacement(place);
-        draggedOut.add(handPlacement);
-        update();
-    }
-
     /** Guess which piece in our hand this refers to. Note that our hand may have identical pieces,
      *  and in order to give physicality to them, we distinguish between them. */
     private QwirklePlacement getHandPlacement(QwirklePlacement placement) {
@@ -174,10 +178,19 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         }
     }
 
+    /** A piece was dragged out of our hand. */
+    private void dragOut(QwirklePlacement place) {
+        QwirklePlacement handPlacement = getHandPlacement(place);
+        draggedOut.add(handPlacement);
+//        System.out.println("Dragged out " + place);
+        update();
+    }
+
     /** Never mind about a piece that was previously dragged out of our hand. */
     private void undragOut(QwirklePlacement place) {
         QwirklePlacement handPlacement = getHandPlacement(place);
         draggedOut.remove(handPlacement);
+//        System.out.println("Undragged " + place);
         update();
     }
 

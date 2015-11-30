@@ -12,6 +12,7 @@ import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.swing.util.HasAspectRatio;
+import qwirkle.ui.swing.util.SelfDisposingEventSubscriber;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +27,8 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     public static final double VERTICAL_ASPECT_RATIO = 1 / 7.5;
     /** If horizontal, this is the ideal width-to-height ratio. */
     public static final double HORIZONTAL_ASPECT_RATIO = 5;
+    /** The size for the labels. */
+    public static final double AUTO_SIZE_FRACTION = 0.25;
 
     private QwirklePlayer player;
 
@@ -44,20 +47,19 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         this.handPanel = new PlayerHandPanel(control, player);
 
         setLayout(new GridBagLayout());
-        double fraction = 0.25;
-        nameLabel = new AutoSizeLabel(this, " -- ", fraction); // text is set later
+        nameLabel = new AutoSizeLabel(this, " -- ", AUTO_SIZE_FRACTION); // text is set later
         autoSizeLabels.add(nameLabel);
-        scoreLabel = new AutoSizeLabel(this, "0", fraction);
+        scoreLabel = new AutoSizeLabel(this, "0", AUTO_SIZE_FRACTION);
         autoSizeLabels.add(scoreLabel);
-        scoreSeparatorLabel = new AutoSizeLabel(this, ": ", fraction);
+        scoreSeparatorLabel = new AutoSizeLabel(this, ": ", AUTO_SIZE_FRACTION);
         autoSizeLabels.add(scoreSeparatorLabel);
-        bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, fraction * 0.7,
+        bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, AUTO_SIZE_FRACTION * 0.7,
                 new Callable<TurnCompleted>() { @Override public TurnCompleted call() { return bestMove; } });
         bestMoveLabel.setOpaque(false);
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);
 
-        control.register(new Object() {
+        new SelfDisposingEventSubscriber(control.getEventBus(), this) {
             @Subscribe
             public void turnCompleted(TurnCompleted event) {
                 AnnotatedGame annotated = event.getStatus().getAnnotated();
@@ -74,7 +76,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             public void gameStart(GameStarted started) {
                 clear();
             }
-        });
+        };
     }
 
     @Override

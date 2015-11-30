@@ -42,13 +42,13 @@ public class SwingMain {
             @Override
             public void run() {
                 // settings
-                List<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
-                List<QwirkleShape> shapes = QwirkleShape.DEFAULT_SHAPES;
-                int decks = 3;
-//                List<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
+//                List<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
+//                List<QwirkleShape> shapes = QwirkleShape.DEFAULT_SHAPES;
+//                int decks = 3;
+                List<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
+                List<QwirkleShape> shapes = QwirkleShape.FOUR_SHAPES;
+                int decks = 1;
 //                List<QwirkleShape> shapes = QwirkleShape.FIVE_SHAPES;
-//                List<QwirkleShape> shapes = QwirkleShape.FOUR_SHAPES;
-//                int decks = 1;
 
                 // players
                 List<QwirklePlayer> players = new ArrayList<>();
