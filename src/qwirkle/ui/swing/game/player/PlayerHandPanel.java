@@ -124,8 +124,13 @@ public class PlayerHandPanel extends QwirkleGridPanel {
             }
         }
 
+        // TODO why is panel not updated sometimes when New Game is pressed? Does it have something to do with the order in which GameStarted events are received by QGSP and PlayerHandPanel?
+
         // a game started
-        @Subscribe public void gameStart(GameStarted started) { clear(); }
+        @Subscribe public void gameStart(GameStarted started) {
+            clear();
+//            System.out.println(started + ": " + control.getGame().getHand(player));
+        }
 
         // highlight the new pieces we draw
         @Subscribe public void dealt(DrawPieces draw) {

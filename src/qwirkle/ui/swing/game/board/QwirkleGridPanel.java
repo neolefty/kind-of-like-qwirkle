@@ -65,6 +65,8 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
             public void run() {
                 synchronized (getTreeLock()) {
                     QwirkleGrid grid = getGrid();
+//                    try { Thread.sleep(50); } catch(InterruptedException ignored) {}
+//                    System.out.print(this + ": grid = " + grid);
                     removeAll();
                     layout.setGrid(grid);
                     if (grid != null)

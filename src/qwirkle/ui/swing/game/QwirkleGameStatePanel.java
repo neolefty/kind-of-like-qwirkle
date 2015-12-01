@@ -40,7 +40,7 @@ public class QwirkleGameStatePanel extends JPanel {
         });
     }
 
-    private void updatePlayers(List<QwirklePlayer> players) {
+    private void updatePlayers(final List<QwirklePlayer> players) {
         removePlayerPanels();
         addPlayerPanels(players);
     }
@@ -56,6 +56,7 @@ public class QwirkleGameStatePanel extends JPanel {
                 add(pp);
             }
         }
+        validate();
     }
 
     private void removePlayerPanels() {

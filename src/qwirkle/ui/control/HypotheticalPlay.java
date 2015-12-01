@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+// TODO fix bug where if you drag the first piece off the board and back on it gives 4 placement options
 /** A play that a player is contemplating. */
 public class HypotheticalPlay {
     // The board not including the hypothetical play
