@@ -46,4 +46,8 @@ public class QwirkleUIController {
     /** Convenience method. Calls {@link EventBus#register}. */
     public void register(Object subscriber) { interact.register(subscriber); }
     public void unregister(Object subscriber) { interact.unregister(subscriber); }
+
+    public DiscardController getDiscardController() {
+        return getInteraction().getDiscardController();
+    }
 }

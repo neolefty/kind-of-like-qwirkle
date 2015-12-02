@@ -32,7 +32,7 @@ public class QwirkleGameStatePanel extends JPanel {
         add(grid);
 
         // discard panel
-        discardPanel = new DiscardPanel(control);
+        discardPanel = new DiscardPanel(control.getDiscardController());
         add(discardPanel);
 
         // ui controllers

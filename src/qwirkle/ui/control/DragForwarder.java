@@ -4,9 +4,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PassOver;
-import qwirkle.ui.swing.util.SelfDisposingEventSubscriber;
-
-import javax.swing.*;
 
 /** Forward drag events from one EventBus to another, so that a
  *  drag that starts in one can pass over and conclude with another.
@@ -16,10 +13,10 @@ public class DragForwarder extends SelfDisposingEventSubscriber {
     private EventBus externalBus;
 
     /** Forward drag events from <tt>localBus</tt> to <tt>externalBus</tt>.
-     *  @param home if ever removed from its parent, stop forwarding (also while it is hidden) */
-    public DragForwarder(EventBus localBus, JComponent home, EventBus exernalBus) {
-        super(localBus, home);
-        this.externalBus = exernalBus;
+     *  @param du if disposed, stop forwarding */
+    public DragForwarder(EventBus localBus, DisposeUndisposer du, EventBus externalBus) {
+        super(localBus, du);
+        this.externalBus = externalBus;
     }
 
     @Subscribe public void dragPosted(DragPiece event) { externalBus.post(event); }

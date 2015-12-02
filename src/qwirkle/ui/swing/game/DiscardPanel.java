@@ -1,6 +1,6 @@
 package qwirkle.ui.swing.game;
 
-import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.control.DiscardController;
 import qwirkle.ui.swing.game.player.PlayerPanel;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
@@ -14,11 +14,13 @@ public class DiscardPanel extends JPanel implements HasAspectRatio {
     public static final String DISCARD = "Discard";
 
     private DiscardGridPanel gridPanel;
+    private DiscardController controller;
     private AutoSizeLabel label;
 
     private Boolean vertical = null; // use an object to induce full layout first time
 
-    public DiscardPanel(QwirkleUIController controller) {
+    public DiscardPanel(DiscardController controller) {
+        this.controller = controller;
         gridPanel = new DiscardGridPanel(controller);
         label = new AutoSizeLabel(this, DISCARD, PlayerPanel.AUTO_SIZE_FRACTION);
         setLayout(new GridBagLayout());
@@ -27,7 +29,7 @@ public class DiscardPanel extends JPanel implements HasAspectRatio {
 
     @Override
     public double getAspectRatio() {
-        return PlayerPanel.getAspectRatio(vertical, gridPanel.getNumSpots());
+        return PlayerPanel.getAspectRatio(vertical, controller.getNumSpots());
     }
 
     @Override
