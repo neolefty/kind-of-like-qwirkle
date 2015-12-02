@@ -13,10 +13,10 @@ import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.ui.swing.colors.Colors;
-import qwirkle.ui.swing.game.QwirkleDragPane;
 import qwirkle.ui.swing.game.QwirkleGamePanel;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
+import qwirkle.ui.swing.util.TransparencyFader;
 
 import javax.swing.*;
 import java.util.ArrayList;

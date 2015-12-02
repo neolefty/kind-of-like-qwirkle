@@ -12,7 +12,7 @@ import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.colors.ColorSets;
 import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
-import qwirkle.ui.swing.util.DragHelper;
+import qwirkle.ui.swing.util.SwingDragHelper;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.swing.util.SwingDisposeUndisposer;
 
@@ -29,7 +29,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     private QwirklePiece piece;
     private QwirkleLocation location;
     private EventBus bus;
-    private DragHelper dragHelper;
+    private SwingDragHelper dragHelper;
     private QwirkleGridDisplay parent;
 
     private BackgroundManager bgMgr;
@@ -145,7 +145,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     private void initDragHelper(final QwirklePlayer player, final PlayPiece context) {
         if (context != null && !context.isPhaseAccept())
             throw new IllegalArgumentException("Unsupported state: " + context);
-        dragHelper = new DragHelper(this, new DragHelper.DragHandler() {
+        dragHelper = new SwingDragHelper(this, new SwingDragHelper.DragHandler() {
             DragPiece event;
 
             @Override

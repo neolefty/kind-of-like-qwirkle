@@ -7,6 +7,7 @@ import qwirkle.ui.swing.util.LayoutBase;
 
 import java.awt.*;
 
+/** Layout for {@link QwirkleGridPanel}. */
 public class QwirkleGridLayout extends LayoutBase {
     private QwirkleGrid grid;
     private int margin;

@@ -9,7 +9,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
 /** Supports dragging stuff. */
-public class DragHelper {
+public class SwingDragHelper {
     // is dragging currently possible?
     private boolean draggable = true;
 
@@ -27,7 +27,7 @@ public class DragHelper {
     // the player who is acting
     private QwirklePlayer player;
 
-    /** Implement this and pass it to {@link #DragHelper}. */
+    /** Implement this and pass it to {@link #SwingDragHelper}. */
     public interface DragHandler {
         /** Called when a drag is started (mouse is clicked and dragged beyond a certain threshold. */
         void startDrag(MouseEvent e);
@@ -42,7 +42,7 @@ public class DragHelper {
         void cancelDrag();
     }
 
-    public DragHelper(final Component listenTo, final DragHandler handler) {
+    public SwingDragHelper(final Component listenTo, final DragHandler handler) {
         if (handler == null) throw new NullPointerException("handler is null");
         this.handler = handler;
 

@@ -1,6 +1,6 @@
-package qwirkle.ui.swing.main;
+package qwirkle.ui.swing.util;
 
-import qwirkle.ui.swing.util.HasTransparency;
+import qwirkle.ui.swing.main.ScreenSaverPane;
 
 /** Use HasTransparency to fade something. */
 public class TransparencyFader implements ScreenSaverPane.Fader {

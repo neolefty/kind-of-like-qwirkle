@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 // TODO make playable spots pulse
-// TODO abstract this from Swing and move to qwirkle.game.control, like PieceDropWatcher?
+// TODO abstract this from Swing and move to qwirkle.game.control, like PieceDropWatcher
 /** A listener that highlights playable spots on a board. */
 public class PlayableHighlighter {
     private QwirkleGridPanel gridPanel;

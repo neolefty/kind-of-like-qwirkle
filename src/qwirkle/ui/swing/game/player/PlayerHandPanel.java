@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+// TODO move logic into a controller
 // TODO allow dragging to reorder pieces
 // TODO highlight playable pieces, on your turn, with colored bg?
 // TODO highlight destinations on mouseover?

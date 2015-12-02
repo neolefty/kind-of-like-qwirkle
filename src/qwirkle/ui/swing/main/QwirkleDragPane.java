@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.game;
+package qwirkle.ui.swing.main;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
