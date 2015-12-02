@@ -114,6 +114,11 @@ public class PlayPiece {
         return display.getDisplayType() == QwirkleGridDisplay.DisplayType.gameboard;
     }
 
+    /** Is this a play into a player's hand (taking it back from the board)? */
+    public boolean isTypeHand() {
+        return display.getDisplayType() == QwirkleGridDisplay.DisplayType.hand;
+    }
+
     /** This play is proposed by a player. */
     public boolean isPhasePropose() { return phase == Phase.propose; }
     /** A player has changed their mind about a play. */

@@ -68,7 +68,7 @@ public class HypotheticalPlay {
     @Subscribe
     public synchronized void proposePlay(PlayPiece event) {
         // A. playing a new piece is proposed
-        if (event.isPhasePropose()) {
+        if (event.isPhasePropose() && event.isTypeGameboard()) {
             // if it's legal, accept it
             if (isLegalMove(event)) {
                 PlayPiece accept = event.accept(this);
@@ -117,15 +117,8 @@ public class HypotheticalPlay {
         if (size() > 0 && isAllDiscards())
             result = Collections.emptyList();
         // what are the legal moves?
-        else {
+        else
             result = getBoard().getLegalPlacements(getPlacements(), piece);
-            // allow it to be put back where it came from
-//            for (QwirklePlacement p : getPlacements())
-//                if (p.getPiece() == piece) { // if it's the very same piece that was picked up
-//                    result = new ArrayList<>(result);
-//                    result.add(p);
-//                }
-        }
 
         // remember the result
         this.lastLegal = result;
@@ -165,9 +158,23 @@ public class HypotheticalPlay {
                 return lastLegal.contains(play.getPlacement());
             }
         }
+        else if (play.isTypeHand()) {
+            PlayPiece origin = findPlay(play.getPiece());
+            //noinspection SimplifiableIfStatement
+            if (origin == null) return true; // already removed or never actually played
+            else return isRemovable(origin.getPlacement());
+        }
         // um, don't know about other types of plays. Cancellations are handled elsewhere.
         else
             throw new UnsupportedOperationException("Unknown type: " + play);
+    }
+
+    /** Find the placement of this piece in the hypothetical play. Null if not present. */
+    private PlayPiece findPlay(QwirklePiece piece) {
+        for (PlayPiece play : acceptedPlays)
+            if (piece == play.getPiece())
+                return play;
+        return null;
     }
 
     /** The board not including hypothetical plays. */

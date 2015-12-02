@@ -9,6 +9,7 @@ import qwirkle.ui.swing.util.HasAspectRatio;
 import javax.swing.*;
 import java.awt.*;
 
+// TODO add "Pass" button to pass with zero discards
 /** A panel containing a DiscardGridPanel, handles layout etc. */
 public class DiscardPanel extends JPanel implements HasAspectRatio {
     public static final String DISCARD = "Discard";
