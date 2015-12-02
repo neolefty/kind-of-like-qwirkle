@@ -13,6 +13,11 @@ public class AutoSizeLabel extends JLabel {
         sizer.setFractionOfMetric(fraction);
     }
 
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+    }
+
     public AutoSizeLabel(Component parent) {
         sizer = new FontAutosizer(this, parent);
     }

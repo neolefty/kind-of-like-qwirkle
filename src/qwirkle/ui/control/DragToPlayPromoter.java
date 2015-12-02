@@ -12,10 +12,10 @@ import qwirkle.ui.QwirklePieceDisplay;
 /** Watches PieceDrag and PassOver events to catch when someone
  *  is trying to play a piece by dragging and dropping.
  *  Note: doesn't guarantee that the attempt to play is legal. */
-public class PieceDropWatcher {
+public class DragToPlayPromoter {
     private QwirklePieceDisplay lastDisplay;
 
-    public PieceDropWatcher(final EventBus bus) {
+    public DragToPlayPromoter(final EventBus bus) {
         bus.register(new Object() {
             @Subscribe
             public void passOver(PassOver event) {
@@ -32,11 +32,10 @@ public class PieceDropWatcher {
                 // if it's a drop, and it's over a QwirklePieceDisplay,
                 if (event.isDrop()) {
                     QwirklePieceDisplay pieceDisplay = lastDisplay; // avoid concurrency problems by grabbing a temp copy
-                    if (pieceDisplay != null && pieceDisplay.getPiece() == null) {
+                    if (pieceDisplay != null /* && pieceDisplay.getPiece() == null */) {
                         QwirkleLocation location = pieceDisplay.getQwirkleLocation();
                         QwirklePlacement placement = new QwirklePlacement(event.getPiece(), location);
                         PlayPiece proposal = PlayPiece.propose(event.getPlayer(), placement, pieceDisplay.getDisplay());
-                        System.out.println(proposal);
                         bus.post(proposal);
                     }
                 }

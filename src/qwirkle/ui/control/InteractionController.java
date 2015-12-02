@@ -6,7 +6,7 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 
 /** Umbrella for various UI-oriented event managers. */
 public class InteractionController {
-    private PieceDropWatcher pieceDropWatcher;
+    private DragToPlayPromoter dragToPlayPromoter;
     private HypotheticalPlay hypotheticalPlay;
     private EventBus bus;
 
@@ -19,12 +19,12 @@ public class InteractionController {
             }
         });
 
-        pieceDropWatcher = new PieceDropWatcher(bus);
+        dragToPlayPromoter = new DragToPlayPromoter(bus);
         hypotheticalPlay = new HypotheticalPlay(bus);
     }
 
     public EventBus getEventBus() { return bus; }
-    public PieceDropWatcher getPieceDropWatcher() { return pieceDropWatcher; }
+    public DragToPlayPromoter getDragToPlayPromoter() { return dragToPlayPromoter; }
     public HypotheticalPlay getHypotheticalPlay() { return hypotheticalPlay; }
 
     /** Convenience method. Calls {@link EventBus#post}. */

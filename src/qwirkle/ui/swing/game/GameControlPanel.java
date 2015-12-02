@@ -105,13 +105,14 @@ public class GameControlPanel extends JPanel {
             public void updateHumanPlay(PlayPiece event) {
                 if (event.isPhaseAccept())
                     stepButton.setText(STEP_FINISH_HUMAN);
-                else if (event.isPhaseUnpropose() && event.getPlay().size() == 0)
+                else if (event.isPhaseCancel() && event.getPlay().size() == 0)
                     stepButton.setText(STEP_AI);
             }
 
             // display the number of cards remaining
             @Subscribe
             public void update(TurnStarting event) {
+                stepButton.setText(STEP_AI);
                 remaining.setText(event.getStatus().getDeckRemaining() + "");
             }
 

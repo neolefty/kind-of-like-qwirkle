@@ -11,28 +11,23 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.control.DragForwarder;
-import qwirkle.ui.control.HypotheticalPlay;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
 import java.util.*;
 
-// TODO disallow regular playing if discarding and vice-versa
-// TODO highlight when droppable?
+// TODO highlight when discarding is allowed
+// TODO allow changing your mind -- drag out of discard pile
 /** A panel you can discard pieces into. */
 public class DiscardGridPanel extends QwirkleGridPanel {
     private boolean vertical;
     private List<QwirklePlacement> placements = new ArrayList<>();
     private int numSpots = 0;
-    private QwirkleUIController uiController;
-    private HypotheticalPlay hypoPlay;
     private QwirklePlayer curPlayer;
 
     public DiscardGridPanel(QwirkleUIController controller) {
         super(new EventBus("discards"), DisplayType.discard);
-        this.uiController = controller;
-        this.hypoPlay = uiController.getHypothetical();
 
         // the bus for managing events in the discard grid
         EventBus localBus = super.getEventBus();

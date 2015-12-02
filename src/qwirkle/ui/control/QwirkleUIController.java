@@ -16,7 +16,7 @@ public class QwirkleUIController {
         this.interact = new InteractionController();
         this.game = new GameController(interact.getEventBus(), settings, threading);
 
-        // link the two together by watching for PlayTurn
+        // link the interaction controller with the game controller by watching for PlayTurn events
         interact.register(new Object() {
             @Subscribe
             public void turnRequested(PlayTurn turn) {
@@ -24,7 +24,6 @@ public class QwirkleUIController {
                     game.play(game.getCurrentPlayer(), turn.getPlacements());
                 else if (turn.getDiscards() != null)
                     game.discard(game.getCurrentPlayer(), turn.getDiscards());
-
             }
         });
         threads = new QwirkleThreads(game);

@@ -12,6 +12,7 @@ import qwirkle.ui.swing.colors.ColorSet;
 import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 
 import java.util.Collection;
+import java.util.Collections;
 
 // TODO make playable spots pulse
 // TODO abstract this from Swing and move to qwirkle.game.control, like PieceDropWatcher?
@@ -67,6 +68,12 @@ public class PlayableHighlighter {
         QwirkleBoard board = getBoard();
         if (board != null) {
             Collection<QwirklePlacement> legalMoves = hypo.getLegalMoves(piece);
+            // special case: empty board but not zero-centered (like if we've walked a pair of pieces off-center)
+            if (gridPanel.getGrid().size() == 1) {
+                QwirklePlacement placement = gridPanel.getGrid().getPlacements().iterator().next();
+                if (placement.getPiece() == piece)
+                    legalMoves = Collections.singletonList(placement);
+            }
             for (QwirklePlacement move : legalMoves) {
                 // do we need to check for null? yes because of race conditions
                 // (that hopefully haven't messed up legality -- practice they're related

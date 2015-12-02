@@ -37,14 +37,14 @@ public class QwirkleGameLayout extends LayoutBase {
                             + comp.getClass().getSimpleName() + ": " + comp);
             }
             stackOfPanels.clear();
-            stackOfPanels.addAll(playerPanels);
             if (discardPanel != null)
                 stackOfPanels.add(discardPanel);
+            stackOfPanels.addAll(playerPanels);
 
             Dimension outer = getFitInside(parent);
             // if this panel is vertical, make the player panels horizontal, and vice versa
             // give horizontal a little advantage because it's more space-efficient.
-            vertical = outer.getWidth() < outer.getHeight() / 1;
+            vertical = outer.getWidth() < outer.getHeight() / 1.1;
 
             // 2. Lay out player panels & discard panel
             int edge = 0; // start at the edge and walk left/down with panels

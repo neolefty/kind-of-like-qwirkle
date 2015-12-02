@@ -164,6 +164,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             // name at top
             constraints.weighty = 0;
             nameLabel.setText(player.getName());
+            nameLabel.setToolTipText(player.getName());
             nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(nameLabel, constraints);
             constraints.gridy++;

@@ -16,16 +16,19 @@ public class HypotheticalPlayBgColors implements ColorSet {
         this(placement.getColor());
     }
 
+    /** Legal destination. */
     @Override
     public Color getNormal() {
         return new Color(pieceColor.getColorInt()).darker().darker();
     }
 
+    /** Hover over a legal destination. */
     @Override
     public Color getHighlight() {
         return new Color(pieceColor.getColorInt()).darker();
     }
 
+    /** Where the piece came from (because the mouse is pressed, and this is focused, during a drag) */
     @Override
     public Color getActivated() {
         return new Color(pieceColor.getColorInt()).brighter();

@@ -7,7 +7,6 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.PreEvent;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
-import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.event.PlayTurn;
 
@@ -32,8 +31,6 @@ public class HypotheticalPlay {
     // (note: may be plays on the gameboard or discards)
     private List<PlayPiece> acceptedPlays = new ArrayList<>();
 
-    // If the last action was to cancel a play, and we're still mid-drag, what was it? Null if none.
-    private PlayPiece lastCancel;
     // Cached copy: the last set of legal moves reported
     private Collection<QwirklePlacement> lastLegal;
 
@@ -58,14 +55,6 @@ public class HypotheticalPlay {
     /** When a new turn starts, update our notion of the current player. */
     @Subscribe
     public void turnStarting(TurnStarting event) { currentPlayer = event.getCurPlayer(); }
-
-    /** When a drag completes, forget the last cancel. */
-    @Subscribe
-    public synchronized void dragComplete(DragPiece event) {
-        if (event.isCancel() || event.isDrop()) {
-            lastCancel = null;
-        }
-    }
 
     /** Does this play consist only of discards? */
     public boolean isAllDiscards() {
@@ -101,8 +90,7 @@ public class HypotheticalPlay {
                     updateBoard();
                     if (!removed) throw new IllegalStateException
                             ("Couldn't remove " + event.getPrevious() + " from accepted plays.");
-                    lastCancel = event.cancel();
-                    bus.post(lastCancel);
+                    bus.post(event.cancel());
                 }
                 // sorry, we would need to remove other pieces first and cascade to this one
                 else
@@ -121,27 +109,23 @@ public class HypotheticalPlay {
     /** How many pieces are currently in this hypothetical play? */
     public int size() { return acceptedPlays.size(); }
 
+    // TODO allow putting it back where you found it
     /** Where can this piece be placed legally? */
     public synchronized Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
         Collection<QwirklePlacement> result;
         // you can't discard & play at the same time
         if (size() > 0 && isAllDiscards())
             result = Collections.emptyList();
-        // special case: moving the only piece on the board
-        else if (lastCancel != null && getHypotheticalBoard() != null && getHypotheticalBoard().size() == 0
-                && piece == lastCancel.getPiece())
-        {
-            List<QwirklePlacement> temp = new ArrayList<>();
-            QwirkleLocation center = lastCancel.getPlacement().getLocation();
-            temp.add(new QwirklePlacement(piece, center.getAbove()));
-            temp.add(new QwirklePlacement(piece, center.getBelow()));
-            temp.add(new QwirklePlacement(piece, center.getLeft()));
-            temp.add(new QwirklePlacement(piece, center.getRight()));
-            result = Collections.unmodifiableList(temp);
-        }
-        // normal case: legal moves
-        else
+        // what are the legal moves?
+        else {
             result = getBoard().getLegalPlacements(getPlacements(), piece);
+            // allow it to be put back where it came from
+//            for (QwirklePlacement p : getPlacements())
+//                if (p.getPiece() == piece) { // if it's the very same piece that was picked up
+//                    result = new ArrayList<>(result);
+//                    result.add(p);
+//                }
+        }
 
         // remember the result
         this.lastLegal = result;
@@ -205,7 +189,6 @@ public class HypotheticalPlay {
         hypoBoard = null;
         currentPlayer = null;
         acceptedPlays.clear();
-        lastCancel = null;
         lastLegal = null;
         this.board = board;
     }

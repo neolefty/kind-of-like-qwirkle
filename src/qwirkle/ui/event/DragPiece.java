@@ -1,10 +1,11 @@
 package qwirkle.ui.event;
 
 import qwirkle.game.base.*;
+import qwirkle.ui.control.DragToPlayPromoter;
 
 /** A piece is being dragged -- picked up or put down or cancelled.
  *  Note that we don't track the destination in this event.
- *  Instead, destination is determined by {@link qwirkle.ui.control.PieceDropWatcher}
+ *  Instead, destination is determined by {@link DragToPlayPromoter}
  *  and can be subscribed to via {@link PlayPiece} events. */
 public class DragPiece {
     public enum Action {

@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 
+// TODO animate transition
 public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGridLayout layout;
     private boolean blankIncluded;
