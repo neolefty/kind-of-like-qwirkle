@@ -10,14 +10,17 @@ import java.awt.*;
 public class QwirkleGridLayout extends LayoutBase {
     private QwirkleGrid grid;
     private int margin;
+    private QwirkleGridPanel panel;
 
-    public QwirkleGridLayout() {}
+    public QwirkleGridLayout(QwirkleGridPanel panel) {
+        this.panel = panel;
+    }
 
     @Override
     public void layoutContainer(Container parent) {
         synchronized (parent.getTreeLock()) {
             if (grid != null) {
-                int xMin = grid.getXMin() - getMargin(), yMin = grid.getYMin() - getMargin();
+                int xMin = panel.getXMin(), yMin = panel.getYMin();
                 int square = getSquareSize(parent);
                 int xMargin = (parent.getWidth() - square * getNx()) / 2,
                         yMargin = (parent.getHeight() - square * getNy()) / 2;
@@ -57,29 +60,14 @@ public class QwirkleGridLayout extends LayoutBase {
         return new Dimension(getNx() * square, getNy() * square);
     }
 
-    /** How big would the board be if we fit it into the size given by dim?
-     *  Keeps the pieces square. */
-    private Dimension fit(Dimension dim) {
-        if (dim != null) {
-            if (grid == null)
-                return new Dimension(0, 0);
-            else {
-                int sq = getSquareSize(dim, false);
-                return new Dimension(sq * getNx(), sq * getNy());
-            }
-        }
-        else
-            return null;
-    }
-
     /** Number of x spaces (columns) to allow for the board. */
     private int getNx() {
-        return grid == null ? margin : grid.getWidth() + margin * 2;
+        return 1 + panel.getXMax() - panel.getXMin();
     }
 
     /** Number of y spaces (rows) to allow for the board. */
     private int getNy() {
-        return grid == null ? margin : grid.getHeight() + margin * 2;
+        return 1 + panel.getYMax() - panel.getYMin();
     }
 
     private int getSquareSize(Dimension dim, boolean min) {

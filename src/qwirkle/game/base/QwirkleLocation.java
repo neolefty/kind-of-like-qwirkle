@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** An immutable x,y int pair */
-public class QwirkleLocation implements Comparable<QwirkleLocation> {
+public class QwirkleLocation implements Comparable<QwirkleLocation>, HasQwirkleLocation {
     private int x, y;
 
     public QwirkleLocation(int x, int y) { this.x = x; this.y = y; }
@@ -40,6 +40,8 @@ public class QwirkleLocation implements Comparable<QwirkleLocation> {
     }
     private SoftReference<List<QwirkleLocation>> neighbSoft;
     private List<QwirkleLocation> neighbors;
+
+    @Override public QwirkleLocation getQwirkleLocation() { return this; }
 
     public List<QwirkleLocation> getNeighbors() {
 //        List<QwirkleLocation> result = neighbSoft == null ? null : neighbSoft.get();

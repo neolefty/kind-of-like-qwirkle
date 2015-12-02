@@ -2,9 +2,11 @@ package qwirkle.ui.swing.game;
 
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.swing.game.player.PlayerPanel;
+import qwirkle.ui.swing.util.HasAspectRatio;
 import qwirkle.ui.swing.util.LayoutBase;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -12,6 +14,8 @@ import java.util.Set;
 public class QwirkleGameLayout extends LayoutBase {
     private Set<PlayerPanel> playerPanels = new LinkedHashSet<>();
     private QwirkleGridPanel gridPanel;
+    private DiscardPanel discardPanel;
+    private java.util.List<HasAspectRatio> stackOfPanels = new ArrayList<>();
     private boolean vertical = false;
 
     @Override
@@ -26,26 +30,31 @@ public class QwirkleGameLayout extends LayoutBase {
                     playerPanels.add((PlayerPanel) comp);
                 else if (comp instanceof QwirkleGridPanel)
                     gridPanel = (QwirkleGridPanel) comp;
+                else if (comp instanceof DiscardPanel)
+                    discardPanel = (DiscardPanel) comp;
+                else
+                    throw new UnsupportedOperationException("Unknown component: "
+                            + comp.getClass().getSimpleName() + ": " + comp);
             }
+            stackOfPanels.clear();
+            stackOfPanels.addAll(playerPanels);
+            if (discardPanel != null)
+                stackOfPanels.add(discardPanel);
 
             Dimension outer = getFitInside(parent);
             // if this panel is vertical, make the player panels horizontal, and vice versa
             // give horizontal a little advantage because it's more space-efficient.
-            vertical = outer.getWidth() < outer.getHeight() / 1.1;
+            vertical = outer.getWidth() < outer.getHeight() / 1;
 
-            // 2. Lay out player panels
+            // 2. Lay out player panels & discard panel
             int edge = 0; // start at the edge and walk left/down with panels
-            for (PlayerPanel player : playerPanels) {
-                player.setVertical(!vertical); // opposite of our orientation
-                Dimension d;
-                if (vertical) // if vertical, player panel is horizontal, same width as this
-                    d = new Dimension(outer.width, (int) (outer.width / player.getAspectRatio()));
-                else
-                    d = new Dimension((int) (outer.height * player.getAspectRatio()), outer.height);
-                if (vertical) // start at top and work down
-                    player.setBounds(0, edge, d.width, d.height);
-                else // start at left and work to the right
-                    player.setBounds(edge, 0, d.width, d.height);
+            for (HasAspectRatio panel : stackOfPanels) {
+                panel.setVertical(!vertical); // opposite of our orientation
+                Dimension d = getDimensions(outer, panel);
+                if (vertical) // vertical: start at top and work down
+                    ((Component) panel).setBounds(0, edge, d.width, d.height);
+                else // horizontal: start at left and work to the right
+                    ((Component) panel).setBounds(edge, 0, d.width, d.height);
                 edge += vertical ? d.height : d.width;
             }
 
@@ -57,6 +66,17 @@ public class QwirkleGameLayout extends LayoutBase {
                     gridPanel.setBounds(edge, 0, outer.width - edge, outer.height);
             }
         }
+    }
+
+    /** The dimensions of a sub-panel like a player panel or discard panel.
+     *  @param outer the outer dimensions everything is fitting into
+     *  @param panel the panel to be dimensioned */
+    private Dimension getDimensions(Dimension outer, HasAspectRatio panel) {
+        if (panel.isVertical()) // vertical -- same height as outer
+            return new Dimension((int) (outer.height * panel.getAspectRatio()), outer.height);
+        else // horizontal -- same width as outer
+            return new Dimension(outer.width, (int) (outer.width / panel.getAspectRatio()));
+
     }
 
     @Override

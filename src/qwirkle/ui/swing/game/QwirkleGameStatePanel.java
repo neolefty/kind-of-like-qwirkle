@@ -6,7 +6,7 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.board.PlayableHighlighter;
-import qwirkle.ui.swing.game.board.QwirklePlayableGridPanel;
+import qwirkle.ui.swing.game.board.GameboardPanel;
 import qwirkle.ui.swing.game.player.PlayerPanel;
 import qwirkle.ui.swing.util.SwingKitty;
 
@@ -15,10 +15,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** A JPanel that shows the state of a game: players and board. */
+/** A JPanel that shows the state of a qwirkle game: the players and board. */
 public class QwirkleGameStatePanel extends JPanel {
     // synchronize on this before making any changes
     private final Map<QwirklePlayer, PlayerPanel> playerPanelMap = new LinkedHashMap<>();
+    private final DiscardPanel discardPanel;
     private QwirkleUIController control;
 
     public QwirkleGameStatePanel(QwirkleUIController control) {
@@ -26,9 +27,13 @@ public class QwirkleGameStatePanel extends JPanel {
         this.control = control;
 
         // board
-        QwirklePlayableGridPanel grid = new QwirklePlayableGridPanel(control);
+        GameboardPanel grid = new GameboardPanel(control);
         grid.setBlankIncluded(true);
         add(grid);
+
+        // discard panel
+        discardPanel = new DiscardPanel(control);
+        add(discardPanel);
 
         // ui controllers
         new PlayableHighlighter(control, grid);

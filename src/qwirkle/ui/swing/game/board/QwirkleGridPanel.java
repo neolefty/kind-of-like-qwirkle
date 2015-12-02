@@ -6,6 +6,7 @@ import qwirkle.game.base.QwirkleGrid;
 import qwirkle.game.base.QwirkleLocation;
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.base.impl.QwirkleGridTools;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.QwirkleGridDisplay;
@@ -13,8 +14,7 @@ import qwirkle.ui.QwirklePieceDisplay;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGridLayout layout;
@@ -22,13 +22,18 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private QwirkleGrid grid;
     private TurnCompleted lastTurn;
     private EventBus eventBus;
+    private DisplayType displayType;
+
+    private final Object alwaysShownSync = new Object();
+    private Set<QwirkleLocation> alwaysShown;
 
     private boolean draggable = false;
     private QwirklePlayer dragPlayer = null;
 
-    public QwirkleGridPanel(EventBus bus) {
+    public QwirkleGridPanel(EventBus bus, DisplayType displayType) {
         this.eventBus = bus;
-        layout = new QwirkleGridLayout();
+        this.displayType = displayType;
+        layout = new QwirkleGridLayout(this);
         setLayout(layout);
         setBlankIncluded(true);
         bus.register(this);
@@ -54,12 +59,11 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         if (this.blankIncluded != blankIncluded) {
             this.blankIncluded = blankIncluded;
             layout.setMargin(blankIncluded ? 1 : 0);
-            // refresh
             refresh();
         }
     }
 
-    public void refresh() {
+    private void refresh() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -71,15 +75,21 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
                     layout.setGrid(grid);
                     if (grid != null)
                         if (blankIncluded) {
-                            for (int y = grid.getYMin() - 1; y <= grid.getYMax() + 1; ++y)
-                                for (int x = grid.getXMin() - 1; x <= grid.getXMax() + 1; ++x)
+                            int margin = layout.getMargin();
+                            for (int y = grid.getYMin() - margin; y <= grid.getYMax() + margin; ++y)
+                                for (int x = grid.getXMin() - margin; x <= grid.getXMax() + margin; ++x)
                                     addPiecePanel(createPiecePanel(x, y));
                         } else {
-                            for (QwirklePlacement p : grid.getPlacements()) {
-                                QwirkleLocation loc = p.getLocation();
-                                addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
-                            }
+                            for (QwirklePlacement p : grid.getPlacements())
+                                addPiecePanel(p.getLocation());
                         }
+                    // include the locations we've been asked to alway show
+                    synchronized (alwaysShownSync) {
+                        if (alwaysShown != null)
+                            for (QwirkleLocation loc : alwaysShown)
+                                if (!panelMap.containsKey(loc))
+                                    addPiecePanel(loc);
+                    }
                 }
                 validate();
                 repaint();
@@ -88,7 +98,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     public QwirklePiecePanel createPiecePanel(int x, int y) {
-        return new QwirklePiecePanel(eventBus, grid, x, y, isInLastTurn(x, y));
+        return new QwirklePiecePanel(eventBus, this, x, y, isInLastTurn(x, y));
     }
 
     private boolean isInLastTurn(int x, int y) {
@@ -105,6 +115,28 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         }
     }
 
+    /** Be sure to always show these locations.
+     *  @param refresh if true, refresh the display immediately;
+     *                 if false, wait until the next call to {@link #setGrid}. */
+    public void setAlwayShown(Collection<QwirkleLocation> locations, boolean refresh) {
+        synchronized (alwaysShownSync) {
+            if (locations == null || locations.size() == 0)
+                alwaysShown = null;
+            else
+                this.alwaysShown = Collections.unmodifiableSet(new HashSet<>(locations));
+        }
+        if (refresh)
+            refresh();
+    }
+
+    /** Locations that this is always sure to show. */
+    public Set<QwirkleLocation> getAlwaysShown() {
+        return alwaysShown;
+    }
+
+    private void addPiecePanel(QwirkleLocation loc) {
+        addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
+    }
     private void addPiecePanel(QwirklePiecePanel pp) {
         if (draggable && pp.getPiece() != null)
             pp.makeDraggable(dragPlayer, null);
@@ -114,26 +146,28 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
 
     /** Enable drag-and-drop operations starting from this grid. */
     public void makeDraggable(QwirklePlayer player) {
-        synchronized (getTreeLock()) {
-            this.dragPlayer = player;
-            this.draggable = true;
-            for (Component c : getComponents()) {
-                if (c instanceof QwirklePiecePanel)
-                    ((QwirklePiecePanel) c).makeDraggable(dragPlayer, null);
+        if (!draggable || this.dragPlayer != player)
+            synchronized (getTreeLock()) {
+                this.dragPlayer = player;
+                this.draggable = true;
+                for (Component c : getComponents()) {
+                    if (c instanceof QwirklePiecePanel)
+                        ((QwirklePiecePanel) c).makeDraggable(dragPlayer, null);
+                }
             }
-        }
     }
 
     /** Disable drag-and-drop operations starting from this grid. */
     public void makeUndraggable() {
-        synchronized (getTreeLock()) {
-            this.dragPlayer = null;
-            this.draggable = false;
-            for (Component c : getComponents()) {
-                if (c instanceof QwirklePiecePanel)
-                    ((QwirklePiecePanel) c).makeUndraggable();
+        if (draggable)
+            synchronized (getTreeLock()) {
+                this.dragPlayer = null;
+                this.draggable = false;
+                for (Component c : getComponents()) {
+                    if (c instanceof QwirklePiecePanel)
+                        ((QwirklePiecePanel) c).makeUndraggable();
+                }
             }
-        }
     }
 
     public void setGrid(QwirkleGrid grid) {
@@ -144,10 +178,49 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     @Override public QwirkleGrid getGrid() { return grid; }
-
     @Override public int getPieceWidth() { return layout.getPieceSize(); }
-
     @Override public int getPieceHeight() { return layout.getPieceSize(); }
+    @Override public DisplayType getDisplayType() { return displayType; }
+
+    /** Least x-coordinate that is visible, including margin and all locations. */
+    public int getXMin() {
+        int result = grid == null ? 0 : grid.getXMin();
+        synchronized (alwaysShownSync) {
+            if (alwaysShown != null)
+                result = Math.min(result, QwirkleGridTools.getXMin(alwaysShown));
+        }
+        return result - layout.getMargin();
+    }
+
+    /** Least y-coordinate that is visible, including margin and all locations. */
+    public int getYMin() {
+        int result = grid == null ? 0 : grid.getYMin();
+        synchronized (alwaysShownSync) {
+            if (alwaysShown != null)
+                result = Math.min(result, QwirkleGridTools.getYMin(alwaysShown));
+        }
+        return result - layout.getMargin();
+    }
+
+    /** Greatest x-coordinate that is visible, including margin and all locations. */
+    public int getXMax() {
+        int result = grid == null ? 0 : grid.getXMax();
+        synchronized (alwaysShownSync) {
+            if (alwaysShown != null)
+                result = Math.max(result, QwirkleGridTools.getXMax(alwaysShown));
+        }
+        return result + layout.getMargin();
+    }
+
+    /** Greatest y-coordinate that is visible, including margin and all locations. */
+    public int getYMax() {
+        int result = grid == null ? 0 : grid.getYMax();
+        synchronized (alwaysShownSync) {
+            if (alwaysShown != null)
+                result = Math.max(result, QwirkleGridTools.getYMax(alwaysShown));
+        }
+        return result + layout.getMargin();
+    }
 
     public QwirklePiecePanel getPiecePanel(QwirkleLocation loc) {
         return panelMap.get(loc);

@@ -20,7 +20,11 @@ public class QwirkleUIController {
         interact.register(new Object() {
             @Subscribe
             public void turnRequested(PlayTurn turn) {
-                game.play(game.getCurrentPlayer(), turn.getPlacements());
+                if (turn.getPlacements() != null)
+                    game.play(game.getCurrentPlayer(), turn.getPlacements());
+                else if (turn.getDiscards() != null)
+                    game.discard(game.getCurrentPlayer(), turn.getDiscards());
+
             }
         });
         threads = new QwirkleThreads(game);

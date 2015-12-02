@@ -243,7 +243,7 @@ public class GameController {
 //                Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
 //                if (placements == null || placements.size() == 0)
 //                    // an empty play means pass, which means give a chance to discard and re-draw
-//                    stepDiscard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
+//                    discard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
 //                else
 //                    play(cur, placements);
 //            } catch(IllegalStateException e) {
@@ -263,7 +263,7 @@ public class GameController {
                         Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
                         if (placements == null || placements.size() == 0)
                             // an empty play means pass, which means give a chance to discard and re-draw
-                            stepDiscard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
+                            discard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
                         else
                             play(cur, placements);
                     } catch(IllegalStateException e) {
@@ -304,8 +304,8 @@ public class GameController {
         stepFinish(cur, turn);
     }
 
-    /** The part of a step after the QwirklePlayer callback if the player chose to discard. */
-    private void stepDiscard(QwirklePlayer cur, Collection<QwirklePiece> discards) {
+    /** A player takes a turn by discarding some pieces, and the game advances. */
+    public void discard(QwirklePlayer cur, Collection<QwirklePiece> discards) {
         checkCurrent(cur, "discard");
         ++nPasses; // increment the pass counter
         if (discards != null && discards.size() > 0) { // do the discard

@@ -19,20 +19,25 @@ public class PieceDropWatcher {
         bus.register(new Object() {
             @Subscribe
             public void passOver(PassOver event) {
+                // moved in --> currently over a display
                 if (event.isEnter())
                     lastDisplay = event.getDisplay();
+                // moved out --> currently not over a display
                 else
                     lastDisplay = null;
             }
 
             @Subscribe
             public void drag(DragPiece event) {
+                // if it's a drop, and it's over a QwirklePieceDisplay,
                 if (event.isDrop()) {
-                    QwirklePieceDisplay display = lastDisplay; // avoid concurrency problems by grabbing a temp copy
-                    if (display != null && display.getPiece() == null) {
-                        QwirkleLocation location = display.getQwirkleLocation();
+                    QwirklePieceDisplay pieceDisplay = lastDisplay; // avoid concurrency problems by grabbing a temp copy
+                    if (pieceDisplay != null && pieceDisplay.getPiece() == null) {
+                        QwirkleLocation location = pieceDisplay.getQwirkleLocation();
                         QwirklePlacement placement = new QwirklePlacement(event.getPiece(), location);
-                        bus.post(PlayPiece.propose(event.getPlayer(), placement));
+                        PlayPiece proposal = PlayPiece.propose(event.getPlayer(), placement, pieceDisplay.getDisplay());
+                        System.out.println(proposal);
+                        bus.post(proposal);
                     }
                 }
             }

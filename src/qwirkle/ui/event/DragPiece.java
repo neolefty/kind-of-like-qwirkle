@@ -2,15 +2,18 @@ package qwirkle.ui.event;
 
 import qwirkle.game.base.*;
 
-/** A piece is being dragged -- picked up or put down or cancelled. */
+/** A piece is being dragged -- picked up or put down or cancelled.
+ *  Note that we don't track the destination in this event.
+ *  Instead, destination is determined by {@link qwirkle.ui.control.PieceDropWatcher}
+ *  and can be subscribed to via {@link PlayPiece} events. */
 public class DragPiece {
     public enum Action {
         PICKUP, SUSTAIN, DROP, CANCEL
     }
 
     private QwirklePlayer player;
-    private QwirkleGrid sourceGrid, destGrid;
-    private QwirkleLocation sourceLocation, destLocation;
+    private QwirkleGrid sourceGrid;
+    private QwirkleLocation sourceLocation;
     private Action action;
 
     private DragPiece(QwirklePlayer player, QwirkleGrid sourceGrid, QwirkleLocation location, Action action) {
@@ -26,9 +29,7 @@ public class DragPiece {
     private DragPiece(DragPiece precedent, Action action) {
         this.player = precedent.player;
         this.sourceGrid = precedent.sourceGrid;
-        this.destGrid = precedent.destGrid;
         this.sourceLocation = precedent.sourceLocation;
-        this.destLocation = precedent.destLocation;
         this.action = action;
     }
 
@@ -39,12 +40,9 @@ public class DragPiece {
     }
 
     /** Drop a piece. */
-    public DragPiece drop(QwirkleGrid destGrid, QwirkleLocation location) {
+    public DragPiece drop() {
         checkStartOrSustain(Action.DROP);
-        DragPiece result = new DragPiece(this, Action.DROP);
-        result.destGrid = destGrid;
-        result.destLocation = location;
-        return result;
+        return new DragPiece(this, Action.DROP);
     }
 
     /** Keep dragging. */
@@ -65,22 +63,11 @@ public class DragPiece {
     /** The grid this piece is being picked up from. */
     public QwirkleGrid getSourceGrid() { return sourceGrid; }
 
-    /** The grid this is piece is being dropped on. */
-    public QwirkleGrid getDestGrid() { return destGrid; }
-
     /** The location being picked up from. */
     public QwirkleLocation getSourceLocation() { return sourceLocation; }
 
-    /** The location being dropped on (null if none yet). */
-    public QwirkleLocation getDestLocation() { return destLocation; }
-
     /** The placement being picked up. */
     public QwirklePlacement getSourcePlacement() { return sourceGrid.getPlacement(sourceLocation); }
-
-    /** The placement being dropped (null if none yet). */
-    public QwirklePlacement getDestPlacement() {
-        return destLocation != null && destGrid != null ? destGrid.getPlacement(destLocation) : null;
-    }
 
     /** The piece being picked up or dropped. */
     public QwirklePiece getPiece() { return sourceGrid.get(sourceLocation); }
@@ -100,7 +87,6 @@ public class DragPiece {
 
     @Override
     public String toString() {
-        return action + " " + getSourcePlacement()
-                + (getDestPlacement() == null ? "" : " to " + getDestPlacement());
+        return action + " " + getPiece() + " from " + getSourceLocation();
     }
 }

@@ -10,9 +10,9 @@ import qwirkle.game.event.DrawPieces;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.control.DragForwarder;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.DragPiece;
-import qwirkle.ui.event.PassOver;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.swing.util.SelfDisposingEventSubscriber;
@@ -57,7 +57,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
                 System.out.println("Player hand panel event bus: " + context);
                 exception.printStackTrace(System.out);
             }
-        }));
+        }), DisplayType.hand);
         this.control = control;
         setBlankIncluded(false);
 
@@ -65,10 +65,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         new GameListener(control.getEventBus(), this);
 
         // forward mouse events from the local bus to the parent bus
-        new SelfDisposingEventSubscriber(getEventBus(), this) {
-            @Subscribe public void dragPosted(DragPiece event) { control.post(event); }
-            @Subscribe public void passedOver(PassOver event) { control.post(event); }
-        };
+        new DragForwarder(getEventBus(), this, control.getEventBus());
 
         setVertical(true);
     }
@@ -103,11 +100,11 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         // hide & show pieces in hand as we drag them to the board
         @Subscribe public void play(PlayPiece event) {
             if (event.getPlayer() == player) {
-                if (event.isAccept()) {
+                if (event.isPhaseAccept()) {
 //                    System.out.println(event);
                     dragOut(event.getPlacement());
                 }
-                else if (event.isCancel() || event.isReject()) {
+                else if (event.isPhaseCancel() || event.isPhaseReject()) {
 //                    System.out.println(event);
                     undragOut(event.getPlacement());
                 }

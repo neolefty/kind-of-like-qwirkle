@@ -38,6 +38,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Boolean vertical = null;
     private TurnCompleted bestMove = null;
     private boolean myTurn;
+    private int handSize = 0;
 
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
@@ -75,13 +76,19 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             @Subscribe
             public void gameStart(GameStarted started) {
                 clear();
+                handSize = started.getSettings().getHandSize();
             }
         };
     }
 
+    // TODO adjust aspect ratio based on number of pieces in hand
+    public static double getAspectRatio(boolean vertical, int handSize) {
+        return vertical ? VERTICAL_ASPECT_RATIO : HORIZONTAL_ASPECT_RATIO;
+    }
+
     @Override
     public double getAspectRatio() {
-        return isHorizontal() ? HORIZONTAL_ASPECT_RATIO : VERTICAL_ASPECT_RATIO;
+        return getAspectRatio(vertical, handSize);
     }
 
     private void setBestMove(TurnCompleted best) {
@@ -154,12 +161,14 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             for (AutoSizeLabel asl : autoSizeLabels)
                 asl.setMetric(FontAutosizer.Metric.WIDTH);
 
+            // name at top
             constraints.weighty = 0;
             nameLabel.setText(player.getName());
             nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(nameLabel, constraints);
-
             constraints.gridy++;
+
+            // then score
             constraints.weighty = 0;
             scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(scoreLabel, constraints);
@@ -168,12 +177,14 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             add(scoreSeparatorLabel, constraints);
             scoreSeparatorLabel.setVisible(false);
             constraints.gridx = 0;
-
             constraints.gridy++;
+
+            // then hand
             constraints.weighty = 1;
             add(handPanel, constraints);
-
             constraints.gridy++;
+
+            // then best play at bottom
             constraints.weighty = 0;
             bestMoveLabel.setHorizontalAlignment(SwingConstants.CENTER);
             add(bestMoveLabel, constraints);

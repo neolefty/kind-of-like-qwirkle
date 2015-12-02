@@ -3,6 +3,7 @@ package qwirkle.ui.swing.game.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.*;
+import qwirkle.ui.QwirkleGridDisplay;
 import qwirkle.ui.QwirklePieceDisplay;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
@@ -28,27 +29,27 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     private QwirkleLocation location;
     private EventBus bus;
     private DragHelper dragHelper;
-    private QwirkleGrid grid;
+    private QwirkleGridDisplay parent;
 
     private BackgroundManager bgMgr;
 
-    public QwirklePiecePanel(EventBus bus, QwirkleGrid grid, int x, int y) {
-        this(bus, grid, x, y, false);
+    public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, int x, int y) {
+        this(bus, parent, x, y, false);
     }
 
-    public QwirklePiecePanel(EventBus bus, QwirkleGrid grid, int x, int y, boolean highlight) {
-        this(bus, grid, new QwirkleLocation(x, y), highlight);
+    public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, int x, int y, boolean highlight) {
+        this(bus, parent, new QwirkleLocation(x, y), highlight);
     }
 
     /** Create a QwirklePiecePanel.
      *  @param bus The EventBus to post {@link DragPiece} events to. Can be null if this won't post drag events. */
-    public QwirklePiecePanel(final EventBus bus, final QwirkleGrid grid, final QwirkleLocation location, boolean highlight) {
+    public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, QwirkleLocation location, boolean highlight) {
         bgMgr = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
 
         this.location = location;
-        this.piece = grid.get(location);
+        this.parent = parent;
+        this.piece = parent.getGrid().get(location);
         this.bus = bus;
-        this.grid = grid;
         initEvents();
 
         if (piece != null)
@@ -111,6 +112,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     @Override public QwirklePiece getPiece() { return piece; }
     @Override public int getPieceHeight() { return getHeight(); }
     @Override public int getPieceWidth() { return getWidth(); }
+    @Override public QwirkleGridDisplay getDisplay() { return parent; }
 
     @Override
     public String toString() { return location + ": " + (piece == null ? "blank" : piece); }
@@ -140,7 +142,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     private void initDragHelper(final QwirklePlayer player, final PlayPiece context) {
-        if (context != null && !context.isAccept())
+        if (context != null && !context.isPhaseAccept())
             throw new IllegalArgumentException("Unsupported state: " + context);
         dragHelper = new DragHelper(this, new DragHelper.DragHandler() {
             DragPiece event;
@@ -148,11 +150,11 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
             @Override
             public void startDrag(MouseEvent e) {
                 if (context != null) {
-                    if (context.isAccept()) {
+                    if (context.isPhaseAccept()) {
                         bus.post(context.unpropose());
                     }
                 }
-                event = post(DragPiece.createPickup(player, grid, location));
+                event = post(DragPiece.createPickup(player, parent.getGrid(), location));
             }
 
             @Override
@@ -163,7 +165,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
 
             @Override
             public void endDrag(MouseEvent e) {
-                event = post(event.drop(grid, location));
+                event = post(event.drop());
             }
 
             @Override

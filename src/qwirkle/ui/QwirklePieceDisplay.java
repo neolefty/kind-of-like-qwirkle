@@ -13,4 +13,7 @@ public interface QwirklePieceDisplay extends HasQwirkleLocation {
 
     /** The size of the piece displayed, in screen pixels. */
     int getPieceWidth();
+
+    /** The grid display that this is part of. Not null (so far ...). */
+    QwirkleGridDisplay getDisplay();
 }

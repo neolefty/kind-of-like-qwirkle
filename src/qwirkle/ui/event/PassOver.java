@@ -2,7 +2,7 @@ package qwirkle.ui.event;
 
 import qwirkle.ui.QwirklePieceDisplay;
 
-/** The mouse passed over a {@link QwirklePieceDisplay}. */
+/** The mouse passed into or out of a {@link QwirklePieceDisplay}. */
 public class PassOver {
     private QwirklePieceDisplay display;
     private boolean enter;
@@ -20,7 +20,8 @@ public class PassOver {
 
     @Override
     public String toString() {
-        return (enter ? "Entering " : "Exiting ") + display.getPiece()
-                + " (" + display.getPieceWidth() + "x" + display.getPieceHeight();
+        return (enter ? "Entering " : "Exiting ")
+                + (display.getPiece() == null ? "empty spot" : display.getPiece())
+                + " at " + display.getQwirkleLocation();
     }
 }
