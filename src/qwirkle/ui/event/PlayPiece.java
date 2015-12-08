@@ -5,7 +5,7 @@ import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.ui.QwirkleGridDisplay;
-import qwirkle.ui.control.HypotheticalPlay;
+import qwirkle.ui.control.HypotheticalPlayController;
 
 /** Someone plays a piece interactively. */
 public class PlayPiece {
@@ -16,7 +16,7 @@ public class PlayPiece {
     private QwirkleGridDisplay display;
 
     // The play being contemplated
-    private HypotheticalPlay play;
+    private HypotheticalPlayController play;
 
     /** A player {@link Phase#propose}s a play by dragging a piece.
      *  The game {@link Phase#accept}s or {@link Phase#reject}s it.
@@ -68,7 +68,7 @@ public class PlayPiece {
     }
 
     /** Accept a single placement. */
-    public PlayPiece accept(HypotheticalPlay play) {
+    public PlayPiece accept(HypotheticalPlayController play) {
         PlayPiece result = new PlayPiece(this, Phase.propose, Phase.accept);
         result.play = play;
         return result;
@@ -86,7 +86,7 @@ public class PlayPiece {
      public PlayPiece cancel() { return new PlayPiece(this, Phase.unpropose, Phase.cancel); }
 
     /** The whole play being contemplated. Null if it's the first play and hasn't been accepted yet. */
-    public HypotheticalPlay getPlay() { return play; }
+    public HypotheticalPlayController getPlay() { return play; }
 
     /** The piece & location being played to. */
     public QwirklePlacement getPlacement() { return placement; }

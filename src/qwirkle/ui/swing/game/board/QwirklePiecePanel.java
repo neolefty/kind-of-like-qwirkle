@@ -14,7 +14,7 @@ import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.util.SwingDragHelper;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.impl.SwingDisposeUndisposer;
+import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,7 +67,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
 
     private void initEvents() {
         if (bus != null)
-            new SelfDisposingEventSubscriber(bus, new SwingDisposeUndisposer(this)) {
+            new SelfDisposingEventSubscriber(bus, new SwingPlatformAttacher(this)) {
                 /** Highlight this piece if it is part of the {@link HighlightTurn}. */
                 @Subscribe public void highlight(HighlightTurn hl) {
                     // we can tell based on location

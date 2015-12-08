@@ -2,7 +2,7 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.impl.QwirkleGridImpl;
-import qwirkle.ui.control.DiscardController;
+import qwirkle.ui.control.DiscardTracker;
 import qwirkle.ui.event.DiscardUpdate;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 
@@ -10,9 +10,9 @@ import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 // TODO allow changing your mind -- drag out of discard pile
 /** A panel you can discard pieces into. */
 public class DiscardGridPanel extends QwirkleGridPanel {
-    private DiscardController controller;
+    private DiscardTracker controller;
 
-    public DiscardGridPanel(final DiscardController controller) {
+    public DiscardGridPanel(final DiscardTracker controller) {
         super(controller.getLocalBus(), DisplayType.discard);
         super.setBlankIncluded(false);
 

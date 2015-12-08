@@ -2,7 +2,7 @@ package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.ui.control.QwirkleUIController;
-import qwirkle.ui.control.HypotheticalPlay;
+import qwirkle.ui.control.HypotheticalPlayController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.game.base.QwirkleBoard;
@@ -14,7 +14,7 @@ import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
  *  a hypothetical turn a player is building. */
 public class GameboardPanel extends QwirkleGridPanel {
     // The play the player is currently making
-    public HypotheticalPlay hypoPlay;
+    public HypotheticalPlayController hypoPlay;
 
     public GameboardPanel(final QwirkleUIController control) {
         super(control.getEventBus(), DisplayType.gameboard);

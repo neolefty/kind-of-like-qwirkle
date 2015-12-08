@@ -7,7 +7,7 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 /** Umbrella for various UI-oriented event managers. */
 public class InteractionController {
     private DragToPlayPromoter dragToPlayPromoter;
-    private HypotheticalPlay hypotheticalPlay;
+    private HypotheticalPlayController hypotheticalPlay;
     private EventBus bus;
 
     public InteractionController() {
@@ -20,13 +20,13 @@ public class InteractionController {
         });
 
         dragToPlayPromoter = new DragToPlayPromoter(bus);
-        hypotheticalPlay = new HypotheticalPlay(bus);
+        hypotheticalPlay = new HypotheticalPlayController(bus);
     }
 
     public EventBus getEventBus() { return bus; }
     public DragToPlayPromoter getDragToPlayPromoter() { return dragToPlayPromoter; }
-    public HypotheticalPlay getHypotheticalPlay() { return hypotheticalPlay; }
-    public DiscardController getDiscardController() { return hypotheticalPlay.getDiscardController(); }
+    public HypotheticalPlayController getHypotheticalPlay() { return hypotheticalPlay; }
+    public DiscardTracker getDiscardController() { return hypotheticalPlay.getDiscardTracker(); }
 
     /** Convenience method. Calls {@link EventBus#post}. */
     public void post(Object event) { bus.post(event); }

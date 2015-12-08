@@ -15,9 +15,9 @@ import qwirkle.ui.event.PlayPiece;
 import java.util.*;
 
 /** The logic for tracking discards. Doesn't accept or reject proposals -- that's handled
- *  by {@link HypotheticalPlay}. Instead, it just watches for acceptances and cancellations,
+ *  by {@link HypotheticalPlayController}. Instead, it just watches for acceptances and cancellations,
  *  keeps track of them, and sends {@link DiscardUpdate} events. */
-public class DiscardController {
+public class DiscardTracker {
     private final EventBus localBus = new EventBus("discards");
     private final EventBus externalBus;
     private boolean vertical;
@@ -26,7 +26,7 @@ public class DiscardController {
     private int numSpots = 0;
     private QwirklePlayer curPlayer;
 
-    public DiscardController(EventBus eventBus) {
+    public DiscardTracker(EventBus eventBus) {
         this.externalBus = eventBus;
         externalBus.register(new OutsideListener());
 

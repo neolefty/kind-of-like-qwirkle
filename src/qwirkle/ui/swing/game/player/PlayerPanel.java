@@ -13,7 +13,7 @@ import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.swing.util.HasAspectRatio;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.impl.SwingDisposeUndisposer;
+import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,7 +61,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);
 
-        new SelfDisposingEventSubscriber(control.getEventBus(), new SwingDisposeUndisposer(this)) {
+        new SelfDisposingEventSubscriber(control.getEventBus(), new SwingPlatformAttacher(this)) {
             @Subscribe
             public void turnCompleted(TurnCompleted event) {
                 AnnotatedGame annotated = event.getStatus().getAnnotated();

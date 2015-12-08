@@ -2,7 +2,7 @@ package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.ui.control.QwirkleUIController;
-import qwirkle.ui.control.HypotheticalPlay;
+import qwirkle.ui.control.HypotheticalPlayController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.game.base.QwirkleBoard;
 import qwirkle.game.base.QwirkleGrid;
@@ -19,7 +19,7 @@ import java.util.Collections;
 /** A listener that highlights playable spots on a board. */
 public class PlayableHighlighter {
     private QwirkleGridPanel gridPanel;
-    private HypotheticalPlay hypo;
+    private HypotheticalPlayController hypo;
 
     public PlayableHighlighter(QwirkleUIController control, QwirkleGridPanel gridPanel) {
         control.register(this);

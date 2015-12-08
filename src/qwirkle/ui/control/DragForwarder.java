@@ -14,7 +14,7 @@ public class DragForwarder extends SelfDisposingEventSubscriber {
 
     /** Forward drag events from <tt>localBus</tt> to <tt>externalBus</tt>.
      *  @param du if disposed, stop forwarding */
-    public DragForwarder(EventBus localBus, DisposeUndisposer du, EventBus externalBus) {
+    public DragForwarder(EventBus localBus, PlatformAttacher du, EventBus externalBus) {
         super(localBus, du);
         this.externalBus = externalBus;
     }

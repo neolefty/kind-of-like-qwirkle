@@ -16,10 +16,10 @@ import java.util.Collections;
 import java.util.List;
 
 /** A play that a player is contemplating. */
-public class HypotheticalPlay {
+public class HypotheticalPlayController {
     // The board not including the hypothetical play
     private QwirkleBoard board;
-    private DiscardController discardController;
+    private DiscardTracker discardTracker;
 
     private EventBus bus;
 
@@ -34,10 +34,10 @@ public class HypotheticalPlay {
     // Cached copy: the last set of legal moves reported
     private Collection<QwirklePlacement> lastLegal;
 
-    public HypotheticalPlay(final EventBus bus) {
+    public HypotheticalPlayController(final EventBus bus) {
         this.bus = bus;
         bus.register(new EventSubscriber());
-        this.discardController = new DiscardController(bus);
+        this.discardTracker = new DiscardTracker(bus);
     }
 
     /** The board not including hypothetical plays. */
@@ -47,7 +47,7 @@ public class HypotheticalPlay {
     public synchronized QwirkleBoard getHypotheticalBoard() { return hypoBoard; }
 
     /** Discards are managed here, for the sake of modularity. */
-    public DiscardController getDiscardController() { return discardController; }
+    public DiscardTracker getDiscardTracker() { return discardTracker; }
 
     /** Is this one of the placements that has already been accepted? */
     public synchronized boolean containsPlacement(QwirklePlacement placement) {
@@ -207,7 +207,7 @@ public class HypotheticalPlay {
         if (event.isPhasePropose() && (event.isTypeGameboard() || event.isTypeDiscard())) {
             // if it's legal, accept it
             if (isLegalMove(event)) {
-                PlayPiece accept = event.accept(HypotheticalPlay.this);
+                PlayPiece accept = event.accept(HypotheticalPlayController.this);
                 acceptedPlays.add(accept);
                 updateBoard();
                 bus.post(accept);

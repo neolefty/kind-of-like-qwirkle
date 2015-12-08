@@ -16,7 +16,7 @@ import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.impl.SwingDisposeUndisposer;
+import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         new GameListener(control.getEventBus(), this);
 
         // forward mouse events from the local bus to the parent bus
-        new DragForwarder(getEventBus(), new SwingDisposeUndisposer(this), control.getEventBus());
+        new DragForwarder(getEventBus(), new SwingPlatformAttacher(this), control.getEventBus());
 
         setVertical(true);
     }
@@ -81,7 +81,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
     }
 
     private class GameListener extends SelfDisposingEventSubscriber {
-        public GameListener(EventBus bus, JComponent home) { super(bus, new SwingDisposeUndisposer(home)); }
+        public GameListener(EventBus bus, JComponent home) { super(bus, new SwingPlatformAttacher(home)); }
 
         // listen for dragging pieces in and out
         @Subscribe public void drag(DragPiece event) {

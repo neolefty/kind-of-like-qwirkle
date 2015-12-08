@@ -36,7 +36,7 @@ public class QwirkleUIController {
 
     public GameController getGame() { return game; }
     public InteractionController getInteraction() { return interact; }
-    public HypotheticalPlay getHypothetical() { return interact.getHypotheticalPlay(); }
+    public HypotheticalPlayController getHypothetical() { return interact.getHypotheticalPlay(); }
     public EventBus getEventBus() { return interact.getEventBus(); }
     public QwirkleThreads getThreads() { return threads; }
 
@@ -47,7 +47,7 @@ public class QwirkleUIController {
     public void register(Object subscriber) { interact.register(subscriber); }
     public void unregister(Object subscriber) { interact.unregister(subscriber); }
 
-    public DiscardController getDiscardController() {
+    public DiscardTracker getDiscardController() {
         return getInteraction().getDiscardController();
     }
 }
