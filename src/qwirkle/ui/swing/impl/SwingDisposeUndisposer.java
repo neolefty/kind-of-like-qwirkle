@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.util;
+package qwirkle.ui.swing.impl;
 
 import qwirkle.ui.control.DisposeUndisposer;
 
