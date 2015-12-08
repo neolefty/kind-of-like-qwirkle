@@ -2,11 +2,12 @@ package qwirkle.ui.control;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.game.base.*;
+import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.PreEvent;
 import qwirkle.game.event.TurnCompleted;
-import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.event.PlayTurn;
 
@@ -25,7 +26,6 @@ public class HypotheticalPlayController {
 
     // The board including the hypothetical play
     private QwirkleBoard hypoBoard;
-    private QwirklePlayer currentPlayer;
 
     // The accepted plays, in the order they were placed
     // (note: may be plays on the gameboard or discards)
@@ -55,14 +55,6 @@ public class HypotheticalPlayController {
             if (play.getPlacement().equals(placement))
                 return true;
         return false;
-    }
-
-    /** Does this play consist only of discards? */
-    public boolean isAllDiscards() {
-        for (PlayPiece accepted : acceptedPlays)
-            if (!accepted.isTypeDiscard())
-                return false;
-        return true; // no non-discards found
     }
 
     /** How many pieces are currently in this hypothetical play? */
@@ -110,7 +102,6 @@ public class HypotheticalPlayController {
         throw new IllegalStateException("No acceptance found for " + placement);
     }
 
-    // TODO allow putting it back where you found it
     /** Where can this piece be placed legally? */
     public synchronized Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
         Collection<QwirklePlacement> result;
@@ -135,14 +126,17 @@ public class HypotheticalPlayController {
         return Collections.unmodifiableList(result);
     }
 
-    /** Who is the current player? (Not synchronized because it wouldn't help.) */
-    public QwirklePlayer getCurrentPlayer() {
-        return currentPlayer;
+    /** Does this play consist only of discards? */
+    public boolean isAllDiscards() {
+        for (PlayPiece accepted : acceptedPlays)
+            if (!accepted.isTypeDiscard())
+                return false;
+        return true; // no non-discards found
     }
 
     /** Is <tt>placement</tt> legal, considering the other accepted moves so far? */
     // TODO only accept highlighted drops? Remember the last legal moves?
-    public synchronized boolean isLegalMove(PlayPiece play) {
+    private synchronized boolean isLegalMove(PlayPiece play) {
         // you can discard as long as you've only discarded so far
         if (play.isTypeDiscard()) {
             return isAllDiscards()
@@ -170,6 +164,7 @@ public class HypotheticalPlayController {
             throw new UnsupportedOperationException("Unknown type: " + play);
     }
 
+    /** Handle events from the EventBus. */
     private class EventSubscriber {
         @Subscribe
         public void startGame(GameStarted started) {
@@ -184,20 +179,10 @@ public class HypotheticalPlayController {
                 clearHypothetical(((TurnCompleted) pre.getEvent()).getStatus().getBoard());
         }
 
-        /** When a new turn starts, update our notion of the current player. */
-        @Subscribe
-        public void turnStarting(TurnStarting event) {
-            setCurrentPlayer(event.getCurPlayer());
-        }
-
         @Subscribe
         public void proposePlay(PlayPiece event) {
             respondToProposal(event);
         }
-    }
-
-    private synchronized void setCurrentPlayer(QwirklePlayer currentPlayer) {
-        this.currentPlayer = currentPlayer;
     }
 
     /** Respond to player interactions -- proposing a piece to play
@@ -235,6 +220,15 @@ public class HypotheticalPlayController {
         }
     }
 
+    /** Clear hypothetical plays because the board has updated. */
+    private synchronized void clearHypothetical(QwirkleBoard board) {
+        hypoBoard = null;
+        acceptedPlays.clear();
+        lastLegal = null;
+        this.board = board;
+    }
+
+    /** Update the board based on the current hypothetical plays, but don't post any events. */
     private void updateBoard() {
         if (isAllDiscards())
             hypoBoard = getBoard();
@@ -248,14 +242,5 @@ public class HypotheticalPlayController {
             if (piece == play.getPiece())
                 return play;
         return null;
-    }
-
-    /** Clear hypothetical plays because the board has updated. */
-    private synchronized void clearHypothetical(QwirkleBoard board) {
-        hypoBoard = null;
-        currentPlayer = null;
-        acceptedPlays.clear();
-        lastLegal = null;
-        this.board = board;
     }
 }

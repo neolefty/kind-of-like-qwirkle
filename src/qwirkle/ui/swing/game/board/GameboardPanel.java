@@ -15,9 +15,11 @@ import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 public class GameboardPanel extends QwirkleGridPanel {
     // The play the player is currently making
     public HypotheticalPlayController hypoPlay;
+    public QwirkleUIController control;
 
     public GameboardPanel(final QwirkleUIController control) {
         super(control.getEventBus(), DisplayType.gameboard);
+        this.control = control;
         // When a placement is confirmed or canceled, update our display of the hypothetical play.
         control.register(new Object() {
             @Subscribe
@@ -60,7 +62,7 @@ public class GameboardPanel extends QwirkleGridPanel {
             result.getBackgroundManager()
                     .setColors(new HypotheticalPlayBgColors(getGrid().getPlacement(x, y)));
             if (hypoPlay.isRemovable(placement))
-                result.makeDraggable(hypoPlay.getCurrentPlayer(), hypoPlay.getAcceptedPlay(placement));
+                result.makeDraggable(control.getGame().getCurrentPlayer(), hypoPlay.getAcceptedPlay(placement));
         }
         return result;
     }
