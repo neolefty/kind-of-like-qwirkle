@@ -14,7 +14,7 @@ import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.util.SwingDragHelper;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.util.SwingDisposeUndisposer;
+import qwirkle.ui.swing.impl.SwingDisposeUndisposer;
 
 import javax.swing.*;
 import java.awt.*;

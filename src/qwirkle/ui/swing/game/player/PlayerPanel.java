@@ -13,7 +13,7 @@ import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.swing.util.HasAspectRatio;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.util.SwingDisposeUndisposer;
+import qwirkle.ui.swing.impl.SwingDisposeUndisposer;
 
 import javax.swing.*;
 import java.awt.*;

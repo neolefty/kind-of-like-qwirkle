@@ -16,7 +16,7 @@ import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.util.SwingDisposeUndisposer;
+import qwirkle.ui.swing.impl.SwingDisposeUndisposer;
 
 import javax.swing.*;
 import java.util.ArrayList;
