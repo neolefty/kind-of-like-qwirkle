@@ -14,19 +14,21 @@ import qwirkle.ui.event.PlayPiece;
 
 import java.util.*;
 
-/** The logic for discarding. */
+/** The logic for tracking discards. Doesn't accept or reject proposals -- that's handled
+ *  by {@link HypotheticalPlay}. Instead, it just watches for acceptances and cancellations,
+ *  keeps track of them, and sends {@link DiscardUpdate} events. */
 public class DiscardController {
     private final EventBus localBus = new EventBus("discards");
-    private final InteractionController interactionController;
+    private final EventBus externalBus;
     private boolean vertical;
 
     private List<QwirklePlacement> placements = new ArrayList<>();
     private int numSpots = 0;
     private QwirklePlayer curPlayer;
 
-    public DiscardController(InteractionController interactionController) {
-        this.interactionController = interactionController;
-        interactionController.register(new OutsideListener());
+    public DiscardController(EventBus eventBus) {
+        this.externalBus = eventBus;
+        externalBus.register(new OutsideListener());
 
         // forward drag events -- don't worry about undisposing because this controller is immortal
         new DragForwarder(getLocalBus(), null, getMainBus());
@@ -35,7 +37,7 @@ public class DiscardController {
     /** The bus that is local to the discard panel. */
     public EventBus getLocalBus() { return localBus; }
     /** The main bus for the gameboard. */
-    public EventBus getMainBus() { return interactionController.getEventBus(); }
+    public EventBus getMainBus() { return externalBus; }
 
     public boolean isVertical() { return vertical; }
     public void setVertical(boolean vertical) {
@@ -78,7 +80,6 @@ public class DiscardController {
 
         // when a turn ends, forget our state
         @Subscribe public void turnEnd(TurnCompleted event) { clear(); }
-
     }
 
     private void add(QwirklePlacement placement) {

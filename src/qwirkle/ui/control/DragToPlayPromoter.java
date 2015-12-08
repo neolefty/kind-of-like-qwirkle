@@ -11,7 +11,7 @@ import qwirkle.ui.QwirklePieceDisplay;
 
 /** Watches PieceDrag and PassOver events to catch when someone
  *  is trying to play a piece by dragging and dropping.
- *  Note: doesn't guarantee that the attempt to play is legal. */
+ *  Note: doesn't care whether the attempt to play is legal. */
 public class DragToPlayPromoter {
     private QwirklePieceDisplay lastDisplay;
 
