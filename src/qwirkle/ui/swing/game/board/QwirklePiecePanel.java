@@ -5,16 +5,15 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.*;
 import qwirkle.ui.QwirkleGridDisplay;
 import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.ui.event.PassOver;
-import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.colors.ColorSets;
+import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 import qwirkle.ui.swing.main.UIConstants;
 import qwirkle.ui.swing.paint.QwirklePiecePainter;
 import qwirkle.ui.swing.util.SwingDragHelper;
-import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,10 +33,6 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
 
     private BackgroundManager bgMgr;
 
-    public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, int x, int y) {
-        this(bus, parent, x, y, false);
-    }
-
     public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, int x, int y, boolean highlight) {
         this(bus, parent, new QwirkleLocation(x, y), highlight);
     }
@@ -49,7 +44,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
 
         this.location = location;
         this.parent = parent;
-        this.piece = parent.getGrid().get(location);
+        this.piece = (parent.getGrid() == null ? null : parent.getGrid().get(location));
         this.bus = bus;
         initEvents();
 
@@ -66,7 +61,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     private void initEvents() {
-        if (bus != null)
+        if (bus != null) {
             new SelfDisposingEventSubscriber(bus, new SwingPlatformAttacher(this)) {
                 /** Highlight this piece if it is part of the {@link HighlightTurn}. */
                 @Subscribe public void highlight(HighlightTurn hl) {
@@ -76,8 +71,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
                 }
             };
 
-        // post PassOver events
-        if (bus != null) {
+            // post PassOver events
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -93,6 +87,8 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     }
 
     public BackgroundManager getBackgroundManager() { return bgMgr; }
+
+    public QwirkleGrid getGrid() { return parent.getGrid(); }
 
     @Override
     public void paint(Graphics g) {
@@ -114,6 +110,7 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
     @Override public int getPieceHeight() { return getHeight(); }
     @Override public int getPieceWidth() { return getWidth(); }
     @Override public QwirkleGridDisplay getDisplay() { return parent; }
+    @Override public QwirklePlacement getPlacement() { return getGrid().getPlacement(location); }
 
     @Override
     public String toString() { return location + ": " + (piece == null ? "blank" : piece); }
@@ -126,59 +123,17 @@ public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, Qwi
         return dragHelper != null && dragHelper.isDraggable();
     }
 
-    /** Start listening for drag events and assume they're actions of <tt>player</tt>.
-     *  @param player the player who will be doing the dragging
-     *  @param context is this piece part of a hypothetical play that might be canceled, or what?
-     *                      (null if no context) */
-    public void makeDraggable(QwirklePlayer player, PlayPiece context) {
+    /** Start listening for drag events. */
+    public void makeDraggable(QwirklePlayer currentPlayer) {
         if (dragHelper == null)
-            initDragHelper(player, context);
+            dragHelper = new SwingDragHelper(this, currentPlayer, bus, this);
         else
-            dragHelper.makeDraggable(player);
+            dragHelper.setDraggable(true);
     }
 
+    /** Stop listening for drag events. */
     public void makeUndraggable() {
         if (dragHelper != null)
-            dragHelper.makeUndraggable();
-    }
-
-    private void initDragHelper(final QwirklePlayer player, final PlayPiece context) {
-        if (context != null && !context.isPhaseAccept())
-            throw new IllegalArgumentException("Unsupported state: " + context);
-        dragHelper = new SwingDragHelper(this, new SwingDragHelper.DragHandler() {
-            DragPiece event;
-
-            @Override
-            public void startDrag(MouseEvent e) {
-                if (context != null) {
-                    if (context.isPhaseAccept()) {
-                        bus.post(context.unpropose());
-                    }
-                }
-                event = post(DragPiece.createPickup(player, parent.getGrid(), location));
-            }
-
-            @Override
-            public void keepDragging(MouseEvent e) {
-                if (event != null)
-                    event = post(event.sustain());
-            }
-
-            @Override
-            public void endDrag(MouseEvent e) {
-                event = post(event.drop());
-            }
-
-            @Override
-            public void cancelDrag() {
-                post(event.cancel());
-                event = null;
-            }
-
-            private DragPiece post(DragPiece event) {
-                bus.post(event);
-                return event;
-            }
-        });
+            dragHelper.setDraggable(false);
     }
 }

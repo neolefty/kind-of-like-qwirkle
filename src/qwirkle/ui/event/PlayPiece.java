@@ -2,44 +2,84 @@ package qwirkle.ui.event;
 
 import qwirkle.game.base.QwirkleLocation;
 import qwirkle.game.base.QwirklePiece;
-import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirklePlayer;
-import qwirkle.ui.QwirkleGridDisplay;
-import qwirkle.ui.control.HypotheticalPlayController;
 
 /** Someone plays a piece interactively. */
 public class PlayPiece {
-    private QwirklePlacement placement;
-    private QwirklePlayer player;
+    private DragPiece pickup;
+    private DragPiece drop;
     private Phase phase;
-    private PlayPiece previous;
-    private QwirkleGridDisplay display;
 
-    // The play being contemplated
-    private HypotheticalPlayController play;
-
-    /** A player {@link Phase#propose}s a play by dragging a piece.
-     *  The game {@link Phase#accept}s or {@link Phase#reject}s it.
-     *  Later, it may be either {@link Phase#cancel}ed or confirmed
-     *  by posting a {@link PlayTurn} event. */
+    /** A player {@link Phase#propose}s a play by dragging a piece from one panel & position to another.
+     *  The interaction engine {@link Phase#accept}s or {@link Phase#reject}s it.
+     *  The turn is finalized by a {@link PlayTurn} event, at which point you can discard all
+     *  {@link PlayPiece} events. */
     public enum Phase {
         // propose --> accept --> [TurnCompleted event]
-        //         \                \--> unpropose --> cancel
         //           \--> reject
         propose, // a player suggests a move by dragging a piece
-        unpropose, // never mind, I don't want to do this previously accepted play
-
         accept, // the game says okay you can do that; anything else?
         reject, // the game says no, you can't do that
-
-        cancel, // unproposal was successful
     }
 
-    private PlayPiece(QwirklePlacement placement, QwirklePlayer player, QwirkleGridDisplay display) {
-        this.player = player;
-        this.placement = placement;
-        this.phase = Phase.propose;
-        this.display = display;
+    /** A player proposes playing a piece from one board to another. */
+    public static PlayPiece propose(DragPiece pickup, DragPiece drop) {
+        return new PlayPiece(Phase.propose, pickup, drop);
+    }
+
+    public PlayPiece(Phase phase, DragPiece pickup, DragPiece drop) {
+        this.phase = phase;
+        this.pickup = pickup;
+        this.drop = drop;
+    }
+
+    /** Accept a single placement. */
+    public PlayPiece accept() {
+        return new PlayPiece(this, Phase.propose, Phase.accept);
+    }
+
+    /** Reject a single placement. */
+    public PlayPiece reject() {
+        return new PlayPiece(this, Phase.propose, Phase.reject);
+    }
+
+    /** Which player is playing? */
+    public QwirklePlayer getPlayer() { return pickup.getPlayer(); }
+
+    /** Convenience. */
+    public QwirklePiece getPiece() { return pickup.getPiece(); }
+
+    public DragPiece getPickup() { return pickup; }
+    public DragPiece getDrop() { return drop; }
+
+    /** What phase of a play is this? Proposal, acceptance, etc. */
+    public Phase getPhase() { return phase; }
+
+    public QwirkleLocation getDropLocation() { return drop.getPlacement().getLocation(); }
+
+    /** This play is proposed by a player. */
+    public boolean isPhasePropose() { return phase == Phase.propose; }
+    /** This play has been accepted by the board as legal. */
+    public boolean isPhaseAccept() { return phase == Phase.accept; }
+    /** This play has been rejected by the board, probably because it was illegal. */
+//    public boolean isPhaseReject() { return phase == Phase.reject; }
+
+    public boolean isPickupHand() { return pickup.isGridHand(); }
+    public boolean isPickupDiscard() { return pickup.isGridDiscard(); }
+    public boolean isPickupGameboard() { return pickup.isGridGameboard(); }
+
+    public boolean isDropHand() { return drop.isGridHand(); }
+    public boolean isDropDiscard() { return drop.isGridDiscard(); }
+    public boolean isDropGameboard() { return drop.isGridGameboard(); }
+
+    public String toString() {
+        // propose move red square at 3, 2 from hand to 1, -1 on gameboard
+        return phase
+                + " move " + pickup.getPiece()
+                + " from " + pickup.getLocation()
+                + " on " + pickup.getDisplayType()
+                + " to " + drop.getLocation()
+                + " on " + drop.getDisplayType();
     }
 
     private PlayPiece(PlayPiece previous, Phase requiredPhase, Phase newPhase) {
@@ -47,90 +87,8 @@ public class PlayPiece {
             throw new IllegalStateException
                     ("Can only " + newPhase + " a " + requiredPhase + " -- not " + previous);
 
-        this.placement = previous.getPlacement();
-        this.player = previous.getPlayer();
-        this.display = previous.getDisplay();
+        this.pickup = previous.pickup;
+        this.drop = previous.drop;
         this.phase = newPhase;
-        this.previous = previous;
-        this.play = previous.play;
-    }
-
-    /** Which player is playing? */
-    public QwirklePlayer getPlayer() { return player; }
-
-    /** Convenience. */
-    public QwirklePiece getPiece() { return placement.getPiece(); }
-
-    /** A player proposes playing a piece, probably by dragging it to the board.
-     *  @param display the place it was dragged to */
-    public static PlayPiece propose(QwirklePlayer player, QwirklePlacement placement, QwirkleGridDisplay display) {
-        return new PlayPiece(placement, player, display);
-    }
-
-    /** Accept a single placement. */
-    public PlayPiece accept(HypotheticalPlayController play) {
-        PlayPiece result = new PlayPiece(this, Phase.propose, Phase.accept);
-        result.play = play;
-        return result;
-    }
-
-    /** Reject a single placement. */
-    public PlayPiece reject() { return new PlayPiece(this, Phase.propose, Phase.reject); }
-
-    /** Player changes their mind about a proposed placement.
-     *  May trigger a cascade of cancellations. */
-    public PlayPiece unpropose() { return new PlayPiece(this, Phase.accept, Phase.unpropose); }
-
-    /** Cancel an already-accepted play, usually a response to an un-proposal,
-     *  but may be part of an unpropose cascade. */
-     public PlayPiece cancel() { return new PlayPiece(this, Phase.unpropose, Phase.cancel); }
-
-    /** The whole play being contemplated. Null if it's the first play and hasn't been accepted yet. */
-    public HypotheticalPlayController getPlay() { return play; }
-
-    /** The piece & location being played to. */
-    public QwirklePlacement getPlacement() { return placement; }
-
-    /** The location being played to. */
-    public QwirkleLocation getLocation() { return getPlacement().getLocation(); }
-
-    /** The display this is being played on. */
-    public QwirkleGridDisplay getDisplay() { return display; }
-
-    /** What phase of a play is this? Proposal, acceptance, etc. */
-    public Phase getPhase() { return phase; }
-
-    /** What preceded this phase? For example, a cancel is preceded by an unproposal.
-     *  For a proposal, returns null. */
-    public PlayPiece getPrevious() { return previous; }
-
-    /** Is this a play onto a discard pile? */
-    public boolean isTypeDiscard() {
-        return display.getDisplayType() == QwirkleGridDisplay.DisplayType.discard;
-    }
-
-    /** Is this a play onto a gameboard? */
-    public boolean isTypeGameboard() {
-        return display.getDisplayType() == QwirkleGridDisplay.DisplayType.gameboard;
-    }
-
-    /** Is this a play into a player's hand (taking it back from the board)? */
-    public boolean isTypeHand() {
-        return display.getDisplayType() == QwirkleGridDisplay.DisplayType.hand;
-    }
-
-    /** This play is proposed by a player. */
-    public boolean isPhasePropose() { return phase == Phase.propose; }
-    /** A player has changed their mind about a play. */
-    public boolean isPhaseUnpropose() { return phase == Phase.unpropose; }
-    /** This play has been accepted by the board as legal. */
-    public boolean isPhaseAccept() { return phase == Phase.accept; }
-    /** This play has been rejected by the board, probably because it was illegal. */
-    public boolean isPhaseReject() { return phase == Phase.reject; }
-    /** This play has been cancelled, probably after an unproposal. */
-    public boolean isPhaseCancel() { return phase == Phase.cancel; }
-
-    public String toString() {
-        return phase + " " + placement + " to " + display.getDisplayType();
     }
 }

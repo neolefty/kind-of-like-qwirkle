@@ -389,7 +389,7 @@ public class GameController {
                 List<QwirklePiece> dealt = pickToDeal(player, getHand(player));
                 if (dealt.size() > 0) {
                     playerHands.get(player).addAll(dealt);
-                    events.add(new DrawPieces(player, dealt));
+                    events.add(new DrawPieces(player, dealt, getHand(player)));
                 }
             }
         }
@@ -411,7 +411,7 @@ public class GameController {
                 result.add(deck.remove(x));
             }
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     private void post(Object event) {

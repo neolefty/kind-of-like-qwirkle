@@ -3,12 +3,17 @@ package qwirkle.ui.control;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
+import qwirkle.game.base.QwirklePlayer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** Umbrella for various UI-oriented event managers. */
 public class InteractionController {
     private DragToPlayPromoter dragToPlayPromoter;
     private HypotheticalPlayController hypotheticalPlay;
     private EventBus bus;
+    private final Map<QwirklePlayer, PlayerHandTracker> handTrackers = new HashMap<>();
 
     public InteractionController() {
         bus = new EventBus(new SubscriberExceptionHandler() {
@@ -26,7 +31,15 @@ public class InteractionController {
     public EventBus getEventBus() { return bus; }
     public DragToPlayPromoter getDragToPlayPromoter() { return dragToPlayPromoter; }
     public HypotheticalPlayController getHypotheticalPlay() { return hypotheticalPlay; }
-    public DiscardTracker getDiscardController() { return hypotheticalPlay.getDiscardTracker(); }
+    public DiscardTracker getDiscardTracker() { return hypotheticalPlay.getDiscardTracker(); }
+
+    public PlayerHandTracker getHandTracker(QwirklePlayer player) {
+        synchronized (handTrackers) {
+            if (!handTrackers.containsKey(player))
+                handTrackers.put(player, new PlayerHandTracker(bus, player));
+            return handTrackers.get(player);
+        }
+    }
 
     /** Convenience method. Calls {@link EventBus#post}. */
     public void post(Object event) { bus.post(event); }

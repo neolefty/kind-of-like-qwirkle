@@ -1,12 +1,16 @@
 package qwirkle.ui.swing.game.board;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.control.QwirkleUIController;
-import qwirkle.ui.control.HypotheticalPlayController;
-import qwirkle.ui.event.DragPiece;
-import qwirkle.ui.event.PlayPiece;
 import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirkleGrid;
+import qwirkle.game.base.QwirkleKit;
 import qwirkle.game.base.QwirklePlacement;
+import qwirkle.game.base.impl.QwirkleBoardImpl;
+import qwirkle.game.event.GameStarted;
+import qwirkle.game.event.TurnCompleted;
+import qwirkle.ui.control.HypotheticalPlayController;
+import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
 
 // TODO show points of hypothetical placement in highlight
@@ -22,22 +26,23 @@ public class GameboardPanel extends QwirkleGridPanel {
         this.control = control;
         // When a placement is confirmed or canceled, update our display of the hypothetical play.
         control.register(new Object() {
-            @Subscribe
-            public void play(PlayPiece event) {
+            /** Clear the board when a new game starts. */
+            @Subscribe public void gameStarted(GameStarted started) {
+                setHighlight(null);
+                setGrid(null); // force a refresh
+            }
+
+            /** Receive new turn notifications from the event bus. */
+            @Subscribe public void nextTurn(TurnCompleted turn) {
+                setHighlight(QwirkleKit.placementsToLocations(turn.getPlacements()));
+                setGrid(turn.getGrid());
+            }
+
+            /** Show hypothetical play as it develops. */
+            @Subscribe public void play(PlayPiece event) {
                 // note: if a turn is confirmed, a QwirkleTurn will post and super will update
                 if (event.isPhaseAccept())
                     setGrid(hypoPlay.getHypotheticalBoard());
-                // on a cancel, we need to delay removing the piece from the board, since it will confuse Swing's drag-and-drop
-                else if (event.isPhaseCancel()) {
-                    control.register(new Object() {
-                        @Subscribe public void drop(DragPiece event) {
-                            if (event.isDrop()) {
-                                control.unregister(this);
-                                setGrid(hypoPlay.getHypotheticalBoard());
-                            }
-                        }
-                    });
-                }
             }
         });
         this.hypoPlay = control.getHypothetical();
@@ -50,19 +55,28 @@ public class GameboardPanel extends QwirkleGridPanel {
                 : hypoPlay.getBoard();
     }
 
+    @Override
+    public void setGrid(QwirkleGrid grid) {
+        if (grid == null)
+            //noinspection unchecked
+            grid = new QwirkleBoardImpl(control.getGame().getSettings());
+        super.setGrid(grid);
+    }
+
     // TODO only if no discards
     /** Highlight the hypothetical play. */
     @Override
     public QwirklePiecePanel createPiecePanel(int x, int y) {
         // normal ...
         QwirklePiecePanel result = super.createPiecePanel(x, y);
-        QwirklePlacement placement = getGrid().getPlacement(x, y);
+        QwirkleGrid grid = getGrid();
+        QwirklePlacement placement = grid == null ? null : grid.getPlacement(x, y);
         // ... except if it's part of the hypothetical play
-        if (hypoPlay.containsPlacement(placement)) {
+        if (placement != null && hypoPlay.containsPlacement(placement)) {
             result.getBackgroundManager()
                     .setColors(new HypotheticalPlayBgColors(getGrid().getPlacement(x, y)));
             if (hypoPlay.isRemovable(placement))
-                result.makeDraggable(control.getGame().getCurrentPlayer(), hypoPlay.getAcceptedPlay(placement));
+                result.makeDraggable(hypoPlay.getCurrentPlayer());
         }
         return result;
     }

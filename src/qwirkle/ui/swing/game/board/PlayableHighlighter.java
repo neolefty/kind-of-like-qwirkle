@@ -29,9 +29,9 @@ public class PlayableHighlighter {
 
     @Subscribe
     public void drag(DragPiece event) {
-        if (event.isPickup())
+        if (event.isActionPickup())
             highlightPlayable(event);
-        else if (event.isCancel() || event.isDrop())
+        else if (event.isActionCancel() || event.isActionDrop())
             unhighlight(event);
     }
 

@@ -2,11 +2,15 @@ package qwirkle.ui;
 
 import qwirkle.game.base.HasQwirkleLocation;
 import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
 
 /** A UI component that displays a {@link QwirklePiece}. */
 public interface QwirklePieceDisplay extends HasQwirkleLocation {
     /** The piece that this displays. Null if empty. */
     QwirklePiece getPiece();
+
+    /** The placement that is here. Null if {@link #getPiece()} is empty. */
+    QwirklePlacement getPlacement();
 
     /** The size of the piece displayed, in screen pixels. */
     int getPieceHeight();

@@ -5,64 +5,38 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirkleBoard;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
+import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.PreEvent;
 import qwirkle.game.event.TurnCompleted;
+import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.QwirkleGridDisplay;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.event.PlayTurn;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+// TODO test this
 /** A play that a player is contemplating. */
 public class HypotheticalPlayController {
     // The board not including the hypothetical play
     private QwirkleBoard board;
     private DiscardTracker discardTracker;
+    private QwirklePlayer curPlayer;
 
     private EventBus bus;
 
     // The board including the hypothetical play
     private QwirkleBoard hypoBoard;
 
-    // The accepted plays, in the order they were placed
-    // (note: may be plays on the gameboard or discards)
-    private List<PlayPiece> acceptedPlays = new ArrayList<>();
-
-    // Cached copy: the last set of legal moves reported
-    private Collection<QwirklePlacement> lastLegal;
+    // The accepted plays (may be plays on the gameboard or discards)
+    // note: use identity rather than hashcode because we may have multiple identical pieces played (discarded)
+    private Map<QwirklePiece, PlayPiece> acceptedPlays = new IdentityHashMap<>();
 
     public HypotheticalPlayController(final EventBus bus) {
         this.bus = bus;
         bus.register(new EventSubscriber());
         this.discardTracker = new DiscardTracker(bus);
-    }
-
-    /** The board not including hypothetical plays. */
-    public synchronized QwirkleBoard getBoard() { return board; }
-
-    /** The board including hypothetical plays. */
-    public synchronized QwirkleBoard getHypotheticalBoard() { return hypoBoard; }
-
-    /** Discards are managed here, for the sake of modularity. */
-    public DiscardTracker getDiscardTracker() { return discardTracker; }
-
-    /** Is this one of the placements that has already been accepted? */
-    public synchronized boolean containsPlacement(QwirklePlacement placement) {
-        for (PlayPiece play : acceptedPlays)
-            if (play.getPlacement().equals(placement))
-                return true;
-        return false;
-    }
-
-    /** How many pieces are currently in this hypothetical play? */
-    public int size() { return acceptedPlays.size(); }
-
-    /** Does this have no hypothetical placements? */
-    public synchronized boolean isEmpty() {
-        return acceptedPlays.isEmpty();
     }
 
     /** Confirm this hypothetical play as a real play. */
@@ -75,6 +49,29 @@ public class HypotheticalPlayController {
         }
         else
             bus.post(PlayTurn.play(getPlacements()));
+    }
+
+    /** The board not including hypothetical plays. */
+    public synchronized QwirkleBoard getBoard() { return board; }
+
+    /** The board including hypothetical plays. */
+    public synchronized QwirkleBoard getHypotheticalBoard() { return hypoBoard; }
+
+    /** Discards are managed here, for the sake of modularity. */
+    public DiscardTracker getDiscardTracker() { return discardTracker; }
+
+    /** Is this one of the placements on the main board that has already been accepted? */
+    public synchronized boolean containsPlacement(QwirklePlacement placement) {
+        PlayPiece play = acceptedPlays.get(placement.getPiece());
+        return play != null && play.getDrop().getPlacement().equals(placement);
+    }
+
+    /** How many pieces are currently in this hypothetical play? */
+    public int size() { return acceptedPlays.size(); }
+
+    /** Does this have no hypothetical placements? */
+    public synchronized boolean isEmpty() {
+        return acceptedPlays.isEmpty();
     }
 
     /** Is this placement removable? */
@@ -93,76 +90,121 @@ public class HypotheticalPlayController {
         }
     }
 
-    /** Get the event that records a particular placement being accepted.
-     *  Useful if you want to unpropose that placement. */
-    public PlayPiece getAcceptedPlay(QwirklePlacement placement) {
-        for (PlayPiece accept : acceptedPlays)
-            if (accept.getPlacement().equals(placement))
-                return accept;
-        throw new IllegalStateException("No acceptance found for " + placement);
-    }
-
-    /** Where can this piece be placed legally? */
+    /** Where can this piece land legally on the gameboard? */
     public synchronized Collection<QwirklePlacement> getLegalMoves(QwirklePiece piece) {
         Collection<QwirklePlacement> result;
-        // you can't discard & play at the same time
-        if (size() > 0 && isAllDiscards())
+        Collection<PlayPiece> allExcept = getAllExcept(piece);
+        // if we've discarded, then we can't play on the board
+        if (!allExcept.isEmpty() && allExcept.iterator().next().isDropDiscard())
             result = Collections.emptyList();
-            // what are the legal moves?
+        // a play is allowed
         else
-            result = getBoard().getLegalPlacements(getPlacements(), piece);
+            result = getBoard().getLegalPlacements(getPlacements(piece), piece);
 
-        // remember the result
-        this.lastLegal = result;
 //        System.out.println("Legal moves: " + result);
         return result;
     }
 
-    /** The placements so far accepted from the player. */
-    public synchronized List<QwirklePlacement> getPlacements() {
-        List<QwirklePlacement> result = new ArrayList<>();
-        for (PlayPiece play : acceptedPlays)
-            result.add(play.getPlacement());
-        return Collections.unmodifiableList(result);
+    /** All the plays that have been accepted except for the one involving <tt>play</tt>'s piece. */
+    private Collection<PlayPiece> getAllExcept(QwirklePiece piece) {
+        Map<QwirklePiece, PlayPiece> result = new IdentityHashMap<>(acceptedPlays);
+        result.remove(piece);
+        return result.values();
     }
 
-    /** Does this play consist only of discards? */
+    /** The placements so far accepted from the player. */
+    public synchronized List<QwirklePlacement> getPlacements() { return getPlacements(null); }
+
+    /** The placements so far accepted from the player, except for any involving <tt>exceptFor</tt>. */
+    public synchronized List<QwirklePlacement> getPlacements(QwirklePiece exceptFor) {
+        List<QwirklePlacement> result = new ArrayList<>();
+        for (PlayPiece play : acceptedPlays.values())
+            if (play.getPiece() != exceptFor)
+                result.add(play.getDrop().getPlacement());
+        return result;
+    }
+
+    /** Does this play consist only of 0 or more discards? */
     public boolean isAllDiscards() {
-        for (PlayPiece accepted : acceptedPlays)
-            if (!accepted.isTypeDiscard())
-                return false;
-        return true; // no non-discards found
+        return acceptedPlays.isEmpty()
+                || acceptedPlays.values().iterator().next().isDropDiscard();
     }
 
     /** Is <tt>placement</tt> legal, considering the other accepted moves so far? */
-    // TODO only accept highlighted drops? Remember the last legal moves?
     private synchronized boolean isLegalMove(PlayPiece play) {
-        // you can discard as long as you've only discarded so far
-        if (play.isTypeDiscard()) {
-            return isAllDiscards()
-                    // and nothing is already in that discard spot (purely cosmetic)
-                    && play.getDisplay().getGrid().get(play.getLocation()) == null;
-        }
-        // you can play if it fits the rules
-        else if (play.isTypeGameboard()) {
-            if (lastLegal == null) {
-                List<QwirklePlacement> tmp = new ArrayList<>(getPlacements());
-                tmp.add(play.getPlacement());
-                return board.isLegal(tmp);
-            } else {
-                return lastLegal.contains(play.getPlacement());
+        // note: we don't initialize these on purpose, to force a compiler check
+        // that we've covered all possibilities (that's why we have all the UOE's)
+        boolean pickupLegal, dropLegal;
+
+        // 1. Pickup -- is it legal?
+        // coming from the gameboard: can pick it up if it's not locked by other pieces
+        if (play.isPickupGameboard())
+            pickupLegal = isRemovable(play.getPickup().getPlacement());
+            // can pick up pretty much anything from discard or hand
+        else if (play.isPickupDiscard() || play.isPickupHand())
+            pickupLegal = true;
+        else
+            throw new UnsupportedOperationException("Unknown origin type: " + play);
+
+        // 2. Drop -- is it legal?
+        // on gameboard: yes if it's a legal play & discard is otherwise empty
+        if (play.isDropGameboard()) {
+
+            // a. figure out whether the placement would be legal
+            List<QwirklePlacement> placements = getPlacements();
+            // if it's a relocation on the gameboard, remove the old spot and add the new spot
+            if (play.isPickupGameboard()) {
+                boolean removed = placements.remove(play.getPickup().getPlacement());
+                if (!removed)
+                    throw new IllegalStateException("Picking up nonexistent piece: " + play.getPickup());
+                placements.add(play.getDrop().getPlacement());
+            }
+            if (!getBoard().isLegal(placements))
+                dropLegal = false;
+
+            // b. if the placement would be legal, see if the pickup is okay
+            else {
+                // from hand: can play if you haven't already discarded
+                if (play.isPickupHand())
+                    dropLegal = (discardTracker.size() == 0);
+                    // from discard: can play if it's the only discarded piece
+                else if (play.isPickupDiscard())
+                    dropLegal = discardTracker.size() == 1;
+                    // if it was picked up from the gameboard, then it's fine
+                else if (play.isPickupGameboard())
+                    dropLegal = true;
+                else
+                    throw new UnsupportedOperationException("Unknown destination type: " + play);
             }
         }
-        else if (play.isTypeHand()) {
-            PlayPiece origin = findPlay(play.getPiece());
-            //noinspection SimplifiableIfStatement
-            if (origin == null) return true; // already removed or never actually played
-            else return isRemovable(origin.getPlacement());
+
+        // drop in hand: legal if the piece can be removed from the board
+        else if (play.isDropHand()) {
+            if (play.isPickupDiscard() || play.isPickupHand())
+                dropLegal = true;
+            else if (play.isPickupGameboard())
+                dropLegal = isRemovable(play.getPickup().getPlacement());
+            else throw new UnsupportedOperationException("Unknown origin type: " + play);
         }
-        // um, don't know about other types of plays. Cancellations are handled elsewhere.
-        else
-            throw new UnsupportedOperationException("Unknown type: " + play);
+
+        // drop in discard: only if it wouldn't split the play between the gameboard and discard pile
+        else if (play.isDropDiscard()) {
+            if (play.isPickupHand())
+                dropLegal = isAllDiscards();
+            else if (play.isPickupDiscard())
+                dropLegal = true;
+            // TODO treat drop on discard as drop on hand when can't discard
+            else if (play.isPickupGameboard())
+                dropLegal = acceptedPlays.size() == 1; // it's removable by definition
+            else throw new UnsupportedOperationException("Unknown origin type: " + play);
+        }
+
+        else throw new UnsupportedOperationException("Unknown destination type: " + play);
+
+        return pickupLegal && dropLegal;
     }
+
+    public QwirklePlayer getCurrentPlayer() { return curPlayer; }
 
     /** Handle events from the EventBus. */
     private class EventSubscriber {
@@ -179,52 +221,42 @@ public class HypotheticalPlayController {
                 clearHypothetical(((TurnCompleted) pre.getEvent()).getStatus().getBoard());
         }
 
-        @Subscribe
-        public void proposePlay(PlayPiece event) {
-            respondToProposal(event);
-        }
+        @Subscribe public void proposePlay(PlayPiece event) { handlePlay(event); }
+
+        @Subscribe public void newTurn(TurnStarting event) { curPlayer = event.getCurPlayer(); }
     }
 
     /** Respond to player interactions -- proposing a piece to play
      *  or unproposing a piece that was contemplated. */
-    private synchronized void respondToProposal(PlayPiece event) {
-        // A. playing a new piece is proposed -- either on the gameboard or a discard
-        if (event.isPhasePropose() && (event.isTypeGameboard() || event.isTypeDiscard())) {
-            // if it's legal, accept it
-            if (isLegalMove(event)) {
-                PlayPiece accept = event.accept(HypotheticalPlayController.this);
-                acceptedPlays.add(accept);
-                updateBoard();
-                bus.post(accept);
-            }
-            // if it's not legal, reject it
+    private synchronized void handlePlay(PlayPiece event) {
+        if (event.isPhasePropose()) {
+            if (isLegalMove(event))
+                accept(event);
             else
-                bus.post(event.reject());
+                reject(event);
         }
-        // B. a player has changed their mind and wants to retract a play
-        else if (event.isPhaseUnpropose()) {
-            // is this one of ours?
-            if (containsPlacement(event.getPlacement())) {
-                // can we remove it without breaking things?
-                if (isRemovable(event.getPlacement())) {
-                    boolean removed = acceptedPlays.remove(event.getPrevious());
-                    updateBoard();
-                    if (!removed) throw new IllegalStateException
-                            ("Couldn't remove " + event.getPrevious() + " from accepted plays.");
-                    bus.post(event.cancel());
-                }
-                // sorry, we would need to remove other pieces first and cascade to this one
-                else
-                    throw new IllegalStateException("Removing a locked piece is not supported: " + event);
-            }
-        }
+    }
+
+    private void reject(PlayPiece event) {
+        bus.post(event.reject());
+    }
+
+    private synchronized void accept(PlayPiece event) {
+        event = event.accept();
+        // clear previous state about this piece
+        acceptedPlays.remove(event.getPiece());
+        // note the new state (putting it back into your hand isn't really a play)
+        if (event.getDrop().getDisplayType() != QwirkleGridDisplay.DisplayType.hand)
+            // note: will overwrite a previous play of the same piece
+            acceptedPlays.put(event.getPiece(), event);
+        updateBoard();
+        bus.post(event);
     }
 
     /** Clear hypothetical plays because the board has updated. */
     private synchronized void clearHypothetical(QwirkleBoard board) {
         hypoBoard = null;
         acceptedPlays.clear();
-        lastLegal = null;
         this.board = board;
     }
 
@@ -234,13 +266,5 @@ public class HypotheticalPlayController {
             hypoBoard = getBoard();
         else
             hypoBoard = getBoard().play(getPlacements());
-    }
-
-    /** Find the placement of this piece in the hypothetical play. Null if not present. */
-    private PlayPiece findPlay(QwirklePiece piece) {
-        for (PlayPiece play : acceptedPlays)
-            if (piece == play.getPiece())
-                return play;
-        return null;
     }
 }

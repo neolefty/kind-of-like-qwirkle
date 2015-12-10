@@ -2,6 +2,7 @@ package qwirkle.ui.swing.game;
 
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.event.*;
+import qwirkle.ui.control.HypotheticalPlayController;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.swing.util.AutoSizeButton;
@@ -16,8 +17,8 @@ import java.util.concurrent.Executors;
 /** Start, stop, take a turn. */
 public class GameControlPanel extends JPanel {
     private static final String PAUSE = "  | |  ", PLAY = "  >>  ",
-        STEP_AI = "AI Turn", NEW_GAME = "New Game", RESTART = "New Game",
-        STEP_FINISH_HUMAN = "Finished Turn";
+            NEW_GAME = "New Game", RESTART = "New Game",
+            STEP_AI = "AI Turn", STEP_DISCARD = "Discard", STEP_FINISH_HUMAN = "Finish Turn";
 
     public static final double FONT_PROPORTION = 0.027;
 
@@ -103,10 +104,15 @@ public class GameControlPanel extends JPanel {
             // change text of turn button when a human is playing
             @Subscribe
             public void updateHumanPlay(PlayPiece event) {
-                if (event.isPhaseAccept())
-                    stepButton.setText(STEP_FINISH_HUMAN);
-                else if (event.isPhaseCancel() && event.getPlay().size() == 0)
-                    stepButton.setText(STEP_AI);
+                if (event.isPhaseAccept()) {
+                    HypotheticalPlayController hypo = control.getHypothetical();
+                    if (hypo.isEmpty())
+                        stepButton.setText(STEP_AI);
+                    else if (hypo.isAllDiscards())
+                        stepButton.setText(STEP_DISCARD);
+                    else
+                        stepButton.setText(STEP_FINISH_HUMAN);
+                }
             }
 
             // display the number of cards remaining

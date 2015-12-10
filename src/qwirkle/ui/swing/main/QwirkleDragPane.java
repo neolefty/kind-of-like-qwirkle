@@ -23,18 +23,18 @@ public class QwirkleDragPane extends JComponent {
 
     @Subscribe
     public void dragEvent(DragPiece event) {
-        if (event.isPickup()) {
+        if (event.isActionPickup()) {
             setVisible(true);
             debugln("Picked up: " + event);
             this.pickup = event;
             repaint();
         }
-        else if (event.isDrop() || event.isCancel()) {
+        else if (event.isActionDrop() || event.isActionCancel()) {
             debugln("Dropped: " + event);
             this.pickup = null;
             setVisible(false);
         }
-        else if (event.isSustain()) {
+        else if (event.isActionSustain()) {
             debug("=");
             repaint();
         }
@@ -74,7 +74,7 @@ public class QwirkleDragPane extends JComponent {
                 g2.translate(-50, -50); // mouse at center of shape
 
                 // 3 paint
-                new QwirklePiecePainter().paint(g2, pickup.getSourcePlacement());
+                new QwirklePiecePainter().paint(g2, pickup.getPlacement());
 
                 // 4 cleanup
                 g2.setTransform(t);

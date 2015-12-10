@@ -82,17 +82,27 @@ public class QwirkleGameLayout extends LayoutBase {
     @Override
     public Dimension minimumLayoutSize(Container parent) {
         Dimension result = new Dimension(0, 0);
+
+        // main grid panel
         if (gridPanel != null)
             result.setSize(gridPanel.getMinimumSize());
 
-        if (vertical) { // pad vertically -- figure out how tall player panels are based on width
-            double h = result.width / PlayerPanel.HORIZONTAL_ASPECT_RATIO;
-            result.height += playerPanels.size() * h;
+        // player panels
+        if (!playerPanels.isEmpty()) {
+            if (vertical) { // pad vertically -- figure out how tall player panels are based on width
+                double h = result.width / playerPanels.iterator().next().getAspectRatio();
+                result.height += playerPanels.size() * h;
+            } else { // pad horizontally -- figure out width based on height
+                double w = result.height * playerPanels.iterator().next().getAspectRatio();
+                result.width += playerPanels.size() * w;
+            }
         }
-        else { // pad horizontally -- figure out width based on height
-            double w = result.height * PlayerPanel.VERTICAL_ASPECT_RATIO;
-            result.width += playerPanels.size() * w;
-        }
+
+        // discard panel
+        if (vertical)
+            result.height += result.width / discardPanel.getAspectRatio();
+        else
+            result.width += result.height * discardPanel.getAspectRatio();
 
         return result;
     }

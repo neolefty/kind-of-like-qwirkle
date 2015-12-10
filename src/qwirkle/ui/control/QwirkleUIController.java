@@ -48,6 +48,6 @@ public class QwirkleUIController {
     public void unregister(Object subscriber) { interact.unregister(subscriber); }
 
     public DiscardTracker getDiscardController() {
-        return getInteraction().getDiscardController();
+        return getInteraction().getDiscardTracker();
     }
 }

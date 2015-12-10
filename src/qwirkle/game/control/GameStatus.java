@@ -1,8 +1,11 @@
 package qwirkle.game.control;
 
 import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.base.QwirkleSettings;
+
+import java.util.List;
 
 /** A read-only snapshot of a game state.
  *  Gives a view of the game without giving access to GameController.
@@ -16,6 +19,7 @@ public class GameStatus {
     private QwirkleBoard board;
     private QwirklePlayer curPlayer;
     private int deckRemaining;
+    private List<QwirklePiece> curPlayerHand;
 
     /** Use Prestarter for a public constructor. */
     public GameStatus(final GameController game) {
@@ -26,6 +30,7 @@ public class GameStatus {
         board = game.getBoard();
         deckRemaining = game.getDeck().size();
         curPlayer = game.getCurrentPlayer();
+        curPlayerHand = game.getHand(curPlayer);
     }
 
     /** What does the playing surface look like? */
@@ -53,4 +58,7 @@ public class GameStatus {
      *  Unlike the rest of this status object, it is live until the current game ends,
      *  when it stops updating. Created anew every time a game starts. */
     public AnnotatedGame getAnnotated() { return annotatedGame; }
+
+    /** The current player's hand. */
+    public List<QwirklePiece> getCurPlayerHand() { return curPlayerHand; }
 }

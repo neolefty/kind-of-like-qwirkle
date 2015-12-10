@@ -7,13 +7,13 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.swing.colors.Colors;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
+import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.swing.util.HasAspectRatio;
-import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +24,14 @@ import java.util.concurrent.Callable;
 // TODO add coach option for human player ("Rainbow suggests ...")
 /** Show the current state of a player. Their hand, name, score, best play so far in the game. */
 public class PlayerPanel extends JPanel implements HasAspectRatio {
-    /** If vertical, this is the ideal width-to-height ratio. */
-    public static final double VERTICAL_ASPECT_RATIO = 1 / 7.5;
-    /** If horizontal, this is the ideal width-to-height ratio. */
-    public static final double HORIZONTAL_ASPECT_RATIO = 5;
+    /** How much extra vertical space, in units of Qwirkle piece grid squares,
+     *  do we allow when in vertical mode, for labels? */
+    public static final double VERTICAL_PADDING = 1.0;
+    /** How much extra vertical space, in units of Qwirkle piece grid squares,
+     *  do we allow when in horizontal mode, for labels? */
+    public static final double HORIZONTAL_PADDING = 0.4;
     /** The size for the labels. */
-    public static final double AUTO_SIZE_FRACTION = 0.25;
+    public static final double AUTO_SIZE_FRACTION = 0.23;
 
     private QwirklePlayer player;
 
@@ -39,14 +41,14 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Boolean vertical = null;
     private TurnCompleted bestMove = null;
     private boolean myTurn;
-    private int handSize = 0;
+    private int handSize;
 
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
 
     public PlayerPanel(final QwirkleUIController control, final QwirklePlayer player) {
         this.player = player;
-        this.handPanel = new PlayerHandPanel(control, player);
+        this.handPanel = new PlayerHandPanel(control.getInteraction().getHandTracker(player));
 
         setLayout(new GridBagLayout());
         nameLabel = new AutoSizeLabel(this, " -- ", AUTO_SIZE_FRACTION); // text is set later
@@ -55,11 +57,12 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         autoSizeLabels.add(scoreLabel);
         scoreSeparatorLabel = new AutoSizeLabel(this, ": ", AUTO_SIZE_FRACTION);
         autoSizeLabels.add(scoreSeparatorLabel);
-        bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, AUTO_SIZE_FRACTION * 0.7,
+        bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, AUTO_SIZE_FRACTION,
                 new Callable<TurnCompleted>() { @Override public TurnCompleted call() { return bestMove; } });
         bestMoveLabel.setOpaque(false);
         autoSizeLabels.add(bestMoveLabel);
         setVertical(true);
+        handSize = control.getGame().getSettings().getHandSize();
 
         new SelfDisposingEventSubscriber(control.getEventBus(), new SwingPlatformAttacher(this)) {
             @Subscribe
@@ -82,9 +85,12 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         };
     }
 
-    // TODO adjust aspect ratio based on number of pieces in hand
+    /** The width to height ratio of this panel. */
     public static double getAspectRatio(boolean vertical, int handSize) {
-        return vertical ? VERTICAL_ASPECT_RATIO : HORIZONTAL_ASPECT_RATIO;
+        if (vertical)
+            return 1. / (VERTICAL_PADDING + handSize);
+        else
+            return ((double) handSize) / (1. + HORIZONTAL_PADDING);
     }
 
     @Override
@@ -121,9 +127,6 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     }
 
     public boolean isVertical() { return vertical; }
-    public boolean isHorizontal() { return !isVertical(); }
-
-    private boolean isMyTurn() { return myTurn; }
 
     private void setMyTurn(boolean myTurn) {
         if (myTurn != this.myTurn) {

@@ -1,8 +1,6 @@
 package qwirkle.game.base;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /** Miscellaneous utility methods. */
 public class QwirkleKit {
@@ -52,5 +50,13 @@ public class QwirkleKit {
             if (p.getColor() == color)
                 ++result;
         return result;
+    }
+
+    public static List<QwirkleLocation> placementsToLocations(Collection<QwirklePlacement> placements) {
+        List<QwirkleLocation> result = new ArrayList<>();
+        if (placements != null)
+            for (QwirklePlacement p : placements)
+                result.add(p.getLocation());
+        return Collections.unmodifiableList(result);
     }
 }

@@ -9,11 +9,11 @@ import java.util.Collections;
 import java.util.List;
 
 /** An interactive discard that a player is contemplating has been updated. */
-public class DiscardUpdate {
+public class UpdateDiscards {
     private final List<QwirklePlacement> placements;
     private final List<QwirkleLocation> alsoVisible;
 
-    public DiscardUpdate(Collection<QwirklePlacement> placements, Collection<QwirkleLocation> alsoVisible) {
+    public UpdateDiscards(Collection<QwirklePlacement> placements, Collection<QwirkleLocation> alsoVisible) {
         this.placements = Collections.unmodifiableList(new ArrayList<>(placements));
         this.alsoVisible = Collections.unmodifiableList(new ArrayList<>(alsoVisible));
     }
