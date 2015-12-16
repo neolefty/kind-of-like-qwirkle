@@ -159,7 +159,14 @@ public class HypotheticalPlayController {
                     throw new IllegalStateException("Picking up nonexistent piece: " + play.getPickup());
                 placements.add(play.getDrop().getPlacement());
             }
-            if (!getBoard().isLegal(placements))
+            // if it's from the discard pile, and it's the only piece there, you can move it to the board
+            if (play.isPickupDiscard() && discardTracker.size() == 1) {
+                if (placements.size() != 1)
+                    throw new IllegalStateException("Expected 1 placement but found " + placements.size());
+                placements.clear(); // remove the old one
+                placements.add(play.getDrop().getPlacement());
+            }
+            if (!getBoard().isLegal(placements)) // if it's against the rules, then you can't play it
                 dropLegal = false;
 
             // b. if the placement would be legal, see if the pickup is okay
