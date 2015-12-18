@@ -9,10 +9,10 @@ import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.base.impl.QwirkleGridImpl;
 import qwirkle.game.base.impl.QwirkleGridTools;
 import qwirkle.game.event.TurnStarting;
-import qwirkle.ui.QwirkleGridDisplay;
-import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.view.QwirkleGridDisplay;
+import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
+import qwirkle.ui.swing.util.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +27,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private EventBus eventBus;
     private DisplayType displayType;
     private QwirklePlayer curPlayer;
+    private final Map<QwirkleLocation, QwirklePiecePanel> panelMap = new HashMap<>();
 
     private final Object alwaysShownSync = new Object();
     private Set<QwirkleLocation> alwaysShown;
@@ -97,8 +98,6 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         return highlight != null && highlight.contains(new QwirkleLocation(x, y));
     }
 
-    private Map<QwirkleLocation, QwirklePiecePanel> panelMap = new HashMap<>();
-
     @Override
     public void removeAll() {
         synchronized (getTreeLock()) {
@@ -129,11 +128,14 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private void addPiecePanel(QwirkleLocation loc) {
         addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
     }
+
     private void addPiecePanel(QwirklePiecePanel pp) {
-        if (draggable && pp.getPiece() != null)
-            pp.makeDraggable(curPlayer);
-        panelMap.put(pp.getQwirkleLocation(), pp);
-        add(pp);
+        synchronized (getTreeLock()) { // probably redundant
+            if (draggable && pp.getPiece() != null)
+                pp.makeDraggable(curPlayer);
+            panelMap.put(pp.getQwirkleLocation(), pp);
+            add(pp);
+        }
     }
 
     /** Enable drag-and-drop operations starting from this grid. */
@@ -170,8 +172,8 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     @Override public QwirkleGrid getGrid() { return grid; }
-    @Override public int getPieceWidth() { return layout.getPieceSize(); }
-    @Override public int getPieceHeight() { return layout.getPieceSize(); }
+//    @Override public int getPieceWidth() { return layout.getPieceSize(); }
+//    @Override public int getPieceHeight() { return layout.getPieceSize(); }
     @Override public DisplayType getDisplayType() { return displayType; }
 
     /** Least x-coordinate that is visible, including margin and all locations. */
@@ -214,8 +216,16 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         return result + layout.getMargin();
     }
 
+    /** Get the piece panel at a board location. */
     public QwirklePiecePanel getPiecePanel(QwirkleLocation loc) {
-        return panelMap.get(loc);
+        synchronized (getTreeLock()) {
+            return panelMap.get(loc);
+        }
+    }
+
+    @Override
+    public QwirklePieceDisplay getPieceDisplay(QwirkleLocation location) {
+        return getPiecePanel(location);
     }
 
     @Override

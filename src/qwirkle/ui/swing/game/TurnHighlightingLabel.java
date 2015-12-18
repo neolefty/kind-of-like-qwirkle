@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.EventBus;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.game.event.TurnCompleted;
-import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.colors.Colors;
 import qwirkle.ui.swing.util.HighlightLabel;
 
 import java.awt.*;
@@ -15,7 +15,7 @@ public class TurnHighlightingLabel extends HighlightLabel {
     private EventBus bus;
 
     public TurnHighlightingLabel(EventBus bus, Component parent, double fraction, Callable<TurnCompleted> getter) {
-        super(parent, fraction, Colors.MOUSE_HL);
+        super(parent, fraction, new Color(Colors.MOUSE_HL.getColorInt()));
         TurnHighlighter highlighter = new TurnHighlighter(getter);
         setHighlightAction(highlighter.createHighlighter(true));
         setUnhighlightAction(highlighter.createHighlighter(false));

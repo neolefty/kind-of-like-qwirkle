@@ -3,16 +3,16 @@ package qwirkle.ui.swing.game.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.*;
-import qwirkle.ui.QwirkleGridDisplay;
-import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.view.QwirkleGridDisplay;
+import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.ui.event.PassOver;
-import qwirkle.ui.swing.colors.ColorSets;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
+import qwirkle.ui.colors.ColorSets;
+import qwirkle.ui.swing.util.SwingPlatformAttacher;
 import qwirkle.ui.swing.main.UIConstants;
-import qwirkle.ui.swing.paint.QwirklePiecePainter;
+import qwirkle.ui.swing.piece.QwirklePiecePainter;
 import qwirkle.ui.swing.util.SwingDragHelper;
 
 import javax.swing.*;
@@ -22,7 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
 // TODO allow cancelling a re-pick -- that is, if you pick up a play from the board, allow putting it back in the same spot.
-public class QwirklePiecePanel extends JPanel implements HasQwirkleLocation, QwirklePieceDisplay {
+public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
     private static final QwirklePiecePainter painter = new QwirklePiecePainter();
 
     private QwirklePiece piece;

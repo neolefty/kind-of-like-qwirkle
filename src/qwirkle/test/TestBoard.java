@@ -67,7 +67,7 @@ public class TestBoard {
     private static void testInit() {
         int trials = 50; // run N times to make sure nothing random is going wrong
         QwirkleShape[] shapes = {QwirkleShape.heart, QwirkleShape.star8, QwirkleShape.diamond};
-        QwirkleColor[] colors = {QwirkleColor.blue, QwirkleColor.purple};
+        QwirkleColor[] colors = {QwirkleColor.BLUE, QwirkleColor.PURPLE};
         QwirkleAI[] rawPlayers = { new MaxAI(), new StupidAI("duh") };
         List<QwirklePlayer> players = QwirklePlayer.wrap(Arrays.asList(rawPlayers));
 
@@ -81,8 +81,8 @@ public class TestBoard {
             for (QwirkleShape s : shapes)
                 for (QwirkleColor c : colors)
                     assert deck.contains(new QwirklePiece(c, s));
-            assert !deck.contains(new QwirklePiece(QwirkleColor.blue, QwirkleShape.butterfly));
-            assert !deck.contains(new QwirklePiece(QwirkleColor.orange, QwirkleShape.heart));
+            assert !deck.contains(new QwirklePiece(QwirkleColor.BLUE, QwirkleShape.butterfly));
+            assert !deck.contains(new QwirklePiece(QwirkleColor.ORANGE, QwirkleShape.heart));
         }
 
         // make sure a multi-deck deal works

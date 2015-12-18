@@ -12,12 +12,11 @@ import qwirkle.ui.control.PlayerHandTracker;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.UpdateHand;
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
+import qwirkle.ui.swing.util.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.util.List;
 
-// TODO move logic into a controller
 // TODO allow dragging to reorder pieces
 // TODO highlight playable pieces, on your turn, with colored bg?
 // TODO highlight destinations on mouseover?
@@ -65,19 +64,6 @@ public class PlayerHandPanel extends QwirkleGridPanel {
                 update();
         }
 
-//        // listen for dragging pieces in and out
-//        @Subscribe public void drag(DragPiece event) {
-//            if (event.getPlayer() == player) {
-//                // if picking up from somewhere else, drag it out
-//                // (if picking up from here, don't need to because PiecePanel will hide it)
-//                if (event.isActionPickup() && event.getGrid() != getGrid())
-//                    dragOut(event.getPlacement());
-//                // if cancelling or dropping, undo the drag out
-//                if (event.isActionCancel() || event.isActionDrop())
-//                    undragOut(event.getPickup().getPlacement());
-//            }
-//        }
-
         // highlight the new pieces we draw
         @Subscribe public void dealt(DrawPieces draw) {
             if (draw.getPlayer() == getPlayer()) {
@@ -101,37 +87,5 @@ public class PlayerHandPanel extends QwirkleGridPanel {
         setHighlight(QwirkleKit.placementsToLocations(hand.getPlacements(lastDraw, false)));
         setAlwayShown(hand.getEmptySpots(), false);
         setGrid(new QwirkleGridImpl(hand.getVisiblePieces().values()));
-
-//        synchronized(handPlaces) {
-//            handPlaces.clear();
-//            List<QwirklePlacement> handDisplay = new ArrayList<>();
-//            List<QwirklePiece> drawScratch = new ArrayList<>();
-//            if (lastDraw != null) drawScratch.addAll(lastDraw);
-//
-//            // make a grid from our hand, along with the new pieces
-//            List<QwirklePiece> hand = control.getGame().getHand(player);
-//            List<QwirkleLocation> drawLocations = new ArrayList<>();
-//            if (hand != null) {
-//                // build a grid that represents the hand
-//                for (int i = 0; i < hand.size(); ++i) {
-//                    QwirkleLocation location = new QwirkleLocation(vertical ? 0 : i, vertical ? i : 0);
-//                    QwirklePiece piece = hand.get(i);
-//                    QwirklePlacement place = new QwirklePlacement(piece, location);
-//                    handPlaces.add(place);
-//                    if (!draggedOut.contains(place))
-//                        handDisplay.add(place);
-//                }
-//                // highlight the new pieces, starting at the bottom
-//                for (int i = handDisplay.size() - 1; i >= 0; --i) {
-//                    QwirklePlacement place = handDisplay.get(i);
-//                    // make sure each draw is highlighted only once, but allow duplicate
-//                    if (drawScratch.remove(place.getPiece()))
-//                        drawLocations.add(place.getLocation());
-//                }
-//            }
-//            QwirkleGrid handGrid = new QwirkleGridImpl(handDisplay);
-//            setGrid(handGrid);
-//            setHighlight(drawLocations);
-//        }
     }
 }

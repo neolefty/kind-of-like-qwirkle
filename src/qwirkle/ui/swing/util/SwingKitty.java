@@ -1,13 +1,15 @@
 package qwirkle.ui.swing.util;
 
+import qwirkle.game.base.QwirkleColor;
+
 import java.awt.*;
 
 /** Swing utilities. */
 public class SwingKitty {
     // Recursively set the colors & font of comp to match our scheme
-    public static void setColors(Component comp, Color fg, Color bg) {
-        comp.setForeground(fg);
-        comp.setBackground(bg);
+    public static void setColors(Component comp, QwirkleColor fg, QwirkleColor bg) {
+        comp.setForeground(new Color(fg.getColorInt()));
+        comp.setBackground(new Color(bg.getColorInt()));
         if (comp.getFont() != null)
             comp.setFont(comp.getFont().deriveFont(30f));
         if (comp instanceof Container) {

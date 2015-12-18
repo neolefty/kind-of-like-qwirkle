@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.ui.event.PassOver;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.game.base.QwirklePiece;
-import qwirkle.ui.swing.paint.QwirklePiecePainter;
+import qwirkle.ui.swing.piece.QwirklePiecePainter;
 
 import javax.swing.*;
 import java.awt.*;

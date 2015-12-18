@@ -10,7 +10,7 @@ import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.PreEvent;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
-import qwirkle.ui.QwirkleGridDisplay;
+import qwirkle.ui.view.QwirkleGridDisplay;
 import qwirkle.ui.event.PlayPiece;
 import qwirkle.ui.event.PlayTurn;
 

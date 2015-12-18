@@ -8,9 +8,9 @@ import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.colors.Colors;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
+import qwirkle.ui.swing.util.SwingPlatformAttacher;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.swing.util.HasAspectRatio;
@@ -133,14 +133,14 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             this.myTurn = myTurn;
             // TODO make highlighting the current player a little nicer
             if (myTurn) {
-                setDraggable(true);
-                setBorder(BorderFactory.createLineBorder(Colors.FG));
-                setBackground(Colors.BG_HL);
+                handPanel.makeDraggable(player);
+                setBorder(BorderFactory.createLineBorder(new Color(Colors.FG.getColorInt())));
+                setBackground(new Color(Colors.BG_HL.getColorInt()));
             }
             else {
-                setDraggable(false);
+                handPanel.makeUndraggable();
                 setBorder(null);
-                setBackground(Colors.BG);
+                setBackground(new Color(Colors.BG.getColorInt()));
             }
             repaint();
         }
@@ -222,13 +222,5 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
             constraints.weighty = 0;
             add(labels, constraints);
         }
-    }
-
-    // TODO maybe remove this once we've moved the current player event processing into this panel?
-    public void setDraggable(boolean draggable) {
-        if (draggable)
-            handPanel.makeDraggable(player);
-        else
-            handPanel.makeUndraggable();
     }
 }

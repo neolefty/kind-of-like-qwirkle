@@ -2,7 +2,7 @@ package qwirkle.ui.swing.util;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.colors.Colors;
 
 import javax.swing.*;
 import java.awt.*;
@@ -194,7 +194,7 @@ public class UserActivityTimeout {
 
         JPanel controls = new JPanel();
         box.add(controls);
-        controls.setBackground(Colors.BG);
+        controls.setBackground(new Color(Colors.BG.getColorInt()));
 
         JButton activateButton = new JButton("Activate");
         controls.add(activateButton);

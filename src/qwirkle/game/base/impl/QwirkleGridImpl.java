@@ -127,7 +127,7 @@ public class QwirkleGridImpl implements QwirkleGrid {
     @Override
     public String toString(String linePrefix) {
         StringBuilder s = new StringBuilder();
-        QwirklePiece sample = new QwirklePiece(QwirkleColor.blue, QwirkleShape.circle);
+        QwirklePiece sample = new QwirklePiece(QwirkleColor.BLUE, QwirkleShape.circle);
         String space = "          ".substring(0, sample.getAbbrev().length());
         for (LineWalker line : getHorizontalWalker(0)) {
             s.append(linePrefix);

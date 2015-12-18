@@ -1,7 +1,8 @@
 package qwirkle.ui.swing.game.board;
 
+import qwirkle.game.base.QwirkleColor;
 import qwirkle.ui.event.PassOver;
-import qwirkle.ui.swing.colors.ColorSet;
+import qwirkle.ui.colors.ColorSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 // TODO make background change fade in & out -- make a background manager thread ...
+// TODO insulate from Swing
 /** Manages a compoment's background color based on mouse movements.
  *  Also posts {@link PassOver} events. */
 public class BackgroundManager {
@@ -108,7 +110,8 @@ public class BackgroundManager {
 
     private Color getCurrentColor() {
         ColorSet cs = getColors();
-        return isPressed() ? cs.getActivated() : (isHighlighted() ? cs.getHighlight() : cs.getNormal());
+        QwirkleColor qc = isPressed() ? cs.getActivated() : (isHighlighted() ? cs.getHighlight() : cs.getNormal());
+        return qc == null ? null : new Color(qc.getColorInt());
     }
 
     private void update() {

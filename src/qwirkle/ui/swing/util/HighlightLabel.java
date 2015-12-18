@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+// TODO when the best play is in the 0-row, don't also highlight hands & discard spots (that is, maybe include a board type when signalling a highlight)
 /** A JLabel that highlights when you mouse over it.
  *  Note: highlightAction is run in the Swing event thread. */
 public class HighlightLabel extends AutoSizeLabel {

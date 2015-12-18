@@ -1,8 +1,8 @@
 package qwirkle.ui.event;
 
 import qwirkle.game.base.*;
-import qwirkle.ui.QwirkleGridDisplay;
-import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.view.QwirkleGridDisplay;
+import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.DragToPlayPromoter;
 
 /** A piece is being dragged -- picked up or put down or cancelled.

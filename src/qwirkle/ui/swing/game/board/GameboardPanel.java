@@ -11,7 +11,7 @@ import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.control.HypotheticalPlayController;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.PlayPiece;
-import qwirkle.ui.swing.colors.HypotheticalPlayBgColors;
+import qwirkle.ui.colors.HypotheticalPlayBgColors;
 
 // TODO show points of hypothetical placement in highlight
 /** An active playing surface that facilitates playing a next turn by showing

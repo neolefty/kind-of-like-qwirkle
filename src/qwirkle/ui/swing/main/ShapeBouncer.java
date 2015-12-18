@@ -7,8 +7,8 @@ import qwirkle.game.base.QwirkleColor;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirkleSettings;
 import qwirkle.game.base.QwirkleShape;
-import qwirkle.ui.swing.colors.Colors;
-import qwirkle.ui.swing.paint.QwirklePiecePainter;
+import qwirkle.ui.colors.Colors;
+import qwirkle.ui.swing.piece.QwirklePiecePainter;
 import qwirkle.ui.swing.util.HasTransparency;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
@@ -377,7 +377,8 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
             for (int i = 0; i < copies; ++i)
                 shapes.addAll(Arrays.asList(QwirkleShape.values()));
             QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
-            bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values());
+            //noinspection ToArrayCallWithZeroLengthArrayArgument
+            bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values().toArray(new QwirkleColor[0]));
         }
         else {
             GameController justForDeck

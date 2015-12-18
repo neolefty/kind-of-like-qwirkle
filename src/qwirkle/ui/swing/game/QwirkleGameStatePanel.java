@@ -3,14 +3,15 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.event.GameStarted;
+import qwirkle.ui.colors.Colors;
 import qwirkle.ui.control.QwirkleUIController;
-import qwirkle.ui.swing.colors.Colors;
-import qwirkle.ui.swing.game.board.PlayableHighlighter;
 import qwirkle.ui.swing.game.board.GameboardPanel;
+import qwirkle.ui.swing.game.board.PlayableHighlighter;
 import qwirkle.ui.swing.game.player.PlayerPanel;
 import qwirkle.ui.swing.util.SwingKitty;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class QwirkleGameStatePanel extends JPanel {
                 PlayerPanel pp = new PlayerPanel(control, player);
                 playerPanelMap.put(player, pp);
                 // set an invisible border now to take up the space so the size doesn't change later
-                pp.setBorder(BorderFactory.createLineBorder(Colors.BG));
+                pp.setBorder(BorderFactory.createLineBorder(new Color(Colors.BG.getColorInt())));
                 SwingKitty.setColors(pp, Colors.FG, Colors.BG);
                 add(pp);
             }

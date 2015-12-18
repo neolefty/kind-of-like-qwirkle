@@ -4,11 +4,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.event.TurnStarting;
-import qwirkle.ui.QwirklePieceDisplay;
+import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.PassOver;
-import qwirkle.ui.swing.impl.SwingPlatformAttacher;
 
 import javax.swing.*;
 import java.awt.*;

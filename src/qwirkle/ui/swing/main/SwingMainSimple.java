@@ -6,7 +6,7 @@ import qwirkle.game.control.impl.NewThreadEachTime;
 import qwirkle.game.control.players.MaxAI;
 import qwirkle.game.control.players.StupidAI;
 import qwirkle.ui.control.QwirkleUIController;
-import qwirkle.ui.swing.colors.Colors;
+import qwirkle.ui.colors.Colors;
 import qwirkle.ui.swing.game.QwirkleGamePanel;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
