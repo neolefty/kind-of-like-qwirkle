@@ -13,11 +13,16 @@ public class HypotheticalPlayBgColors implements ColorSet {
     public HypotheticalPlayBgColors(QwirklePlacement placement) { this(placement.getColor()); }
 
     /** Legal destination. */
-    @Override public QwirkleColor getNormal() { return pieceColor.darker().darker(); }
+    @Override public QwirkleColor getNormal() { return pieceColor.darker().darker().darker(); }
 
     /** Hover over a legal destination. */
-    @Override public QwirkleColor getHighlight() { return pieceColor.darker(); }
+    @Override public QwirkleColor getHighlight() { return pieceColor.darker().darker(); }
 
     /** Where the piece came from (because the mouse is pressed, and this is focused, during a drag) */
-    @Override public QwirkleColor getActivated() { return pieceColor.brighter(); }
+    @Override public QwirkleColor getActivated() { return pieceColor.darker(); }
+
+    @Override
+    public String toString() {
+        return "hypothetical highlight based on " + pieceColor + ": [" + getNormal() + ", " + getHighlight() + ", " + getActivated() + "]";
+    }
 }

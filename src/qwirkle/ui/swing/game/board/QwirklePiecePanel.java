@@ -68,7 +68,7 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
                 /** Highlight this piece if it is part of the {@link HighlightTurn}. */
                 @Subscribe public void highlight(HighlightTurn hl) {
                     // we can tell based on location
-                    if (hl.getTurn().containsLocation(location))
+                    if (getDisplay().getDisplayType() == hl.getType() && hl.getTurn().containsLocation(location))
                         bgMgr.setHighlighted(hl.isHighlighted());
                 }
             };
@@ -77,13 +77,13 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    bgMgr.setMouseOver(true);
+                    bgMgr.setHover(true);
                     bus.post(new PassOver(QwirklePiecePanel.this, true));
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    bgMgr.setMouseOver(false);
+                    bgMgr.setHover(false);
                     bus.post(new PassOver(QwirklePiecePanel.this, false));
                 }
 
@@ -102,7 +102,7 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
 
     @Override
     public void setBackground(QwirkleColor background) {
-        setBackground(new Color(background.getColorInt()));
+        setBackground(background == null ? null : new Color(background.getColorInt()));
     }
 
     public BackgroundManager getBackgroundManager() { return bgMgr; }

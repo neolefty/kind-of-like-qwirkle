@@ -3,6 +3,7 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.EventBus;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.game.event.TurnCompleted;
+import qwirkle.ui.view.QwirkleGridDisplay;
 import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.swing.util.HighlightLabel;
 
@@ -22,13 +23,13 @@ public class TurnHighlightingLabel extends HighlightLabel {
         this.bus = bus;
     }
 
-    /** Creates TurnGetters to highlight turns. */
+    /** Creates <tt>Callable</tt>s to highlight turns. */
     private class TurnHighlighter {
         private TurnCompleted lastHighlight = null;
-        private Callable<TurnCompleted> getter;
+        private Callable<TurnCompleted> turnGetter;
 
         TurnHighlighter(Callable<TurnCompleted> getter) {
-            this.getter = getter;
+            this.turnGetter = getter;
         }
 
         /** A runnable that will begin or end highlighting this turn. */
@@ -41,7 +42,7 @@ public class TurnHighlightingLabel extends HighlightLabel {
                     // do the new highlight
                     if (highlight)
                         try {
-                            postHighlight(getter.call());
+                            postHighlight(turnGetter.call());
                         } catch (Exception e) {
                             e.printStackTrace(); // can probably safely ignore this, since it's only cosmetic
                         }
@@ -53,14 +54,14 @@ public class TurnHighlightingLabel extends HighlightLabel {
         private synchronized void postHighlight(TurnCompleted turn) {
             if (turn != null) {
                 this.lastHighlight = turn;
-                bus.post(new HighlightTurn(turn, true));
+                bus.post(new HighlightTurn(turn, QwirkleGridDisplay.DisplayType.gameboard, true));
             }
         }
 
         // undo the previous highlight, if there is one
         private synchronized void postUnhighlight() {
             if (lastHighlight != null) {
-                bus.post(new HighlightTurn(lastHighlight, false));
+                bus.post(new HighlightTurn(lastHighlight, QwirkleGridDisplay.DisplayType.gameboard, false));
                 lastHighlight = null;
             }
         }

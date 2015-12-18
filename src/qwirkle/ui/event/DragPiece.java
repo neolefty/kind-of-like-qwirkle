@@ -48,7 +48,9 @@ public class DragPiece {
      *  @param display the display we're passing over now. May be null. */
     public DragPiece sustain(QwirklePieceDisplay display) {
         checkStartOrSustain(Action.SUSTAIN);
-        return new DragPiece(this, display, Action.SUSTAIN);
+        DragPiece result = new DragPiece(this, display, Action.SUSTAIN);
+//        System.out.println(result);
+        return result;
     }
 
     /** Cancel dragging. */
@@ -78,6 +80,9 @@ public class DragPiece {
     private DragPiece(DragPiece precedent, QwirklePieceDisplay display, Action action) {
         this(precedent.player, display, action);
         this.pickup = precedent.getPickup();
+        // use the precedent's piece, not whatever was there originally
+        if (getPlacement().getPiece() != precedent.getPiece())
+            placement = new QwirklePlacement(precedent.getPiece(), display.getQwirkleLocation());
     }
 
     private void checkStartOrSustain(Action action) {
@@ -105,21 +110,29 @@ public class DragPiece {
         return display.getDisplay().getDisplayType();
     }
 
-    public QwirklePieceDisplay getPieceDisplay() { return display; }
-    public QwirkleGridDisplay getGridDisplay() { return display.getDisplay(); }
-
     /** The grid this piece is being picked up from or dropped onto. */
     public QwirkleGrid getGrid() { return grid; }
 
     public QwirkleLocation getLocation() { return placement.getLocation(); }
 
-    public QwirklePlacement getPlacement() { return placement; }
+    public QwirklePlacement getPlacement() {
+        if (placement != null)
+            return placement;
+        else if (getPickup() != null)
+            return getPickup().getPlacement();
+        else
+            throw new IllegalStateException("null placement?");
+//            return null; // shouldn't happen
+    }
 
     public QwirklePiece getPiece() { return getPickup().getPlacement().getPiece(); }
 
     @Override
     public String toString() {
-        return action + " " + placement + " on " + getDisplayType()
-                + (pickup == null ? "" : " from " + pickup.placement + " on " + pickup.getDisplayType());
+        if (placement == null)
+            return action + (pickup == null ? "" : " " + pickup);
+        else
+            return action + " " + placement + " on " + getDisplayType()
+                    + (pickup == null ? "" : " from " + pickup.placement + " on " + pickup.getDisplayType());
     }
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class BackgroundManager {
     private HasBackground ui;
     private java.util.List<ColorSet> bgStack = new ArrayList<>();
-    private boolean pressed = false, mouseOver = false, highlighted = false;
+    private boolean pressed = false, hover = false, highlighted = false;
 
     public BackgroundManager(HasBackground ui, ColorSet bg) {
         this.ui = ui;
@@ -20,16 +20,12 @@ public class BackgroundManager {
         update();
     }
 
-    /** Set this to be highlighted. May be triggered by a mouseover or some external reason. */
-    public void setHighlighted(boolean highlighted) {
-        this.highlighted = highlighted;
-        update();
-    }
-
-    /** Is this highlighted? May be set externally or by a mouseover. */
-    public boolean isHighlighted() { return highlighted; }
+    /** Should this be highlighted?
+     * Is the pointer over it or has {@link #setHighlighted} been called? */
+    public boolean shouldHighlight() { return highlighted || hover; }
 
     // TODO if mouse exits when should stay highlighted, stay highlighted
+
     /** The mouse button is currently pressed (with this as mouse focus) or not. */
     public void setMousePressed(boolean pressed) {
         if (pressed != this.pressed) {
@@ -37,14 +33,19 @@ public class BackgroundManager {
             update();
         }
     }
+    /** Set this to be highlighted for some reason other than a mouse hover. */
+    public void setHighlighted(boolean highlighted) {
+        if (this.highlighted != highlighted) {
+            this.highlighted = highlighted;
+            update();
+        }
+    }
 
-    /** The mouse is currently over or not over this. */
-    public void setMouseOver(boolean mouseOver) {
-        // if already highlighted, assume it's from an external cause, and we shouldn't interfere
-        if (this.mouseOver != mouseOver) {
-            this.mouseOver = mouseOver;
-            // only change highlighting because of entry, not because of external highlighting
-            setHighlighted(mouseOver);
+    /** The pointer is currently over or not over this. */
+    public void setHover(boolean hover) {
+        if (this.hover != hover) {
+            this.hover = hover;
+            update();
         }
     }
 
@@ -52,12 +53,6 @@ public class BackgroundManager {
     public boolean isPressed() {
         return pressed;
     }
-
-    /** Was the current highlight triggered by a mouseover?
-     *
-     *  <p>Note: Will be <tt>false</tt> even if the mouse is currently over this,
-     *  if {@link #setHighlighted} was called externally.</p> */
-    public boolean isMouseOver() { return mouseOver; }
 
     /** Undo previous {@link #pushColors}.
      *  <em>Note:</em> No effect if this would empty the stack -- at least one {@link ColorSet} is kept. */
@@ -86,7 +81,10 @@ public class BackgroundManager {
 
     private QwirkleColor getCurrentColor() {
         ColorSet cs = getColors();
-        return isPressed() ? cs.getActivated() : (isHighlighted() ? cs.getHighlight() : cs.getNormal());
+        QwirkleColor result = isPressed() ? cs.getActivated() : (shouldHighlight() ? cs.getHighlight() : cs.getNormal());
+        if (result == null)
+            System.out.println("ColorSet: " + cs + "; is pressed? " + isPressed() + "; should highlight? " + shouldHighlight());
+        return result;
     }
 
     private void update() {
