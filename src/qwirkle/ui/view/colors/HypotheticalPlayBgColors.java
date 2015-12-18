@@ -1,4 +1,4 @@
-package qwirkle.ui.colors;
+package qwirkle.ui.view.colors;
 
 import qwirkle.game.base.QwirkleColor;
 import qwirkle.game.base.QwirklePiece;

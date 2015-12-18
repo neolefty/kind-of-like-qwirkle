@@ -2,7 +2,7 @@ package qwirkle.test.visual;
 
 import qwirkle.game.base.QwirkleShape;
 import qwirkle.ui.swing.piece.QwirklePiecePainter;
-import qwirkle.ui.colors.Colors;
+import qwirkle.ui.view.colors.Colors;
 
 import javax.swing.*;
 import java.awt.*;

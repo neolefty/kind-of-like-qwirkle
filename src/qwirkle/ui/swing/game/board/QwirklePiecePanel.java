@@ -10,9 +10,9 @@ import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.ui.event.PassOver;
-import qwirkle.ui.colors.ColorSets;
+import qwirkle.ui.view.colors.ColorSets;
 import qwirkle.ui.swing.util.SwingPlatformAttacher;
-import qwirkle.ui.swing.main.UIConstants;
+import qwirkle.ui.UIConstants;
 import qwirkle.ui.swing.piece.QwirklePiecePainter;
 import qwirkle.ui.swing.util.SwingDragHelper;
 

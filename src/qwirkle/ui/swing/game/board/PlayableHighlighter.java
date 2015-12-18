@@ -7,8 +7,8 @@ import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.control.HypotheticalPlayController;
 import qwirkle.ui.event.DragPiece;
-import qwirkle.ui.colors.ColorSet;
-import qwirkle.ui.colors.HypotheticalPlayBgColors;
+import qwirkle.ui.view.colors.ColorSet;
+import qwirkle.ui.view.colors.HypotheticalPlayBgColors;
 
 import java.util.Collection;
 import java.util.Collections;

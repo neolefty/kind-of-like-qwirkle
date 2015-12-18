@@ -1,6 +1,6 @@
 package qwirkle.ui.swing.util;
 
-import qwirkle.ui.view.SetupKit;
+import qwirkle.ui.UIConstants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,20 +44,20 @@ public class SwingSetup {
     public static void saveWindowBounds(JFrame frame, Preferences prefs) {
         if (frame.isVisible()) {
             Rectangle r = frame.getBounds();
-            prefs.putInt(SetupKit.PREFS_WINDOW_LEFT, r.x);
-            prefs.putInt(SetupKit.PREFS_WINDOW_TOP, r.y);
-            prefs.putInt(SetupKit.PREFS_WINDOW_WIDTH, r.width);
-            prefs.putInt(SetupKit.PREFS_WINDOW_HEIGHT, r.height);
+            prefs.putInt(UIConstants.PREFS_WINDOW_LEFT, r.x);
+            prefs.putInt(UIConstants.PREFS_WINDOW_TOP, r.y);
+            prefs.putInt(UIConstants.PREFS_WINDOW_WIDTH, r.width);
+            prefs.putInt(UIConstants.PREFS_WINDOW_HEIGHT, r.height);
         }
     }
 
     public static Rectangle getStartingBounds(Preferences prefs) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int left = prefs.getInt(SetupKit.PREFS_WINDOW_LEFT, screenSize.width / 4);
-        int top = prefs.getInt(SetupKit.PREFS_WINDOW_TOP, screenSize.height / 4);
-        int width = prefs.getInt(SetupKit.PREFS_WINDOW_WIDTH, screenSize.width / 2);
-        int height = prefs.getInt(SetupKit.PREFS_WINDOW_HEIGHT, screenSize.height / 2);
+        int left = prefs.getInt(UIConstants.PREFS_WINDOW_LEFT, screenSize.width / 4);
+        int top = prefs.getInt(UIConstants.PREFS_WINDOW_TOP, screenSize.height / 4);
+        int width = prefs.getInt(UIConstants.PREFS_WINDOW_WIDTH, screenSize.width / 2);
+        int height = prefs.getInt(UIConstants.PREFS_WINDOW_HEIGHT, screenSize.height / 2);
 
         return new Rectangle(left, top, width, height);
     }

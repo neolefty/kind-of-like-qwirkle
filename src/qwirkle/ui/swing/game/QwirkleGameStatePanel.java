@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.event.GameStarted;
-import qwirkle.ui.colors.Colors;
+import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.game.board.GameboardPanel;
 import qwirkle.ui.swing.game.board.PlayableHighlighter;

@@ -8,7 +8,7 @@ import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.colors.Colors;
+import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.SwingPlatformAttacher;
 import qwirkle.ui.swing.util.AutoSizeLabel;

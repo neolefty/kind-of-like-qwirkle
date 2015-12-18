@@ -3,7 +3,7 @@ package qwirkle.ui.swing.game;
 import com.google.common.eventbus.EventBus;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.game.event.TurnCompleted;
-import qwirkle.ui.colors.Colors;
+import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.swing.util.HighlightLabel;
 
 import java.awt.*;

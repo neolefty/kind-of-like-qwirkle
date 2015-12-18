@@ -1,4 +1,4 @@
-package qwirkle.ui.colors;
+package qwirkle.ui.view.colors;
 
 /** A bunch of predefined color sets -- standard backgrounds. */
 public class ColorSets {

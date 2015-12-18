@@ -1,7 +1,7 @@
 package qwirkle.ui.view;
 
 import qwirkle.game.base.QwirkleColor;
-import qwirkle.ui.colors.ColorSet;
+import qwirkle.ui.view.colors.ColorSet;
 import qwirkle.ui.event.PassOver;
 
 import java.util.ArrayList;

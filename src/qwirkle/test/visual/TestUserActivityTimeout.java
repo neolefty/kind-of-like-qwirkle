@@ -2,7 +2,7 @@ package qwirkle.test.visual;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.colors.Colors;
+import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.swing.util.SwingSetup;
 import qwirkle.ui.swing.util.SwingUserActivityTimeout;
 
