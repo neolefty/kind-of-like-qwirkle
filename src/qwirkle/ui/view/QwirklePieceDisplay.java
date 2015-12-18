@@ -3,7 +3,6 @@ package qwirkle.ui.view;
 import qwirkle.game.base.HasQwirkleLocation;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
-import qwirkle.ui.swing.util.HasBackgroundMgr;
 
 /** A UI component that displays a {@link QwirklePiece}. */
 public interface QwirklePieceDisplay extends HasQwirkleLocation, HasBackgroundMgr {

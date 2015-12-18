@@ -1,28 +1,21 @@
-package qwirkle.ui.swing.game.board;
+package qwirkle.ui.view;
 
 import qwirkle.game.base.QwirkleColor;
-import qwirkle.ui.event.PassOver;
 import qwirkle.ui.colors.ColorSet;
+import qwirkle.ui.event.PassOver;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 // TODO make background change fade in & out -- make a background manager thread ...
-// TODO insulate from Swing
-/** Manages a compoment's background color based on mouse movements.
+/** Manages a {@link HasBackground} UI element's background color based on mouse movements.
  *  Also posts {@link PassOver} events. */
 public class BackgroundManager {
-    private JComponent comp;
+    private HasBackground ui;
     private java.util.List<ColorSet> bgStack = new ArrayList<>();
     private boolean pressed = false, mouseOver = false, highlighted = false;
 
-    public BackgroundManager(JComponent comp, ColorSet bg) {
-        this.comp = comp;
-        comp.setOpaque(true);
-        comp.addMouseListener(new Mouser());
+    public BackgroundManager(HasBackground ui, ColorSet bg) {
+        this.ui = ui;
         pushColors(bg);
         update();
     }
@@ -36,10 +29,23 @@ public class BackgroundManager {
     /** Is this highlighted? May be set externally or by a mouseover. */
     public boolean isHighlighted() { return highlighted; }
 
-    /** Is the mouse button currently pressed (with this as mouse focus)? */
-    private void setPressed(boolean pressed) {
-        this.pressed = pressed;
-        update();
+    // TODO if mouse exits when should stay highlighted, stay highlighted
+    /** The mouse button is currently pressed (with this as mouse focus) or not. */
+    public void setMousePressed(boolean pressed) {
+        if (pressed != this.pressed) {
+            this.pressed = pressed;
+            update();
+        }
+    }
+
+    /** The mouse is currently over or not over this. */
+    public void setMouseOver(boolean mouseOver) {
+        // if already highlighted, assume it's from an external cause, and we shouldn't interfere
+        if (this.mouseOver != mouseOver) {
+            this.mouseOver = mouseOver;
+            // only change highlighting because of entry, not because of external highlighting
+            setHighlighted(mouseOver);
+        }
     }
 
     /** Is the mouse button currently pressed (with this as mouse focus)? */
@@ -78,43 +84,12 @@ public class BackgroundManager {
         return bgStack.get(bgStack.size() - 1);
     }
 
-    private class Mouser extends MouseAdapter {
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            // if already highlighted, assume it's from an external cause, and we shouldn't interfere
-            if (!highlighted) {
-                mouseOver = true;
-                setHighlighted(true);
-            }
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            // only unhighlight if we are highlighted because of entry, not because of external highlighting
-            if (isMouseOver()) {
-                mouseOver = false;
-                setHighlighted(false);
-            }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            setPressed(true);
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            setPressed(false);
-        }
-    }
-
-    private Color getCurrentColor() {
+    private QwirkleColor getCurrentColor() {
         ColorSet cs = getColors();
-        QwirkleColor qc = isPressed() ? cs.getActivated() : (isHighlighted() ? cs.getHighlight() : cs.getNormal());
-        return qc == null ? null : new Color(qc.getColorInt());
+        return isPressed() ? cs.getActivated() : (isHighlighted() ? cs.getHighlight() : cs.getNormal());
     }
 
     private void update() {
-        comp.setBackground(getCurrentColor());
+        ui.setBackground(getCurrentColor());
     }
 }

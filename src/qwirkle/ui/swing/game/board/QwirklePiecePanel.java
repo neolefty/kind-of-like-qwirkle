@@ -3,6 +3,7 @@ package qwirkle.ui.swing.game.board;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.*;
+import qwirkle.ui.view.BackgroundManager;
 import qwirkle.ui.view.QwirkleGridDisplay;
 import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
@@ -41,6 +42,7 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
      *  @param bus The EventBus to post {@link DragPiece} events to. Can be null if this won't post drag events. */
     public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, QwirkleLocation location, boolean highlight) {
         bgMgr = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
+        setOpaque(true);
 
         this.location = location;
         this.parent = parent;
@@ -71,19 +73,36 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
                 }
             };
 
-            // post PassOver events
+            // post PassOver events & alert background manager
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
+                    bgMgr.setMouseOver(true);
                     bus.post(new PassOver(QwirklePiecePanel.this, true));
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
+                    bgMgr.setMouseOver(false);
                     bus.post(new PassOver(QwirklePiecePanel.this, false));
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    bgMgr.setMousePressed(true);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    bgMgr.setMousePressed(false);
                 }
             });
         }
+    }
+
+    @Override
+    public void setBackground(QwirkleColor background) {
+        setBackground(new Color(background.getColorInt()));
     }
 
     public BackgroundManager getBackgroundManager() { return bgMgr; }

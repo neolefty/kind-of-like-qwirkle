@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.util;
+package qwirkle.ui.view;
 
 /** Something that likes to preserve a certain aspect ratio. */
 public interface HasAspectRatio {

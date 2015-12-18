@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.util;
+package qwirkle.ui.view;
 
 public interface HasTransparency {
     /** Change overall transparency. Between 0 (opaque) and 1 (transparent). */

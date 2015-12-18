@@ -4,7 +4,7 @@ import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.game.base.QwirkleShape;
 import qwirkle.ui.swing.piece.impl.*;
-import qwirkle.ui.swing.util.HasTransparency;
+import qwirkle.ui.view.HasTransparency;
 
 import java.awt.*;
 import java.util.HashMap;

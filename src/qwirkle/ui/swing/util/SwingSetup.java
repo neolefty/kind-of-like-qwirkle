@@ -1,5 +1,7 @@
 package qwirkle.ui.swing.util;
 
+import qwirkle.ui.view.SetupKit;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;

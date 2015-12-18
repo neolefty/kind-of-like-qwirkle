@@ -13,7 +13,7 @@ import qwirkle.ui.swing.game.TurnHighlightingLabel;
 import qwirkle.ui.swing.util.SwingPlatformAttacher;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
-import qwirkle.ui.swing.util.HasAspectRatio;
+import qwirkle.ui.view.HasAspectRatio;
 
 import javax.swing.*;
 import java.awt.*;

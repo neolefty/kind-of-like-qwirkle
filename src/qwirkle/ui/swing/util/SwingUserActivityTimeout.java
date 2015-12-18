@@ -1,17 +1,14 @@
 package qwirkle.ui.swing.util;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.colors.Colors;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashSet;
 import java.util.Set;
 
 /** If the user is quiescent (no keyboard or mouse) for a certain amount of time, fire an event. */
-public class UserActivityTimeout {
+public class SwingUserActivityTimeout {
     private EventBus bus;
     // true if we last fired a timeout event; false if we last fired a resume
     private boolean firedTimeout;
@@ -31,8 +28,8 @@ public class UserActivityTimeout {
      *  @param bus where to receive & fire events
      *  @param timeoutMillis how long before firing an event
      *  @param resolutionMillis how often to check */
-    public UserActivityTimeout(Component watched, EventBus bus,
-                               final long timeoutMillis, final long resolutionMillis)
+    public SwingUserActivityTimeout(Component watched, EventBus bus,
+                                    final long timeoutMillis, final long resolutionMillis)
     {
         this.timeoutMillis = timeoutMillis;
         this.resolutionMillis = resolutionMillis;
@@ -166,67 +163,6 @@ public class UserActivityTimeout {
             debugln(); debug("Timed out after " + (now - lastActivity));
             bus.post(new TimeoutEvent(now - lastActivity));
         }
-    }
-
-    public static void main(String[] args) {
-        final int seconds = 4;
-        JFrame frame = new JFrame("Waiting for timeout");
-        SwingSetup.addWindowSizer(frame, UserActivityTimeout.class);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        Box box = new Box(BoxLayout.Y_AXIS);
-        frame.setContentPane(box);
-        EventBus bus = new EventBus();
-        JPanel watched = new JPanel();
-        final UserActivityTimeout timeout = new UserActivityTimeout(watched, bus, seconds * 1000, 100);
-
-        box.add(watched);
-        final JLabel label = new JLabel("Waiting for " + seconds + " seconds of inactivity");
-        watched.add(label);
-
-        bus.register(new Object() {
-            @Subscribe public void timeout(TimeoutEvent event) {
-                label.setText("Inactive for " + event.getElapsedMillis() + "ms");
-            }
-            @Subscribe public void resume(ResumeEvent event) {
-                label.setText("Resumed. Waiting for " + seconds + ".");
-            }
-        });
-
-        JPanel controls = new JPanel();
-        box.add(controls);
-        controls.setBackground(new Color(Colors.BG.getColorInt()));
-
-        JButton activateButton = new JButton("Activate");
-        controls.add(activateButton);
-        activateButton.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) { timeout.activityDetected(); }
-        });
-
-        JButton timeoutButton = new JButton("Timeout");
-        controls.add(timeoutButton);
-        timeoutButton.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) { timeout.timeout(); }
-        });
-
-        JButton quitButton = new JButton("Quit");
-        controls.add(quitButton);
-        quitButton.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) {
-                if (timeout.quit())
-                    label.setText("Not watching");
-            }
-        });
-
-        JButton resumeButton = new JButton("Resume");
-        controls.add(resumeButton);
-        resumeButton.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) {
-                if (timeout.resume())
-                    label.setText("Resumed watching; waiting for " + seconds);
-            }
-        });
-
-        frame.setVisible(true);
     }
 
     private transient boolean lineEnded = false;

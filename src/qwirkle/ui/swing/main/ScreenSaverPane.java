@@ -2,7 +2,8 @@ package qwirkle.ui.swing.main;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.swing.util.UserActivityTimeout;
+import qwirkle.ui.swing.util.SwingUserActivityTimeout;
+import qwirkle.ui.view.Fader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,7 @@ public class ScreenSaverPane extends JPanel {
     public static final long FADE_MILLIS = 250;
 
     private CardLayout layout = new CardLayout();
-    private UserActivityTimeout timeout;
+    private SwingUserActivityTimeout timeout;
     private long fadeMillis = FADE_MILLIS;
 
     /** Fader is optional. */
@@ -28,7 +29,7 @@ public class ScreenSaverPane extends JPanel {
         layout.addLayoutComponent(screensaver, KEY_SS);
 
         EventBus localBus = new EventBus(); // a bus just for screen saver events
-        timeout = new UserActivityTimeout(main, localBus, sleepMillis, 150);
+        timeout = new SwingUserActivityTimeout(main, localBus, sleepMillis, 150);
         timeout.addWatched(screensaver);
         timeout.setDebugging(false);
 
@@ -37,11 +38,11 @@ public class ScreenSaverPane extends JPanel {
         watchControls(screensaver);
 
         localBus.register(new Object() {
-            @Subscribe public void timeout(UserActivityTimeout.TimeoutEvent event) {
+            @Subscribe public void timeout(SwingUserActivityTimeout.TimeoutEvent event) {
                 layout.show(ScreenSaverPane.this, KEY_SS);
             }
 
-            @Subscribe public void resume(UserActivityTimeout.ResumeEvent event) {
+            @Subscribe public void resume(SwingUserActivityTimeout.ResumeEvent event) {
                 if (fader != null) {
                     fader.fade(fadeMillis, new Runnable() {
                         @Override public void run() { showMain(); }
@@ -80,7 +81,4 @@ public class ScreenSaverPane extends JPanel {
         }
     }
 
-    public interface Fader {
-        void fade(long millis, Runnable callback);
-    }
 }

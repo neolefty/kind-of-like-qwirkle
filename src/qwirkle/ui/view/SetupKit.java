@@ -1,4 +1,4 @@
-package qwirkle.ui.swing.util;
+package qwirkle.ui.view;
 
 import java.util.Random;
 

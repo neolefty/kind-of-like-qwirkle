@@ -16,7 +16,8 @@ import qwirkle.ui.colors.Colors;
 import qwirkle.ui.swing.game.QwirkleGamePanel;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
-import qwirkle.ui.swing.util.TransparencyFader;
+import qwirkle.ui.view.TransparencyFader;
+import qwirkle.ui.view.Fader;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class SwingMain {
                 screensaver.setSecondsToRotate(4);
 
                 // manage the game & screensaver panels with a ScreenSaverPane
-                ScreenSaverPane.Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
+                Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
                 ScreenSaverPane ssp = new ScreenSaverPane
                         (gamePanel, screensaver, fader, UIConstants.SCREENSAVER_TIMEOUT);
                 wakeOnGameEvents(ssp, control.getEventBus());

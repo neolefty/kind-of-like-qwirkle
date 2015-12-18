@@ -2,7 +2,7 @@ package qwirkle.ui.swing.game;
 
 import qwirkle.ui.swing.game.board.QwirkleGridPanel;
 import qwirkle.ui.swing.game.player.PlayerPanel;
-import qwirkle.ui.swing.util.HasAspectRatio;
+import qwirkle.ui.view.HasAspectRatio;
 import qwirkle.ui.swing.util.LayoutBase;
 
 import java.awt.*;
