@@ -13,7 +13,6 @@ import qwirkle.ui.UIConstants;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
-import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.swing.game.SwingGame;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
@@ -32,6 +31,12 @@ public class SwingMain {
     // TODO choose shapes & colors to use
     // TODO add slide-out sidebar with game meta-controls & history
 
+//    public static final List<QwirkleColor> COLORS = QwirkleColor.createRainbow(6);
+    public static final List<QwirkleColor> COLORS = QwirkleColor.DEFAULT_COLORS;
+//    public static final List<QwirkleShape> SHAPES = QwirkleShape.EIGHT_SHAPES;
+    public static final List<QwirkleShape> SHAPES = QwirkleShape.DEFAULT_SHAPES;
+    public static final int DECKS = 3;
+
     private static QwirklePlayer createRainbowPlayer(String s, Collection<QwirkleColor> colors) {
         RainbowAI result = new RainbowAI(s, colors);
         result.setBias(5);
@@ -44,30 +49,16 @@ public class SwingMain {
             @Override
             public void run() {
                 // settings
-                List<QwirkleColor> colors = QwirkleColor.DEFAULT_COLORS;
-//                List<QwirkleShape> shapes = QwirkleShape.DEFAULT_SHAPES;
-//                int decks = 3;
-//                List<QwirkleColor> colors = QwirkleColor.FIVE_COLORS;
-                List<QwirkleShape> shapes = QwirkleShape.FOUR_SHAPES;
-                int decks = 1;
-//                int decks = 5;
-//                List<QwirkleShape> shapes = QwirkleShape.FIVE_SHAPES;
 
                 // players
                 List<QwirklePlayer> players = new ArrayList<>();
-                players.add(createRainbowPlayer("Rainbow", colors));
-                players.add(createRainbowPlayer("Color Wheel", colors));
+                players.add(createRainbowPlayer("Rainbow", COLORS));
+                players.add(createRainbowPlayer("Color Wheel", COLORS));
 //                players.add(new QwirklePlayer(new MaxPlayer("Sam")));
 //                players.add(new QwirklePlayer(new MaxPlayer("Gilly")));
 //                players.add(new QwirklePlayer(new StupidPlayer("1")));
 
-                QwirkleSettings settings = new QwirkleSettings(decks, shapes, colors, players);
-
-//                QwirkleSettings settings = new QwirkleSettings(1, QwirkleShape.FIVE_SHAPES, QwirkleColor.FIVE_COLORS, players);
-//                QwirkleSettings settings = new QwirkleSettings(2, QwirkleShape.EIGHT_SHAPES, QwirkleColor.EIGHT_COLORS, players);
-//                QwirkleSettings settings = new QwirkleSettings(3, QwirkleShape.DEFAULT_SHAPES, QwirkleColor.SIX_GREYS, players);
-//                QwirkleSettings settings = new QwirkleSettings(2, QwirkleShape.EIGHT_SHAPES, QwirkleColor.EIGHT_GREYS, players);
-//                QwirkleSettings settings = new QwirkleSettings(3, QwirkleShape.EIGHT_SHAPES, QwirkleColor.FIVE_COLORS, players);
+                QwirkleSettings settings = new QwirkleSettings(DECKS, SHAPES, COLORS, players);
 
                 // TODO move settings to a setup screen and dynamically update them
                 QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
@@ -107,7 +98,7 @@ public class SwingMain {
                 frame.setContentPane(ssp);
 
                 // set colors (only need it once, after everything is added)
-                SwingKitty.setColors(frame, Colors.FG, Colors.BG);
+                SwingKitty.setColors(frame, UIConstants.FG, UIConstants.BG);
 
                 // show the window
                 control.getGame().start();

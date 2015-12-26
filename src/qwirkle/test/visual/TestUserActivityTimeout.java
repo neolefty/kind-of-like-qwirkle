@@ -2,7 +2,7 @@ package qwirkle.test.visual;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import qwirkle.ui.view.colors.Colors;
+import qwirkle.ui.UIConstants;
 import qwirkle.ui.swing.util.SwingSetup;
 import qwirkle.ui.swing.util.SwingUserActivityTimeout;
 
@@ -40,7 +40,7 @@ public class TestUserActivityTimeout {
 
         JPanel controls = new JPanel();
         box.add(controls);
-        controls.setBackground(new Color(Colors.BG.getColorInt()));
+        controls.setBackground(new Color(UIConstants.BG.getColorInt()));
 
         JButton activateButton = new JButton("Activate");
         controls.add(activateButton);

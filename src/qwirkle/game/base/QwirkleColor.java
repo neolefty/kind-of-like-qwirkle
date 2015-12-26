@@ -60,14 +60,32 @@ public class QwirkleColor {
     /** No name or abbreviation. */
     private QwirkleColor(int r, int g, int b, String name) { this(r, g, b, name, null); }
 
-    /** Brightness only -- use <tt>b</tt> as r, g, and b. */
-    private QwirkleColor(int bright, String name, String abbrev) {
-        this(bright, bright, bright, name, abbrev);
+    public static List<QwirkleColor> createRainbow(int n) { return createRainbow(n, 0, 1, 0.9); }
+
+    public static List<QwirkleColor> createRainbow
+            (int n, double startHue, double saturation, double brightness)
+    {
+        List<QwirkleColor> result = new ArrayList<>();
+        double d = 1. / n;
+        for (int i = 0; i < n; ++i)
+            result.add(fromHSV(startHue + i * d, saturation, brightness));
+        return Collections.unmodifiableList(result);
     }
 
-    /** Brightness only -- use <tt>b</tt> as r, g, and b. */
-    private QwirkleColor(int bright, String name) {
-        this(bright, bright, bright, name, null);
+    /** From hue, saturation, brightness. */
+    private static QwirkleColor fromHSV(double h, double s, double v) {
+        int[] rgb = hsvToRgb(h, s, v);
+        return new QwirkleColor(rgb[0], rgb[1], rgb[2], null);
+    }
+
+    /** Grey -- use <tt>v</tt> as r, g, and b. */
+    private QwirkleColor(int v, String name, String abbrev) {
+        this(v, v, v, name, abbrev);
+    }
+
+    /** Grey -- use <tt>v</tt> as r, g, and b. */
+    private QwirkleColor(int v, String name) {
+        this(v, v, v, name, null);
     }
 
     /** Construct a new color and, if abbrev is non-null, add it to the map of abbreviations. */
@@ -136,4 +154,53 @@ public class QwirkleColor {
     }
 
     @Override public String toString() { return (name == null ? "(" + r + "," + g + "," + b + ")" : name); }
+
+    // adapted from java.awt.Color
+    public static int[] hsvToRgb(double h, double s, double v) {
+        // saturation is zero -> grey
+        if (s == 0) {
+            int x = (int) (v * 255.0 + 0.5);
+            return new int[] { x, x, x };
+        } else {
+            int r = -1, g = -1, b = -1;
+            double rainbow = (h - Math.floor(h)) * 6.0;
+            double f = rainbow - Math.floor(rainbow);
+            double p = v * (1. - s);
+            double q = v * (1. - s * f);
+            double t = v * (1. - (s * (1. - f)));
+            switch ((int) rainbow) {
+                case 0:
+                    r = (int) (v * 255. + 0.5);
+                    g = (int) (t * 255. + 0.5);
+                    b = (int) (p * 255. + 0.5);
+                    break;
+                case 1:
+                    r = (int) (q * 255. + 0.5);
+                    g = (int) (v * 255. + 0.5);
+                    b = (int) (p * 255. + 0.5);
+                    break;
+                case 2:
+                    r = (int) (p * 255. + 0.5);
+                    g = (int) (v * 255. + 0.5);
+                    b = (int) (t * 255. + 0.5);
+                    break;
+                case 3:
+                    r = (int) (p * 255. + 0.5);
+                    g = (int) (q * 255. + 0.5);
+                    b = (int) (v * 255. + 0.5);
+                    break;
+                case 4:
+                    r = (int) (t * 255. + 0.5);
+                    g = (int) (p * 255. + 0.5);
+                    b = (int) (v * 255. + 0.5);
+                    break;
+                case 5:
+                    r = (int) (v * 255. + 0.5);
+                    g = (int) (p * 255. + 0.5);
+                    b = (int) (q * 255. + 0.5);
+                    break;
+            }
+            return new int[] { r, g, b };
+        }
+    }
 }

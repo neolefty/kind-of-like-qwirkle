@@ -6,9 +6,9 @@ import qwirkle.game.control.AnnotatedGame;
 import qwirkle.game.event.GameStarted;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.UIConstants;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
-import qwirkle.ui.view.colors.Colors;
 import qwirkle.ui.swing.game.SwingTurnHighlightLabel;
 import qwirkle.ui.swing.util.SwingPlatformAttacher;
 import qwirkle.ui.swing.util.AutoSizeLabel;
@@ -134,13 +134,13 @@ public class SwingPlayer extends JPanel implements HasAspectRatio {
             // TODO make highlighting the current player a little nicer
             if (myTurn) {
                 handPanel.makeDraggable(player);
-                setBorder(BorderFactory.createLineBorder(new Color(Colors.FG.getColorInt())));
-                setBackground(new Color(Colors.BG_HL.getColorInt()));
+                setBorder(BorderFactory.createLineBorder(new Color(UIConstants.FG.getColorInt())));
+                setBackground(new Color(UIConstants.BG_HL.getColorInt()));
             }
             else {
                 handPanel.makeUndraggable();
                 setBorder(null);
-                setBackground(new Color(Colors.BG.getColorInt()));
+                setBackground(new Color(UIConstants.BG.getColorInt()));
             }
             repaint();
         }

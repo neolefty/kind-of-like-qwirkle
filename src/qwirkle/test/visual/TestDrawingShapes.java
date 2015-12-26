@@ -1,8 +1,8 @@
 package qwirkle.test.visual;
 
 import qwirkle.game.base.QwirkleShape;
+import qwirkle.ui.UIConstants;
 import qwirkle.ui.swing.piece.QwirklePiecePainter;
-import qwirkle.ui.view.colors.Colors;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,14 +63,14 @@ public class TestDrawingShapes extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(new Color(Colors.FG.getColorInt()));
+        g.setColor(new Color(UIConstants.FG.getColorInt()));
         g.fillRect(0, 0, getWidth(), getHeight());
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         QwirklePiecePainter painter = new QwirklePiecePainter();
-        g.setColor(new Color(Colors.BG.getColorInt()));
+        g.setColor(new Color(UIConstants.BG.getColorInt()));
 
         g2.scale(getWidth() / 100., getHeight() / 100.);
         g2.translate(50, 50);
