@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.List;
 
 /** Bounce the shapes around inside. */
-public class ShapeBouncer extends JPanel implements HasTransparency {
+public class SwingShapeBouncer extends JPanel implements HasTransparency {
     /** How many seconds should a piece take (on average) to cross the window? */
     private double secondsToCross = 12; // 2.5;
 
@@ -67,16 +67,16 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
 
     private long lastUpdate = System.currentTimeMillis();
 
-    public ShapeBouncer(GameController game) {
+    public SwingShapeBouncer(GameController game) {
         // idea: move this to scatter to keep it up to date with the game
         this(generatePieces(game));
     }
 
-    public ShapeBouncer(QwirkleShape[] shapes, QwirkleColor[] colors) {
+    public SwingShapeBouncer(QwirkleShape[] shapes, QwirkleColor[] colors) {
         this(generatePieces(shapes, colors));
     }
 
-    public ShapeBouncer(Collection<QwirklePiece> pieces) {
+    public SwingShapeBouncer(Collection<QwirklePiece> pieces) {
         Set<QwirkleColor> colorsScratch = new HashSet<>();
         for (QwirklePiece piece : pieces) colorsScratch.add(piece.getColor());
         this.colors = colorsScratch.toArray(new QwirkleColor[colorsScratch.size()]);
@@ -365,11 +365,11 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
     public static void main(String[] args) {
         JFrame frame = new JFrame("All The Shapes!");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        SwingSetup.addWindowSizer(frame, ShapeBouncer.class);
+        SwingSetup.addWindowSizer(frame, SwingShapeBouncer.class);
 
         boolean allShapes = false;
 
-        ShapeBouncer bouncer;
+        SwingShapeBouncer bouncer;
         //noinspection ConstantConditions
         if (allShapes) {
             int copies = 3;
@@ -378,12 +378,12 @@ public class ShapeBouncer extends JPanel implements HasTransparency {
                 shapes.addAll(Arrays.asList(QwirkleShape.values()));
             QwirkleShape[] shapesArray = shapes.toArray(new QwirkleShape[shapes.size()]);
             //noinspection ToArrayCallWithZeroLengthArrayArgument
-            bouncer = new ShapeBouncer(shapesArray, QwirkleColor.values().toArray(new QwirkleColor[0]));
+            bouncer = new SwingShapeBouncer(shapesArray, QwirkleColor.values().toArray(new QwirkleColor[0]));
         }
         else {
             GameController justForDeck
                     = new GameController(new EventBus(), new QwirkleSettings(), new SingleThreadedStrict());
-            bouncer = new ShapeBouncer(justForDeck);
+            bouncer = new SwingShapeBouncer(justForDeck);
             bouncer.changeColors = false;
         }
         frame.setContentPane(bouncer);

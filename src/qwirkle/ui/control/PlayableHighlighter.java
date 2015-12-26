@@ -1,12 +1,14 @@
-package qwirkle.ui.swing.game.board;
+package qwirkle.ui.control;
 
 import com.google.common.eventbus.Subscribe;
-import qwirkle.game.base.*;
+import qwirkle.game.base.QwirkleBoard;
+import qwirkle.game.base.QwirkleGrid;
+import qwirkle.game.base.QwirklePiece;
+import qwirkle.game.base.QwirklePlacement;
+import qwirkle.ui.event.DragPiece;
+import qwirkle.ui.swing.game.board.SwingPiece;
 import qwirkle.ui.view.QwirkleGridDisplay;
 import qwirkle.ui.view.QwirklePieceDisplay;
-import qwirkle.ui.control.QwirkleUIController;
-import qwirkle.ui.control.HypotheticalPlayController;
-import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.view.colors.ColorSet;
 import qwirkle.ui.view.colors.HypotheticalPlayBgColors;
 
@@ -60,7 +62,7 @@ public class PlayableHighlighter {
     }
 
     /** Loop over all the legal placements for <tt>goer</tt>
-     *  and do something to each corresponding {@link QwirklePiecePanel}.
+     *  and do something to each corresponding {@link SwingPiece}.
      *  @param strict If true, do this for every legal move and throw a NPE if the panel can't be found.
      *                If false, just skip it if the panel can't be found. */
     private void forEachLegalQPP(QwirklePiece piece, boolean strict, QPDer goer) {

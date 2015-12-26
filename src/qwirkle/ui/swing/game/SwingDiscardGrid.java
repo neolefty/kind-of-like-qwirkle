@@ -5,15 +5,15 @@ import qwirkle.game.base.impl.QwirkleGridImpl;
 import qwirkle.game.event.TurnCompleted;
 import qwirkle.ui.control.DiscardTracker;
 import qwirkle.ui.event.UpdateDiscards;
-import qwirkle.ui.swing.game.board.QwirkleGridPanel;
+import qwirkle.ui.swing.game.board.SwingGrid;
 
 // TODO highlight when discarding is allowed
 // TODO allow changing your mind -- drag out of discard pile
 /** A panel you can discard pieces into. */
-public class DiscardGridPanel extends QwirkleGridPanel {
+public class SwingDiscardGrid extends SwingGrid {
     private DiscardTracker controller;
 
-    public DiscardGridPanel(final DiscardTracker controller) {
+    public SwingDiscardGrid(final DiscardTracker controller) {
         super(controller.getEventBus(), DisplayType.discard);
         super.setBlankIncluded(false);
 

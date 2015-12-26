@@ -12,10 +12,10 @@ import java.util.concurrent.Callable;
 
 // TODO highlight all the pieces relevant to the score, and the played piece with a color?
 /** A JLabel that highlights a turn by firing HighlightTurn events. */
-public class TurnHighlightingLabel extends HighlightLabel {
+public class SwingTurnHighlightLabel extends HighlightLabel {
     private EventBus bus;
 
-    public TurnHighlightingLabel(EventBus bus, Component parent, double fraction, Callable<TurnCompleted> getter) {
+    public SwingTurnHighlightLabel(EventBus bus, Component parent, double fraction, Callable<TurnCompleted> getter) {
         super(parent, fraction, new Color(Colors.MOUSE_HL.getColorInt()));
         TurnHighlighter highlighter = new TurnHighlighter(getter);
         setHighlightAction(highlighter.createHighlighter(true));

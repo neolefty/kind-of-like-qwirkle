@@ -1,7 +1,7 @@
 package qwirkle.ui.swing.game;
 
-import qwirkle.ui.swing.game.board.QwirkleGridPanel;
-import qwirkle.ui.swing.game.player.PlayerPanel;
+import qwirkle.ui.swing.game.board.SwingGrid;
+import qwirkle.ui.swing.game.player.SwingPlayer;
 import qwirkle.ui.view.HasAspectRatio;
 import qwirkle.ui.swing.util.LayoutBase;
 
@@ -11,10 +11,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /** Lay out an entire Qwirkle game, including board and player panels.*/
-public class QwirkleGameLayout extends LayoutBase {
-    private Set<PlayerPanel> playerPanels = new LinkedHashSet<>();
-    private QwirkleGridPanel gridPanel;
-    private DiscardPanel discardPanel;
+public class SwingGameLayout extends LayoutBase {
+    private Set<SwingPlayer> playerPanels = new LinkedHashSet<>();
+    private SwingGrid gridPanel;
+    private SwingDiscard discardPanel;
     private java.util.List<HasAspectRatio> stackOfPanels = new ArrayList<>();
     private boolean vertical = false;
 
@@ -26,12 +26,12 @@ public class QwirkleGameLayout extends LayoutBase {
             gridPanel = null;
             for (int i = 0; i < parent.getComponentCount(); ++i) {
                 Component comp = parent.getComponent(i);
-                if (comp instanceof PlayerPanel)
-                    playerPanels.add((PlayerPanel) comp);
-                else if (comp instanceof QwirkleGridPanel)
-                    gridPanel = (QwirkleGridPanel) comp;
-                else if (comp instanceof DiscardPanel)
-                    discardPanel = (DiscardPanel) comp;
+                if (comp instanceof SwingPlayer)
+                    playerPanels.add((SwingPlayer) comp);
+                else if (comp instanceof SwingGrid)
+                    gridPanel = (SwingGrid) comp;
+                else if (comp instanceof SwingDiscard)
+                    discardPanel = (SwingDiscard) comp;
                 else
                     throw new UnsupportedOperationException("Unknown component: "
                             + comp.getClass().getSimpleName() + ": " + comp);

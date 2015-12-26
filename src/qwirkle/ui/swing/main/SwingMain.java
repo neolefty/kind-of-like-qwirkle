@@ -14,7 +14,7 @@ import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
 import qwirkle.ui.view.colors.Colors;
-import qwirkle.ui.swing.game.QwirkleGamePanel;
+import qwirkle.ui.swing.game.SwingGame;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
 import qwirkle.ui.view.TransparencyFader;
@@ -74,7 +74,7 @@ public class SwingMain {
                 control.getThreads().setStepMillis(650);
 
                 // make a window frame
-                final QwirkleFrame frame = new QwirkleFrame();
+                final SwingMainFrame frame = new SwingMainFrame();
                 frame.setSize(900, 600); // default size for first time
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,13 +85,13 @@ public class SwingMain {
                 SwingSetup.addWindowSizer(frame, SwingMain.class);
 
                 // add a view of the game
-                QwirkleGamePanel gamePanel = new QwirkleGamePanel(control);
+                SwingGame gamePanel = new SwingGame(control);
 
                 // add an overlay for dragging pieces
-                frame.setGlassPane(new QwirkleDragPane(control.getEventBus()));
+                frame.setGlassPane(new SwingDragPane(control.getEventBus()));
 
                 // with a screensaver
-                ShapeBouncer screensaver = new ShapeBouncer(control.getGame());
+                SwingShapeBouncer screensaver = new SwingShapeBouncer(control.getGame());
                 screensaver.setResetOnResume(true);
                 screensaver.setStepMillis(16);
                 screensaver.setEdgeTransparency(4);
@@ -100,7 +100,7 @@ public class SwingMain {
 
                 // manage the game & screensaver panels with a ScreenSaverPane
                 Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
-                ScreenSaverPane ssp = new ScreenSaverPane
+                SwingScreenSaver ssp = new SwingScreenSaver
                         (gamePanel, screensaver, fader, UIConstants.SCREENSAVER_TIMEOUT);
                 wakeOnGameEvents(ssp, control.getEventBus());
 //                ssp.setFadeMillis(5000);
@@ -116,7 +116,7 @@ public class SwingMain {
         });
     }
 
-    private static void wakeOnGameEvents(final ScreenSaverPane ssp, EventBus bus) {
+    private static void wakeOnGameEvents(final SwingScreenSaver ssp, EventBus bus) {
         bus.register(new Object() {
             @Subscribe public void turnPlayed(TurnCompleted event) { ssp.activityDetected(); }
             @Subscribe public void turnStart(TurnStarting event) { ssp.activityDetected(); }

@@ -19,15 +19,15 @@ import java.awt.*;
 import java.util.*;
 
 // TODO animate transition
-public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
-    private QwirkleGridLayout layout;
+public class SwingGrid extends JPanel implements QwirkleGridDisplay {
+    private SwingGridLayout layout;
     private boolean blankIncluded;
     private QwirkleGrid grid;
     private Collection<QwirkleLocation> highlight;
     private EventBus eventBus;
     private DisplayType displayType;
     private QwirklePlayer curPlayer;
-    private final Map<QwirkleLocation, QwirklePiecePanel> panelMap = new HashMap<>();
+    private final Map<QwirkleLocation, SwingPiece> panelMap = new HashMap<>();
 
     private final Object alwaysShownSync = new Object();
     private Set<QwirkleLocation> alwaysShown;
@@ -35,10 +35,10 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     private boolean draggable = false;
     private QwirklePlayer dragPlayer = null;
 
-    public QwirkleGridPanel(EventBus bus, DisplayType displayType) {
+    public SwingGrid(EventBus bus, DisplayType displayType) {
         this.eventBus = bus;
         this.displayType = displayType;
-        layout = new QwirkleGridLayout(this);
+        layout = new SwingGridLayout(this);
         setLayout(layout);
         setBlankIncluded(true);
         bus.register(new SelfDisposingEventSubscriber(bus, new SwingPlatformAttacher(this)) {
@@ -90,8 +90,8 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         });
     }
 
-    public QwirklePiecePanel createPiecePanel(int x, int y) {
-        return new QwirklePiecePanel(eventBus, this, x, y, isHighlighted(x, y));
+    public SwingPiece createPiecePanel(int x, int y) {
+        return new SwingPiece(eventBus, this, x, y, isHighlighted(x, y));
     }
 
     private boolean isHighlighted(int x, int y) {
@@ -129,7 +129,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
         addPiecePanel(createPiecePanel(loc.getX(), loc.getY()));
     }
 
-    private void addPiecePanel(QwirklePiecePanel pp) {
+    private void addPiecePanel(SwingPiece pp) {
         synchronized (getTreeLock()) { // probably redundant
             if (draggable && pp.getPiece() != null)
                 pp.makeDraggable(curPlayer);
@@ -145,8 +145,8 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
                 this.dragPlayer = player;
                 this.draggable = true;
                 for (Component c : getComponents()) {
-                    if (c instanceof QwirklePiecePanel)
-                        ((QwirklePiecePanel) c).makeDraggable(curPlayer);
+                    if (c instanceof SwingPiece)
+                        ((SwingPiece) c).makeDraggable(curPlayer);
                 }
             }
     }
@@ -158,8 +158,8 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
                 this.dragPlayer = null;
                 this.draggable = false;
                 for (Component c : getComponents()) {
-                    if (c instanceof QwirklePiecePanel)
-                        ((QwirklePiecePanel) c).makeUndraggable();
+                    if (c instanceof SwingPiece)
+                        ((SwingPiece) c).makeUndraggable();
                 }
             }
     }
@@ -217,7 +217,7 @@ public class QwirkleGridPanel extends JPanel implements QwirkleGridDisplay {
     }
 
     /** Get the piece panel at a board location. */
-    public QwirklePiecePanel getPiecePanel(QwirkleLocation loc) {
+    public SwingPiece getPiecePanel(QwirkleLocation loc) {
         synchronized (getTreeLock()) {
             return panelMap.get(loc);
         }

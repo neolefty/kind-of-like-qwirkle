@@ -1,7 +1,7 @@
 package qwirkle.ui.swing.game;
 
 import qwirkle.ui.control.DiscardTracker;
-import qwirkle.ui.swing.game.player.PlayerPanel;
+import qwirkle.ui.swing.game.player.SwingPlayer;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
 import qwirkle.ui.view.HasAspectRatio;
@@ -12,26 +12,26 @@ import java.awt.*;
 // TODO remove label and write discard in big grey letters across the panel that highlight when you grab a piece
 // TODO add "Pass" button to pass with zero discards
 /** A panel containing a DiscardGridPanel, handles layout etc. */
-public class DiscardPanel extends JPanel implements HasAspectRatio {
+public class SwingDiscard extends JPanel implements HasAspectRatio {
     public static final String DISCARD = "Discard";
 
-    private DiscardGridPanel gridPanel;
+    private SwingDiscardGrid gridPanel;
     private DiscardTracker controller;
     private AutoSizeLabel label;
 
     private Boolean vertical = null; // use an object to induce full layout first time
 
-    public DiscardPanel(DiscardTracker controller) {
+    public SwingDiscard(DiscardTracker controller) {
         this.controller = controller;
-        gridPanel = new DiscardGridPanel(controller);
-        label = new AutoSizeLabel(this, DISCARD, PlayerPanel.AUTO_SIZE_FRACTION);
+        gridPanel = new SwingDiscardGrid(controller);
+        label = new AutoSizeLabel(this, DISCARD, SwingPlayer.AUTO_SIZE_FRACTION);
         setLayout(new GridBagLayout());
         setVertical(true);
     }
 
     @Override
     public double getAspectRatio() {
-        return PlayerPanel.getAspectRatio(vertical, controller.getNumSpots());
+        return SwingPlayer.getAspectRatio(vertical, controller.getNumSpots());
     }
 
     @Override

@@ -11,7 +11,7 @@ import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.control.PlayerHandTracker;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.UpdateHand;
-import qwirkle.ui.swing.game.board.QwirkleGridPanel;
+import qwirkle.ui.swing.game.board.SwingGrid;
 import qwirkle.ui.swing.util.SwingPlatformAttacher;
 
 import javax.swing.*;
@@ -21,13 +21,13 @@ import java.util.List;
 // TODO highlight playable pieces, on your turn, with colored bg?
 // TODO highlight destinations on mouseover?
 
-/** Show a player's status. Uses a {@link QwirkleGridPanel} with
+/** Show a player's status. Uses a {@link SwingGrid} with
  *  hacked event updates to show the player's current hand, highlighting
  *  the most recently drawn pieces.
  *
  *  <p>Note that there are two event buses involved: A local one for this panel, with internal events,
  *  and a global one that receives events from the game at large.</p>*/
-public class PlayerHandPanel extends QwirkleGridPanel {
+public class SwingPlayerHand extends SwingGrid {
     private PlayerHandTracker tracker;
 
     /** The set of pieces that we drew most recently. */
@@ -36,7 +36,7 @@ public class PlayerHandPanel extends QwirkleGridPanel {
     // is this panel displayed vertically (true) or horizontally (false)?
     private boolean vertical;
 
-    public PlayerHandPanel(PlayerHandTracker tracker) {
+    public SwingPlayerHand(PlayerHandTracker tracker) {
         super(tracker.getEventBus(), DisplayType.hand);
         this.tracker = tracker;
         setBlankIncluded(false);

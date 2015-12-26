@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /** A panel that switches between a screen saver and main UI */
-public class ScreenSaverPane extends JPanel {
+public class SwingScreenSaver extends JPanel {
     private static final String KEY_MAIN = "main", KEY_SS = "screensaver";
     public static final long FADE_MILLIS = 250;
 
@@ -18,7 +18,7 @@ public class ScreenSaverPane extends JPanel {
     private long fadeMillis = FADE_MILLIS;
 
     /** Fader is optional. */
-    public ScreenSaverPane
+    public SwingScreenSaver
         (Component main, final Component screensaver, final Fader fader, long sleepMillis)
     {
         setLayout(layout);
@@ -39,7 +39,7 @@ public class ScreenSaverPane extends JPanel {
 
         localBus.register(new Object() {
             @Subscribe public void timeout(SwingUserActivityTimeout.TimeoutEvent event) {
-                layout.show(ScreenSaverPane.this, KEY_SS);
+                layout.show(SwingScreenSaver.this, KEY_SS);
             }
 
             @Subscribe public void resume(SwingUserActivityTimeout.ResumeEvent event) {

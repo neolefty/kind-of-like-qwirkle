@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Random;
 
 /** A frame with a Qwirkle icon. */
-public class QwirkleFrame extends JFrame {
-    public QwirkleFrame() {
+public class SwingMainFrame extends JFrame {
+    public SwingMainFrame() {
         super("Qwirkle");
         setIconImage(createIconImage());
     }

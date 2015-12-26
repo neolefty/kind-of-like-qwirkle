@@ -13,19 +13,19 @@ import javax.swing.*;
 import java.util.concurrent.Callable;
 
 /** Show the status messages from a game. */
-public class GameStatusPanel extends Box {
+public class SwingGameStatus extends Box {
     // Show the status of the current turn and the overall game
-    private TurnHighlightingLabel turnLabel, bestTurnLabel;
+    private SwingTurnHighlightLabel turnLabel, bestTurnLabel;
     private TurnCompleted bestTurn, lastTurn;
 
-    public GameStatusPanel(QwirkleUIController control) {
+    public SwingGameStatus(QwirkleUIController control) {
         super(BoxLayout.X_AXIS);
 
         EventBus bus = control.getEventBus();
-        turnLabel = new TurnHighlightingLabel(bus, this, 0.023, new Callable<TurnCompleted>() {
+        turnLabel = new SwingTurnHighlightLabel(bus, this, 0.023, new Callable<TurnCompleted>() {
             @Override public TurnCompleted call() { return lastTurn; }
         });
-        bestTurnLabel = new TurnHighlightingLabel(bus, this, 0.023, new Callable<TurnCompleted>() {
+        bestTurnLabel = new SwingTurnHighlightLabel(bus, this, 0.023, new Callable<TurnCompleted>() {
             @Override public TurnCompleted call() { return bestTurn; }
         });
 

@@ -12,11 +12,11 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 /** Supports dragging {@link QwirklePiece}s around a UI. */
-public class QwirkleDragPane extends JComponent {
+public class SwingDragPane extends JComponent {
     private DragPiece pickup;
     private PassOver passOver;
 
-    public QwirkleDragPane(EventBus bus) {
+    public SwingDragPane(EventBus bus) {
         bus.register(this);
         setOpaque(false);
     }

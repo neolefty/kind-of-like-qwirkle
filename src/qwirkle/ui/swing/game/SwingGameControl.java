@@ -15,14 +15,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** Start, stop, take a turn. */
-public class GameControlPanel extends JPanel {
+public class SwingGameControl extends JPanel {
     private static final String PAUSE = "  | |  ", PLAY = "  >>  ",
             NEW_GAME = "New Game", RESTART = "New Game",
             STEP_AI = "AI Turn", STEP_DISCARD = "Discard", STEP_FINISH_HUMAN = "Finish Turn";
 
     public static final double FONT_PROPORTION = 0.027;
 
-    public GameControlPanel(final QwirkleUIController control) {
+    public SwingGameControl(final QwirkleUIController control) {
         // label: the number of remaining cards
         final JLabel remaining = new AutoSizeLabel(this, "108", FONT_PROPORTION);
         // button: new game

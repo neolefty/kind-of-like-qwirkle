@@ -9,7 +9,7 @@ import qwirkle.game.event.TurnStarting;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.view.colors.Colors;
-import qwirkle.ui.swing.game.TurnHighlightingLabel;
+import qwirkle.ui.swing.game.SwingTurnHighlightLabel;
 import qwirkle.ui.swing.util.SwingPlatformAttacher;
 import qwirkle.ui.swing.util.AutoSizeLabel;
 import qwirkle.ui.swing.util.FontAutosizer;
@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 
 // TODO add coach option for human player ("Rainbow suggests ...")
 /** Show the current state of a player. Their hand, name, score, best play so far in the game. */
-public class PlayerPanel extends JPanel implements HasAspectRatio {
+public class SwingPlayer extends JPanel implements HasAspectRatio {
     /** How much extra vertical space, in units of Qwirkle piece grid squares,
      *  do we allow when in vertical mode, for labels? */
     public static final double VERTICAL_PADDING = 1.0;
@@ -35,9 +35,9 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
 
     private QwirklePlayer player;
 
-    private PlayerHandPanel handPanel;
+    private SwingPlayerHand handPanel;
     private AutoSizeLabel nameLabel, scoreLabel, scoreSeparatorLabel;
-    private TurnHighlightingLabel bestMoveLabel;
+    private SwingTurnHighlightLabel bestMoveLabel;
     private Boolean vertical = null;
     private TurnCompleted bestMove = null;
     private boolean myTurn;
@@ -46,9 +46,9 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
     private Container labels = null;
     private Set<AutoSizeLabel> autoSizeLabels = new HashSet<>();
 
-    public PlayerPanel(final QwirkleUIController control, final QwirklePlayer player) {
+    public SwingPlayer(final QwirkleUIController control, final QwirklePlayer player) {
         this.player = player;
-        this.handPanel = new PlayerHandPanel(control.getInteraction().getHandTracker(player));
+        this.handPanel = new SwingPlayerHand(control.getInteraction().getHandTracker(player));
 
         setLayout(new GridBagLayout());
         nameLabel = new AutoSizeLabel(this, " -- ", AUTO_SIZE_FRACTION); // text is set later
@@ -57,7 +57,7 @@ public class PlayerPanel extends JPanel implements HasAspectRatio {
         autoSizeLabels.add(scoreLabel);
         scoreSeparatorLabel = new AutoSizeLabel(this, ": ", AUTO_SIZE_FRACTION);
         autoSizeLabels.add(scoreSeparatorLabel);
-        bestMoveLabel = new TurnHighlightingLabel(control.getEventBus(), this, AUTO_SIZE_FRACTION,
+        bestMoveLabel = new SwingTurnHighlightLabel(control.getEventBus(), this, AUTO_SIZE_FRACTION,
                 new Callable<TurnCompleted>() { @Override public TurnCompleted call() { return bestMove; } });
         bestMoveLabel.setOpaque(false);
         autoSizeLabels.add(bestMoveLabel);

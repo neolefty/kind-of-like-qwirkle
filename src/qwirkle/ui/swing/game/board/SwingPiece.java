@@ -23,7 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
 // TODO allow cancelling a re-pick -- that is, if you pick up a play from the board, allow putting it back in the same spot.
-public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
+public class SwingPiece extends JPanel implements QwirklePieceDisplay {
     private static final QwirklePiecePainter painter = new QwirklePiecePainter();
 
     private QwirklePiece piece;
@@ -34,13 +34,13 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
 
     private BackgroundManager bgMgr;
 
-    public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, int x, int y, boolean highlight) {
+    public SwingPiece(EventBus bus, QwirkleGridDisplay parent, int x, int y, boolean highlight) {
         this(bus, parent, new QwirkleLocation(x, y), highlight);
     }
 
     /** Create a QwirklePiecePanel.
      *  @param bus The EventBus to post {@link DragPiece} events to. Can be null if this won't post drag events. */
-    public QwirklePiecePanel(EventBus bus, QwirkleGridDisplay parent, QwirkleLocation location, boolean highlight) {
+    public SwingPiece(EventBus bus, QwirkleGridDisplay parent, QwirkleLocation location, boolean highlight) {
         bgMgr = new BackgroundManager(this, highlight ? ColorSets.BG_HIGHLIGHT : ColorSets.BG_NORMAL);
         setOpaque(true);
 
@@ -78,13 +78,13 @@ public class QwirklePiecePanel extends JPanel implements QwirklePieceDisplay {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     bgMgr.setHover(true);
-                    bus.post(new PassOver(QwirklePiecePanel.this, true));
+                    bus.post(new PassOver(SwingPiece.this, true));
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
                     bgMgr.setHover(false);
-                    bus.post(new PassOver(QwirklePiecePanel.this, false));
+                    bus.post(new PassOver(SwingPiece.this, false));
                 }
 
                 @Override

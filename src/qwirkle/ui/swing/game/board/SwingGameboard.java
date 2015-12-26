@@ -16,12 +16,12 @@ import qwirkle.ui.view.colors.HypotheticalPlayBgColors;
 // TODO show points of hypothetical placement in highlight
 /** An active playing surface that facilitates playing a next turn by showing
  *  a hypothetical turn a player is building. */
-public class GameboardPanel extends QwirkleGridPanel {
+public class SwingGameboard extends SwingGrid {
     // The play the player is currently making
     public HypotheticalPlayController hypoPlay;
     public QwirkleUIController control;
 
-    public GameboardPanel(final QwirkleUIController control) {
+    public SwingGameboard(final QwirkleUIController control) {
         super(control.getEventBus(), DisplayType.gameboard);
         this.control = control;
         // When a placement is confirmed or canceled, update our display of the hypothetical play.
@@ -66,9 +66,9 @@ public class GameboardPanel extends QwirkleGridPanel {
     // TODO only if no discards
     /** Highlight the hypothetical play. */
     @Override
-    public QwirklePiecePanel createPiecePanel(int x, int y) {
+    public SwingPiece createPiecePanel(int x, int y) {
         // normal ...
-        QwirklePiecePanel result = super.createPiecePanel(x, y);
+        SwingPiece result = super.createPiecePanel(x, y);
         QwirkleGrid grid = getGrid();
         QwirklePlacement placement = grid == null ? null : grid.getPlacement(x, y);
         // ... except if it's part of the hypothetical play
