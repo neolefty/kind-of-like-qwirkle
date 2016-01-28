@@ -22,7 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
-// TODO allow cancelling a re-pick -- that is, if you pick up a play from the board, allow putting it back in the same spot.
+/** A JPanel that displays a single Qwirkle piece. */
 public class SwingPiece extends JPanel implements QwirklePieceDisplay {
     private static final QwirklePiecePainter painter = new QwirklePiecePainter();
 

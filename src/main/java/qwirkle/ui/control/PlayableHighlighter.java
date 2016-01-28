@@ -6,7 +6,6 @@ import qwirkle.game.base.QwirkleGrid;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirklePlacement;
 import qwirkle.ui.event.DragPiece;
-import qwirkle.ui.swing.game.board.SwingPiece;
 import qwirkle.ui.view.QwirkleGridDisplay;
 import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.view.colors.ColorSet;
@@ -62,7 +61,7 @@ public class PlayableHighlighter {
     }
 
     /** Loop over all the legal placements for <tt>goer</tt>
-     *  and do something to each corresponding {@link SwingPiece}.
+     *  and do something to each corresponding {@link QwirklePieceDisplay}.
      *  @param strict If true, do this for every legal move and throw a NPE if the panel can't be found.
      *                If false, just skip it if the panel can't be found. */
     private void forEachLegalQPP(QwirklePiece piece, boolean strict, QPDer goer) {
