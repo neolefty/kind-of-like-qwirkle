@@ -12,7 +12,9 @@ import java.util.prefs.Preferences;
 
 public class SwingSetup {
     /** Automatically save & restore size of window from prefs. */
-    public static void addWindowSizer(final JFrame frame, Class classForPrefs) {
+    public static void addWindowRememberer
+        (final JFrame frame, Class classForPrefs)
+    {
         // dismiss move operations until we've established our position from prefs
         final boolean[] windowOpened = { false };
         final Preferences prefs = getPrefs(classForPrefs);

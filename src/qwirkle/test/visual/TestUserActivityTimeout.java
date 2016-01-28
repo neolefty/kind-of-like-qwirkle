@@ -16,7 +16,7 @@ public class TestUserActivityTimeout {
     public static void main(String[] args) {
         final int seconds = 4;
         JFrame frame = new JFrame("Waiting for timeout");
-        SwingSetup.addWindowSizer(frame, SwingUserActivityTimeout.class);
+        SwingSetup.addWindowRememberer(frame, SwingUserActivityTimeout.class);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Box box = new Box(BoxLayout.Y_AXIS);
         frame.setContentPane(box);

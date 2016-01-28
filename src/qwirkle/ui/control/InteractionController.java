@@ -4,13 +4,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import qwirkle.game.base.QwirklePlayer;
+import qwirkle.game.control.GameHistory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Umbrella for various UI-oriented event managers. */
 public class InteractionController {
-    private DragToPlayPromoter dragToPlayPromoter;
     private HypotheticalPlayController hypotheticalPlay;
     private EventBus bus;
     private final Map<QwirklePlayer, PlayerHandTracker> handTrackers = new HashMap<>();
@@ -24,12 +24,12 @@ public class InteractionController {
             }
         });
 
-        dragToPlayPromoter = new DragToPlayPromoter(bus);
+        new DragToPlayPromoter(bus);
         hypotheticalPlay = new HypotheticalPlayController(bus);
+        new GameHistory(bus);
     }
 
     public EventBus getEventBus() { return bus; }
-    public DragToPlayPromoter getDragToPlayPromoter() { return dragToPlayPromoter; }
     public HypotheticalPlayController getHypotheticalPlay() { return hypotheticalPlay; }
     public DiscardTracker getDiscardTracker() { return hypotheticalPlay.getDiscardTracker(); }
 

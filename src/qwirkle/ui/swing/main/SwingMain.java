@@ -13,11 +13,11 @@ import qwirkle.ui.UIConstants;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
-import qwirkle.ui.swing.game.SwingGame;
+import qwirkle.ui.swing.game.SwingGamePanel;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
-import qwirkle.ui.view.TransparencyFader;
 import qwirkle.ui.view.Fader;
+import qwirkle.ui.view.TransparencyFader;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -36,13 +36,6 @@ public class SwingMain {
 //    public static final List<QwirkleShape> SHAPES = QwirkleShape.EIGHT_SHAPES;
     public static final List<QwirkleShape> SHAPES = QwirkleShape.DEFAULT_SHAPES;
     public static final int DECKS = 3;
-
-    private static QwirklePlayer createRainbowPlayer(String s, Collection<QwirkleColor> colors) {
-        RainbowAI result = new RainbowAI(s, colors);
-        result.setBias(5);
-        result.getRainbow().setDislikeMonochrome(0); // single color strips are totally okay
-        return new QwirklePlayer(result);
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -66,33 +59,28 @@ public class SwingMain {
 
                 // make a window frame
                 final SwingMainFrame frame = new SwingMainFrame();
-                frame.setSize(900, 600); // default size for first time
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 //                System.setProperty("awt.useSystemAAFontSettings","on");
 //                System.setProperty("swing.aatext", "true");
 
                 // listen for movement & save it to prefs
-                SwingSetup.addWindowSizer(frame, SwingMain.class);
+                SwingSetup.addWindowRememberer(frame, SwingMain.class);
 
                 // add a view of the game
-                SwingGame gamePanel = new SwingGame(control);
+                SwingGamePanel gamePanel = new SwingGamePanel(control);
 
                 // add an overlay for dragging pieces
                 frame.setGlassPane(new SwingDragPane(control.getEventBus()));
 
                 // with a screensaver
-                SwingShapeBouncer screensaver = new SwingShapeBouncer(control.getGame());
-                screensaver.setResetOnResume(true);
-                screensaver.setStepMillis(16);
-                screensaver.setEdgeTransparency(4);
-                screensaver.setSecondsToCross(8);
-                screensaver.setSecondsToRotate(4);
+                SwingShapeBouncer screensaver = createScreensaver(settings);
 
                 // manage the game & screensaver panels with a ScreenSaverPane
                 Fader fader = new TransparencyFader(screensaver, screensaver.getStepMillis());
                 SwingScreenSaver ssp = new SwingScreenSaver
                         (gamePanel, screensaver, fader, UIConstants.SCREENSAVER_TIMEOUT);
+
                 wakeOnGameEvents(ssp, control.getEventBus());
 //                ssp.setFadeMillis(5000);
                 frame.setContentPane(ssp);
@@ -105,6 +93,23 @@ public class SwingMain {
                 frame.setVisible(true);
             }
         });
+    }
+
+    private static QwirklePlayer createRainbowPlayer(String s, Collection<QwirkleColor> colors) {
+        RainbowAI result = new RainbowAI(s, colors);
+        result.setBias(5);
+        result.getRainbow().setDislikeMonochrome(0); // single color strips are totally okay
+        return new QwirklePlayer(result);
+    }
+
+    private static SwingShapeBouncer createScreensaver(QwirkleSettings settings) {
+        SwingShapeBouncer result = new SwingShapeBouncer(SwingShapeBouncer.generatePieces(settings));
+        result.setResetOnResume(true);
+        result.setStepMillis(16);
+        result.setEdgeTransparency(4);
+        result.setSecondsToCross(8);
+        result.setSecondsToRotate(4);
+        return result;
     }
 
     private static void wakeOnGameEvents(final SwingScreenSaver ssp, EventBus bus) {

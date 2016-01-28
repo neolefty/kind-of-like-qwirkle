@@ -1,8 +1,5 @@
 package qwirkle.ui.swing.main;
 
-import com.google.common.eventbus.EventBus;
-import qwirkle.game.control.GameController;
-import qwirkle.game.control.impl.SingleThreadedStrict;
 import qwirkle.game.base.QwirkleColor;
 import qwirkle.game.base.QwirklePiece;
 import qwirkle.game.base.QwirkleSettings;
@@ -67,15 +64,11 @@ public class SwingShapeBouncer extends JPanel implements HasTransparency {
 
     private long lastUpdate = System.currentTimeMillis();
 
-    public SwingShapeBouncer(GameController game) {
-        // idea: move this to scatter to keep it up to date with the game
-        this(generatePieces(game));
-    }
-
     public SwingShapeBouncer(QwirkleShape[] shapes, QwirkleColor[] colors) {
         this(generatePieces(shapes, colors));
     }
 
+    // idea: get pieces from board when we start
     public SwingShapeBouncer(Collection<QwirklePiece> pieces) {
         Set<QwirkleColor> colorsScratch = new HashSet<>();
         for (QwirklePiece piece : pieces) colorsScratch.add(piece.getColor());
@@ -116,12 +109,12 @@ public class SwingShapeBouncer extends JPanel implements HasTransparency {
         this.stepMillis = stepMillis;
     }
 
-    private static Collection<QwirklePiece> generatePieces(GameController game) {
-        QwirkleSettings settings = game.getSettings();
+    public static Collection<QwirklePiece> generatePieces(QwirkleSettings settings) {
         QwirkleSettings oneDeck = new QwirkleSettings
                 (1, settings.getShapes(), settings.getColors(), settings.getPlayers());
         return oneDeck.generate();
     }
+
     private static Collection<QwirklePiece> generatePieces(QwirkleShape[] shapes, QwirkleColor[] colors) {
         int iColor = r.nextInt(colors.length);
         List<QwirklePiece> pieces = new ArrayList<>();
@@ -365,7 +358,7 @@ public class SwingShapeBouncer extends JPanel implements HasTransparency {
     public static void main(String[] args) {
         JFrame frame = new JFrame("All The Shapes!");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        SwingSetup.addWindowSizer(frame, SwingShapeBouncer.class);
+        SwingSetup.addWindowRememberer(frame, SwingShapeBouncer.class);
 
         boolean allShapes = false;
 
@@ -381,9 +374,7 @@ public class SwingShapeBouncer extends JPanel implements HasTransparency {
             bouncer = new SwingShapeBouncer(shapesArray, QwirkleColor.values().toArray(new QwirkleColor[0]));
         }
         else {
-            GameController justForDeck
-                    = new GameController(new EventBus(), new QwirkleSettings(), new SingleThreadedStrict());
-            bouncer = new SwingShapeBouncer(justForDeck);
+            bouncer = new SwingShapeBouncer(generatePieces(new QwirkleSettings()));
             bouncer.changeColors = false;
         }
         frame.setContentPane(bouncer);
