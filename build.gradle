@@ -1,0 +1,37 @@
+apply plugin: 'java'
+
+sourceSets {
+    main
+    test
+    swing
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+}
+
+/*
+task compile << {
+     println 'compile (TODO)'
+}
+
+task jar(dependsOn: compile) << {
+     println 'jar (TODO)'
+}
+
+task jnlp(dependsOn: jar) << {
+     println 'jnlp (webstart) (TODO)'
+}
+
+task clean << {
+     println 'clean (TODO)'
+}
+
+task test(dependsOn: jar) << {
+     println 'test (TODO)'
+}
+*/
