@@ -1,24 +1,24 @@
-An implementation of the boardgame [Qwirkle, by
+An implementation of the boardgame [Qwirkle by
 MindWare](http://mindware.com/qwirkle-a2-32016.fltr).
 Originally written as a teaching aid for an AP computer science class.
 
 Students can:
 
-  * Make new tile shapes
-  * Write AIs (but first, hide MaxPlayer from them)
-  * Draw doodles and animations
-  * Change the game rules
+* Make new tile shapes
+* Write AIs (but first, hide MaxPlayer from them)
+* Draw doodles and animations
+* Change the game rules
 
-Currently, there is a Java Swing UI, but it's fairly well separated
-from the game logic, so it should be possible to write other UIs.
+There's a Java Swing UI, but it's fairly well separated from the game
+logic, so it should be possible to write other UIs.
 
 Major To Dos:
 
-  * Make the human player interface more graceful.
-    It's too AI-centric.
-  * Add network play.
-  * Port to other platforms (Android, web, robo-vm)
-  * ... talk to MindWare?
+* Make the human player interface more graceful.
+  It's too AI-centric.
+* Add network play.
+* Port to other platforms (Android, web, robo-vm)
+* ... talk to MindWare about permission?
 
 To run it,
 
@@ -26,9 +26,10 @@ To run it,
 	$ cd kind-of-like-qwirkle
 	$ gradle runSwing
 
-Or in an IDE, include these two source dirs:
+Or in an IDE:
 
+1. Include these two source dirs:
   * `src/main/java/`
   * `src/swing/java/`
-
-And run the class `qwirkle.ui.swing.main.SwingMain`
+2. Grab the dependency on guava 19 (it's referenced in build.gradle)
+3. Run the class `qwirkle.ui.swing.main.SwingMain`
