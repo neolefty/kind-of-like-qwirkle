@@ -33,3 +33,12 @@ Or in an IDE:
   * `src/swing/java/`
 2. Grab the dependency on guava 19 (it's referenced in build.gradle)
 3. Run the class `qwirkle.ui.swing.main.SwingMain`
+
+Testing:
+
+Unit tests cover the game internals, UI controllers, and benchmarking,
+but not the graphical parts of the UI. 
+
+See the executable classes in src/test/java. They don't use a framework 
+(JUnit etc) -- just assertion failures. Converting to a unit test 
+framework would be a good project for the future.

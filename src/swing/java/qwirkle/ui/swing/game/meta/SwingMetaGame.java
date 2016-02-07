@@ -14,7 +14,7 @@ public class SwingMetaGame extends JPanel {
     private SwingWinLoss winLossPanel;
 
     public SwingMetaGame(EventBus eventBus) {
-        winLossPanel = new SwingWinLoss();
+        winLossPanel = new SwingWinLoss(eventBus);
         eventBus.register(new Object() {
             @Subscribe public void updated(HistoryUpdate event) {
                 update(event.getHistory());
@@ -26,6 +26,9 @@ public class SwingMetaGame extends JPanel {
 
     /** A game has ended, so update our display. */
     private void update(GameHistory history) {
-        winLossPanel.update(history);
+//        int n = history.getAllGames().size();
+//        System.out.println("Update: " + n + " games so far. Winner: "
+//                + history.getAllGames().get(n - 1).getAnnotated().getLeader());
+//        winLossPanel.update(history);
     }
 }

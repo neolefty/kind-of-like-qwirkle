@@ -26,12 +26,16 @@ public class  SlideOutPanel<MainT extends Component, SlideT extends Component> e
     /** Where is the slide now? 0 = hidden, 1 = fully covering the main panel. */
     private double slidePosition = 0;
 
+    public SlideOutPanel() {
+        this(null, null);
+    }
+
     public SlideOutPanel(final MainT main, SlideT slide) {
         this.main = main;
         this.slide = slide;
         setLayout(null);
-        add(slide, new Integer(1));
-        add(main, new Integer(0));
+        setSlideComp(slide);
+        setMainComp(main);
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -43,19 +47,40 @@ public class  SlideOutPanel<MainT extends Component, SlideT extends Component> e
         updateSlidePos();
     }
 
+    public void setMainComp(MainT main) {
+        if (this.main != null)
+            remove(this.main);
+        this.main = main;
+        if (main != null)
+            add(main, new Integer(0));
+        updateMainPos();
+    }
+
     public MainT getMainComp() { return main; }
+
+    public void setSlideComp(SlideT slide) {
+        if (this.slide != null)
+            remove(this.slide);
+        this.slide = slide;
+        if (slide != null)
+            add(slide, new Integer(1));
+        updateSlidePos();
+    }
 
     public SlideT getSlideComp() { return slide; }
 
     private void updateSlidePos() {
-        int slideRight = (int) (getWidth() * slidePosition); // slide right edge
-        int slideWidth = (int) (slideProportion * getWidth()); // slide panel width (stays constant)
-        slide.setBounds(slideRight - slideWidth, 0, slideWidth, getHeight());
-//        System.out.println(" --> " + (slideRight - slideWidth) + ", " + 0 + ", " + slideWidth + ", " + getHeight());
+        if (slide != null) {
+            int slideRight = (int) (getWidth() * slidePosition); // slide right edge
+            int slideWidth = (int) (slideProportion * getWidth()); // slide panel width (stays constant)
+            slide.setBounds(slideRight - slideWidth, 0, slideWidth, getHeight());
+            //        System.out.println(" --> " + (slideRight - slideWidth) + ", " + 0 + ", " + slideWidth + ", " + getHeight());
+        }
     }
 
     private void updateMainPos() {
-        main.setBounds(0, 0, getWidth(), getHeight());
+        if (main != null)
+            main.setBounds(0, 0, getWidth(), getHeight());
     }
 
     /** Slide out or un-slide. */

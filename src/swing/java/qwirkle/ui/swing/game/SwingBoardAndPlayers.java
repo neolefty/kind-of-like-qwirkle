@@ -4,10 +4,12 @@ import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.event.GameStarted;
 import qwirkle.ui.UIConstants;
+import qwirkle.ui.control.PlayableHighlighter;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.swing.game.board.SwingGameboard;
-import qwirkle.ui.control.PlayableHighlighter;
+import qwirkle.ui.swing.game.meta.SwingHamburger;
 import qwirkle.ui.swing.game.player.SwingPlayer;
+import qwirkle.ui.swing.util.SquareEndPanel;
 import qwirkle.ui.swing.util.SwingKitty;
 
 import javax.swing.*;
@@ -16,14 +18,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** A JPanel that shows the state of a qwirkle game: the players and board. */
-public class SwingGameState extends JPanel {
+/** A JPanel that shows the players, board, and a hamburger button. */
+public class SwingBoardAndPlayers extends JPanel {
     // synchronize on this before making any changes
     private final Map<QwirklePlayer, SwingPlayer> playerPanelMap = new LinkedHashMap<>();
     private final SwingDiscard discardPanel;
     private QwirkleUIController control;
+    private SwingHamburger hamburger;
 
-    public SwingGameState(QwirkleUIController control) {
+    public SwingBoardAndPlayers(QwirkleUIController control) {
         super(new SwingGameLayout());
         this.control = control;
 
@@ -34,7 +37,9 @@ public class SwingGameState extends JPanel {
 
         // discard panel
         discardPanel = new SwingDiscard(control.getDiscardController());
-        add(discardPanel);
+        hamburger = new SwingHamburger(control.getEventBus());
+        add(new SquareEndPanel(hamburger, discardPanel));
+//        add(discardPanel);
 
         // ui controllers
         new PlayableHighlighter(control, grid);
@@ -49,6 +54,10 @@ public class SwingGameState extends JPanel {
     private void updatePlayers(final List<QwirklePlayer> players) {
         removePlayerPanels();
         addPlayerPanels(players);
+    }
+
+    public SwingHamburger getHamburger() {
+        return hamburger;
     }
 
     private void addPlayerPanels(List<QwirklePlayer> players) {

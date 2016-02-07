@@ -2,19 +2,15 @@ package qwirkle.ui.swing.game;
 
 import qwirkle.ui.swing.game.board.SwingGrid;
 import qwirkle.ui.swing.game.player.SwingPlayer;
-import qwirkle.ui.view.HasAspectRatio;
 import qwirkle.ui.swing.util.LayoutBase;
+import qwirkle.ui.view.HasAspectRatio;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /** Lay out an entire Qwirkle game, including board and player panels.*/
 public class SwingGameLayout extends LayoutBase {
-    private Set<SwingPlayer> playerPanels = new LinkedHashSet<>();
     private SwingGrid gridPanel;
-    private SwingDiscard discardPanel;
     private java.util.List<HasAspectRatio> stackOfPanels = new ArrayList<>();
     private boolean vertical = false;
 
@@ -22,23 +18,24 @@ public class SwingGameLayout extends LayoutBase {
     public void layoutContainer(Container parent) {
         synchronized (parent.getTreeLock()) {
             // 1. Review components
-            playerPanels.clear(); // start from scratch each time, in case some have been removed
+            java.util.List<SwingPlayer> playerPanels = new ArrayList<>();
             gridPanel = null;
+            java.util.List<HasAspectRatio> extraPanels = new ArrayList<>();
             for (int i = 0; i < parent.getComponentCount(); ++i) {
                 Component comp = parent.getComponent(i);
+                // list player panels separately
                 if (comp instanceof SwingPlayer)
                     playerPanels.add((SwingPlayer) comp);
                 else if (comp instanceof SwingGrid)
                     gridPanel = (SwingGrid) comp;
-                else if (comp instanceof SwingDiscard)
-                    discardPanel = (SwingDiscard) comp;
+                else if (comp instanceof HasAspectRatio)
+                    extraPanels.add((HasAspectRatio) comp);
                 else
                     throw new UnsupportedOperationException("Unknown component: "
                             + comp.getClass().getSimpleName() + ": " + comp);
             }
             stackOfPanels.clear();
-            if (discardPanel != null)
-                stackOfPanels.add(discardPanel);
+            stackOfPanels.addAll(extraPanels);
             stackOfPanels.addAll(playerPanels);
 
             Dimension outer = getFitInside(parent);
@@ -87,22 +84,13 @@ public class SwingGameLayout extends LayoutBase {
         if (gridPanel != null)
             result.setSize(gridPanel.getMinimumSize());
 
-        // player panels
-        if (!playerPanels.isEmpty()) {
-            if (vertical) { // pad vertically -- figure out how tall player panels are based on width
-                double h = result.width / playerPanels.iterator().next().getAspectRatio();
-                result.height += playerPanels.size() * h;
-            } else { // pad horizontally -- figure out width based on height
-                double w = result.height * playerPanels.iterator().next().getAspectRatio();
-                result.width += playerPanels.size() * w;
-            }
-        }
-
-        // discard panel
-        if (vertical)
-            result.height += result.width / discardPanel.getAspectRatio();
-        else
-            result.width += result.height * discardPanel.getAspectRatio();
+        // the rest of the panels
+        // (player panels & discard panel -- all implement HasAspectRatio)
+        for (HasAspectRatio panel : stackOfPanels)
+            if (vertical) // pad vertically -- figure out how tall player panels are based on width
+                result.height += result.width / panel.getAspectRatio();
+            else // pad horizontally -- figure out width based on height
+                result.width += result.height * panel.getAspectRatio();
 
         return result;
     }

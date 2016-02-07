@@ -31,6 +31,7 @@ public class SquareEndPanel extends JPanel implements HasAspectRatio {
 
     @Override
     public void setVertical(boolean vertical) {
+        theRest.setVertical(vertical);
         if (this.vertical != vertical) {
             this.vertical = vertical;
             redraw();

@@ -16,6 +16,9 @@ public class UIConstants {
     public static final String PREFS_WINDOW_WIDTH = "Window Width";
     public static final String PREFS_WINDOW_HEIGHT = "Window Height";
 
+//    public static final int AUTOPLAY_STEP_MILLIS = 650;
+    public static final int AUTOPLAY_STEP_MILLIS = 200;
+
     // Colors
     public static final QwirkleColor FG = QwirkleColor.WHITE; /** Text & border foreground */
 

@@ -13,7 +13,7 @@ import qwirkle.ui.UIConstants;
 import qwirkle.ui.control.QwirkleUIController;
 import qwirkle.ui.event.DragPiece;
 import qwirkle.ui.event.HighlightTurn;
-import qwirkle.ui.swing.game.SwingGamePanel;
+import qwirkle.ui.swing.game.SwingGame;
 import qwirkle.ui.swing.util.SwingKitty;
 import qwirkle.ui.swing.util.SwingSetup;
 import qwirkle.ui.view.Fader;
@@ -35,7 +35,8 @@ public class SwingMain {
     public static final List<QwirkleColor> COLORS = QwirkleColor.DEFAULT_COLORS;
 //    public static final List<QwirkleShape> SHAPES = QwirkleShape.EIGHT_SHAPES;
     public static final List<QwirkleShape> SHAPES = QwirkleShape.DEFAULT_SHAPES;
-    public static final int DECKS = 3;
+    public static final int DECKS = 1;
+//    public static final int DECKS = 3;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -55,7 +56,7 @@ public class SwingMain {
 
                 // TODO move settings to a setup screen and dynamically update them
                 QwirkleUIController control = new QwirkleUIController(settings, new NewThreadEachTime());
-                control.getThreads().setStepMillis(650);
+                control.getThreads().setStepMillis(UIConstants.AUTOPLAY_STEP_MILLIS);
 
                 // make a window frame
                 final SwingMainFrame frame = new SwingMainFrame();
@@ -68,7 +69,7 @@ public class SwingMain {
                 SwingSetup.addWindowRememberer(frame, SwingMain.class);
 
                 // add a view of the game
-                SwingGamePanel gamePanel = new SwingGamePanel(control);
+                SwingGame gamePanel = new SwingGame(control);
 
                 // add an overlay for dragging pieces
                 frame.setGlassPane(new SwingDragPane(control.getEventBus()));

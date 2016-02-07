@@ -1,8 +1,10 @@
 package qwirkle.ui.swing.game.meta;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
-import qwirkle.game.control.GameStatus;
 import qwirkle.game.control.GameHistory;
+import qwirkle.game.control.GameStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,9 +12,15 @@ import java.util.*;
 import java.util.List;
 
 /** Show a record of wins & losses for all players in history. */
-class SwingWinLoss extends JPanel {
-    public SwingWinLoss() {
+public class SwingWinLoss extends JPanel {
+    public SwingWinLoss(EventBus bus) {
         setLayout(new GridBagLayout());
+        bus.register(new Object() {
+            /** A game has ended, so update our display. */
+            @Subscribe public void historyUpdate(GameHistory event) {
+                update(event);
+            }
+        });
     }
 
     public void update(GameHistory history) {
