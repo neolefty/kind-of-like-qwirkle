@@ -1,6 +1,8 @@
 package qwirkle.ui.swing.game;
 
+import com.google.common.eventbus.Subscribe;
 import qwirkle.ui.control.QwirkleUIController;
+import qwirkle.ui.event.PieceClicked;
 import qwirkle.ui.swing.game.meta.SwingMetaGame;
 import qwirkle.ui.swing.util.SlideOutPanel;
 
@@ -23,12 +25,14 @@ public class SwingGame extends SlideOutPanel<JPanel, SwingMetaGame> {
         result.setLayout(new BorderLayout());
 
         final SwingBoardAndPlayers board = new SwingBoardAndPlayers(control);
-        final boolean[] toggleSlide = { false };
+//        final boolean[] toggleSlide = { false };
+        // show context menu on a click on the hamburger
         board.getHamburger().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                toggleSlide[0] = !toggleSlide[0];
-                SwingGame.this.setSlideVisible(toggleSlide[0]);
+//                toggleSlide[0] = !toggleSlide[0];
+//                SwingGame.this.setSlideVisible(toggleSlide[0]);
+                setSlideVisible(true);
             }
         });
 
@@ -48,6 +52,14 @@ public class SwingGame extends SlideOutPanel<JPanel, SwingMetaGame> {
         result.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                setSlideVisible(false);
+            }
+        });
+
+        // hide hamburger menu on click on a piece
+        control.getEventBus().register(new Object() {
+            @Subscribe
+            public void pieceClicked(PieceClicked event) {
                 setSlideVisible(false);
             }
         });

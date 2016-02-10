@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.event.TurnStarting;
+import qwirkle.ui.event.PieceClicked;
 import qwirkle.ui.view.QwirklePieceDisplay;
 import qwirkle.ui.control.SelfDisposingEventSubscriber;
 import qwirkle.ui.event.DragPiece;
@@ -39,7 +40,7 @@ public class SwingDragHelper {
     private DragPiece transientPickup;
 
     public SwingDragHelper
-            (final JComponent component, QwirklePlayer curPlayer, EventBus eventBus, QwirklePieceDisplay display)
+            (final JComponent component, QwirklePlayer curPlayer, final EventBus eventBus, QwirklePieceDisplay display)
     {
         this.eventBus = eventBus;
         this.pieceDisplay = display;
@@ -81,6 +82,8 @@ public class SwingDragHelper {
             @Override
             public void mousePressed(MouseEvent e) {
                 latestMousePress = e.getPoint();
+                // TODO notice clicks on not-in-play pieces (currently only see them on draggable pieces)
+                eventBus.post(new PieceClicked());
             }
 
             @Override
