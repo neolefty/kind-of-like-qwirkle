@@ -14,12 +14,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/** Supports dragging pieces by creating PieceDrag events from Swing internals. */
+/** Supports dragging pieces by creating PieceDrag events from Swing internals.
+ *  By default doesn't create drag events -- call {@link #setDraggable} to start. */
 public class SwingDragHelper {
     private EventBus eventBus;
 
     // is dragging currently possible?
-    private boolean draggable = true;
+    private boolean draggable = false;
 
     // pixel distance required to initiate a drag
     private double dragActivateDistance = 5;
@@ -40,7 +41,7 @@ public class SwingDragHelper {
     private DragPiece transientPickup;
 
     public SwingDragHelper
-            (final JComponent component, QwirklePlayer curPlayer, final EventBus eventBus, QwirklePieceDisplay display)
+            (final JComponent component, QwirklePlayer curPlayer, final EventBus eventBus, final QwirklePieceDisplay display)
     {
         this.eventBus = eventBus;
         this.pieceDisplay = display;
@@ -82,8 +83,7 @@ public class SwingDragHelper {
             @Override
             public void mousePressed(MouseEvent e) {
                 latestMousePress = e.getPoint();
-                // TODO notice clicks on not-in-play pieces (currently only see them on draggable pieces)
-                eventBus.post(new PieceClicked());
+                eventBus.post(new PieceClicked(display));
             }
 
             @Override
@@ -108,6 +108,11 @@ public class SwingDragHelper {
         if (!draggable)
             cancel();
         this.draggable = draggable;
+    }
+
+    /** Note that the current player is also tracked by watching game events. */
+    public void setCurrentPlayer(QwirklePlayer transientCurPlayer) {
+        this.transientCurPlayer = transientCurPlayer;
     }
 
     /** Are we currently mid-drag? */

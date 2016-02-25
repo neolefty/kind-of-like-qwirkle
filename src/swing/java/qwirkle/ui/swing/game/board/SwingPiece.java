@@ -29,7 +29,7 @@ public class SwingPiece extends JPanel implements QwirklePieceDisplay {
     private QwirklePiece piece;
     private QwirkleLocation location;
     private EventBus bus;
-    private SwingDragHelper dragHelper;
+    private final SwingDragHelper dragHelper;
     private QwirkleGridDisplay parent;
 
     private BackgroundManager bgMgr;
@@ -48,6 +48,7 @@ public class SwingPiece extends JPanel implements QwirklePieceDisplay {
         this.parent = parent;
         this.piece = (parent.getGrid() == null ? null : parent.getGrid().get(location));
         this.bus = bus;
+        dragHelper = new SwingDragHelper(this, null, bus, this);
         initEvents();
 
         if (piece != null)
@@ -144,15 +145,13 @@ public class SwingPiece extends JPanel implements QwirklePieceDisplay {
 
     /** Start listening for drag events. */
     public void makeDraggable(QwirklePlayer currentPlayer) {
-        if (dragHelper == null)
-            dragHelper = new SwingDragHelper(this, currentPlayer, bus, this);
-        else
-            dragHelper.setDraggable(true);
+        // note: don't generally need to set current player since the drag helper keeps track by watching game events
+        dragHelper.setCurrentPlayer(currentPlayer);
+        dragHelper.setDraggable(true);
     }
 
     /** Stop listening for drag events. */
     public void makeUndraggable() {
-        if (dragHelper != null)
-            dragHelper.setDraggable(false);
+        dragHelper.setDraggable(false);
     }
 }
