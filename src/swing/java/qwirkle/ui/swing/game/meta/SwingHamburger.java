@@ -15,7 +15,7 @@ import java.awt.event.MouseEvent;
  *  Listen on the event bus for {@link MetaGameMenuOpen} events. */
 public class SwingHamburger extends JPanel {
     // proportions of the hamburger: panel margin, thickness of each layer, and space between layers
-    private static final double MARGIN = 1, LAYER = 2, BETWEEN = 1.25;
+    private static final double MARGIN = 2, LAYER = 2, BETWEEN = 1.25;
     private static final int N = 3; // number of layers
 
     public SwingHamburger(final EventBus bus) {
