@@ -22,9 +22,9 @@ Originally written as a teaching aid for an AP computer science class.
 2. Grab the dependency on guava 19 (it's referenced in build.gradle)
 3. Run the class `qwirkle.ui.swing.main.SwingMain`
 
-## Use in a classroom
+## In a classroom
 
-Students can:
+Students can
 
 * Make new tile shapes
 * Write AIs (but first, hide MaxPlayer from them)
@@ -46,6 +46,6 @@ logic, so it should be possible to write other UIs.
 
 * Unit tests cover the game internals, UI controllers, and benchmarking,
 but not the graphical parts of the UI. 
-* See the executable classes in [src/test/java]. They don't use a framework 
+* See the executable classes in [src/test/java][src/test/java]. They don't use a framework 
 (JUnit etc) -- just assertion failures. Converting to a unit test 
 framework would be a good project for the future.
