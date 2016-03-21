@@ -34,6 +34,8 @@ Students can
 There's a Java Swing UI, but it's fairly well separated from the game
 logic, so it should be possible to write other UIs.
 
+![Vertical, too!](doc/vertical.png)
+
 ## To Do
 
 * Make the human player interface more graceful.
