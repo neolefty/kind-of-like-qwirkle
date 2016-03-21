@@ -29,8 +29,7 @@ public class SwingHamburger extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
-        Graphics2D g2 = (Graphics2D) g;
+        super.paint(g); Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int height = getHeight(), width = getWidth();
         double sum = MARGIN * 2 + LAYER * N + BETWEEN * (N - 1);
