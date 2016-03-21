@@ -46,6 +46,7 @@ logic, so it should be possible to write other UIs.
 
 * Unit tests cover the game internals, UI controllers, and benchmarking,
 but not the graphical parts of the UI. 
-* See the executable classes in [src/test/java][src/test/java]. They don't use a framework 
-(JUnit etc) -- just assertion failures. Converting to a unit test 
-framework would be a good project for the future.
+* See the executable classes in [src/test/java](src/test/java). They
+don't use a framework (JUnit etc) -- just assertion
+failures. Converting to a unit test framework would be a good project
+for the future.
