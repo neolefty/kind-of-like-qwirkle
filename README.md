@@ -2,6 +2,8 @@ An implementation of the boardgame [Qwirkle by
 MindWare](http://mindware.com/qwirkle-a2-32016.fltr).
 Originally written as a teaching aid for an AP computer science class.
 
+![Screenshot of play between Rainbow AIs](doc/typical-small.png)
+
 Students can:
 
 * Make new tile shapes
@@ -18,13 +20,13 @@ Major To Dos:
   It's too AI-centric.
 * Add network play.
 * Port to other platforms (Android, web, robo-vm)
-* ... talk to MindWare about permission?
+* ... talk to MindWare (publisher of Qwirkle) about permission?
 
-To run it,
+To run it using [Gradle](http://gradle.org/),
 
     $ git clone https://github.com/neolefty/kind-of-like-qwirkle
-	$ cd kind-of-like-qwirkle
-	$ gradle runSwing
+    $ cd kind-of-like-qwirkle
+    $ gradle runSwing
 
 Or in an IDE:
 
