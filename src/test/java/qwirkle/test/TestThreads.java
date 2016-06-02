@@ -37,11 +37,11 @@ public class TestThreads {
             w.mark("prevent clobber");
             testFixedTime(nGames * 300, printLevel);
             w.mark("fixed time");
-            testGamePace(nGames, 1, 6, 0.3, printLevel); // fast clock, slow players
+            testGamePace(nGames, 1, 6, 0.4, printLevel); // fast clock, slow players
             w.mark("player slow");
-            testGamePace(nGames, 7, 0, 0.2, printLevel); // slow clock, fast players
+            testGamePace(nGames, 7, 0, 0.3, printLevel); // slow clock, fast players
             w.mark("clock slow");
-            testGamePace(nGames, 5, 5, 0.3, printLevel); // slow both
+            testGamePace(nGames, 5, 5, 0.45, printLevel); // slow both
             w.mark("both slow");
             System.out.print(" -- Completed");
         } finally {

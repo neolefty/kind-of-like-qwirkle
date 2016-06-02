@@ -29,7 +29,7 @@ public class TestPerformance {
 
         Stopwatch w = new Stopwatch(true);
         List<Long> times = timeMaxPlayer(0, w);
-        System.out.println(" -- Completed performance test: " + w.getTotal());
+        System.out.println(" -- Completed perf test: " + w.getTotal());
         System.out.println("    Last " + times.size() + " times: " + times);
     }
 
@@ -39,7 +39,7 @@ public class TestPerformance {
         TimeLimitAI a = new MaxAI("a"), b = new RainbowAI("b");
         QwirkleSettings qs = new QwirkleSettings(a, b);
         GameController mgr = new GameController(new EventBus(), qs, new SingleThreadedStrict());
-        Stopwatch w = new Stopwatch(false);
+        Stopwatch w = new Stopwatch(true);
 
         // run once without a time limit
         mgr.start();
@@ -76,7 +76,7 @@ public class TestPerformance {
 
         assert w.getElapsed(untimedLabel) > w.getElapsed(timedLabel);
 
-        System.out.println("Passed: Time Limit (average time " + avgTime + ", limit " + MAX_MILLIS + ")");
+        System.out.print("; average " + avgTime + "/ limit " + MAX_MILLIS + " -- ");
     }
 
     private static ArrayList<Long> timeMaxPlayer(int verbosity, Stopwatch w) {
