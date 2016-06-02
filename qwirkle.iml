@@ -18,7 +18,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: com.google.guava:guava:19.0" level="project" />
     <orderEntry type="module-library" scope="TEST">
-      <library name="Gradle: R__Cloud_Billy_Library_source_qwirkle_build_classes_swing:">
+      <library name="Gradle: _Users_bbaker_source_qwirkle_build_classes_swing:">
         <CLASSES>
           <root url="file://$MODULE_DIR$/build/classes/swing" />
         </CLASSES>
@@ -27,7 +27,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
-      <library name="Gradle: R__Cloud_Billy_Library_source_qwirkle_build_resources_swing:">
+      <library name="Gradle: _Users_bbaker_source_qwirkle_build_resources_swing:">
         <CLASSES>
           <root url="file://$MODULE_DIR$/build/resources/swing" />
         </CLASSES>
