@@ -4,9 +4,11 @@ import com.google.common.eventbus.EventBus;
 import qwirkle.game.base.QwirkleAI;
 import qwirkle.game.base.QwirklePlayer;
 import qwirkle.game.base.QwirkleSettings;
+import qwirkle.game.base.TimeLimitAI;
 import qwirkle.game.control.GameController;
 import qwirkle.game.control.impl.SingleThreadedStrict;
 import qwirkle.game.control.players.MaxAI;
+import qwirkle.game.control.players.RainbowAI;
 import qwirkle.util.Stopwatch;
 
 import java.io.*;
@@ -22,11 +24,59 @@ public class TestPerformance {
 
         System.out.print("Testing performance: ");
         TestMain.checkAssert();
-        Stopwatch w = new Stopwatch(true);
 
+        testTimeLimit();
+
+        Stopwatch w = new Stopwatch(true);
         List<Long> times = timeMaxPlayer(0, w);
         System.out.println(" -- Completed performance test: " + w.getTotal());
         System.out.println("    Last " + times.size() + " times: " + times);
+    }
+
+    private static final long MAX_MILLIS = 50;
+    /** Test that giving a MaxAI a time limit works. */
+    private static void testTimeLimit() {
+        TimeLimitAI a = new MaxAI("a"), b = new RainbowAI("b");
+        QwirkleSettings qs = new QwirkleSettings(a, b);
+        GameController mgr = new GameController(new EventBus(), qs, new SingleThreadedStrict());
+        Stopwatch w = new Stopwatch(false);
+
+        // run once without a time limit
+        mgr.start();
+        int exceed = 0;
+        int i = 0;
+        Stopwatch untimed = new Stopwatch();
+        while(!mgr.isFinished()) {
+            String label = "" + ++i;
+            mgr.stepAI();
+            untimed.mark(label);
+            if (untimed.getElapsed(label) > MAX_MILLIS)
+                exceed++;
+        }
+        String untimedLabel = "untimed (" + mgr.getBoard().getTurnCount() + " turns)";
+        w.mark(untimedLabel);
+        assert exceed > 5 : "game too fast (" + exceed + "); reduce MAX_MILLIS (" + MAX_MILLIS + ")";
+
+        // run with a time limit
+        a.setMaxMillis(MAX_MILLIS); b.setMaxMillis(MAX_MILLIS);
+        mgr.start();
+        i = 0;
+        Stopwatch timed = new Stopwatch();
+        while (!mgr.isFinished()) {
+            mgr.stepAI();
+            String label = "" + ++i;
+            timed.mark(label);
+            assert timed.getElapsed(label) <= MAX_MILLIS * 5
+                    : "Exceeded " + MAX_MILLIS + " ms (" + timed.getElapsed(label) + ")";
+        }
+        long avgTime = timed.getElapsed() / mgr.getBoard().getTurnCount();
+        assert avgTime <= MAX_MILLIS : "Average time for a turn too long (" + avgTime + ")";
+        String timedLabel = MAX_MILLIS + " ms (" + mgr.getBoard().getTurnCount() + " turns)";
+        w.mark(timedLabel);
+
+        assert w.getElapsed(untimedLabel) > w.getElapsed(timedLabel);
+
+        System.out.println("Passed: Time Limit (average time " + avgTime + ", limit " + MAX_MILLIS + ")");
     }
 
     private static ArrayList<Long> timeMaxPlayer(int verbosity, Stopwatch w) {

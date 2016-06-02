@@ -3,14 +3,13 @@ package qwirkle.game.control.players;
 import com.google.common.collect.Multimap;
 import qwirkle.game.base.*;
 import qwirkle.util.Stopwatch;
-import qwirkle.game.base.QwirkleAI;
 
 import java.util.*;
 
 // TODO make the rainbow deviation a cost, to be subtracted from the move's score?
 // TODO survey board for shape sequences and try to preserve them? Maybe a ranker that both Max and Rainbow can use (Coop player, Max disruptor, etc)
 /** Tries to harmonize with the rest of the board */
-public class RainbowAI implements QwirkleAI {
+public class RainbowAI extends TimeLimitAI {
     private static final Random r = new Random();
     private static final String[] prefixes = { "Color", "Paint", "Rain" }, suffixes = { "ful", "ing", "er" };
 
@@ -30,6 +29,10 @@ public class RainbowAI implements QwirkleAI {
 
     private static final boolean DEBUG = false;
     private static void debug(String s) { if (DEBUG) System.out.println(s); }
+
+    public RainbowAI(String name) {
+        this(name, QwirkleColor.DEFAULT_COLORS);
+    }
 
     public RainbowAI(String name, QwirkleSettings settings) {
         this(name, settings.getColors());
@@ -64,7 +67,8 @@ public class RainbowAI implements QwirkleAI {
 
         // ranked by score, highest first
         // (note we include the empty play, since if we just have junk plays, we'd rather draw and try for a rainbow)
-        Multimap<Integer, Set<QwirklePlacement>> ranked = PlayerKit.rankAllMoves(board, hand, true, true);
+        Multimap<Integer, Set<QwirklePlacement>> ranked
+                = PlayerKit.rankAllMoves(board, hand, w, getMaxMillis(), true, true);
         w.mark("rank by score");
 
         // find the one with the best rainbow-ness, within our bias
@@ -87,6 +91,7 @@ public class RainbowAI implements QwirkleAI {
         }
         w.mark("rank by rainbow");
         debug(w + ": total possible moves " + ranked.size() + "; considered " + nConsidered);
+        setLastMoveWatch(w);
         return best;
     }
 

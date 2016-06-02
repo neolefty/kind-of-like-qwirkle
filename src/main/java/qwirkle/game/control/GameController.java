@@ -256,24 +256,21 @@ public class GameController {
         try {
             // make sure it's not called again while the AI is thinking
             aiRunning.tryAcquire(1, 0, TimeUnit.DAYS);
-            threading.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
-                        if (placements == null || placements.size() == 0)
-                            // an empty play means pass, which means give a chance to discard and re-draw
-                            discard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
-                        else
-                            play(cur, placements);
-                    } catch(IllegalStateException e) {
-                        e.printStackTrace();
-                        System.err.println(board);
-                        e.fillInStackTrace();
-                        throw e;
-                    } finally {
-                        aiRunning.release();
-                    }
+            threading.execute(() -> {
+                try {
+                    Collection<QwirklePlacement> placements = cur.getAi().play(getBoard(), getHand(cur));
+                    if (placements == null || placements.size() == 0)
+                        // an empty play means pass, which means give a chance to discard and re-draw
+                        discard(cur, cur.getAi().discard(getBoard(), getHand(cur)));
+                    else
+                        play(cur, placements);
+                } catch(IllegalStateException e) {
+                    e.printStackTrace();
+                    System.err.println(board);
+                    e.fillInStackTrace();
+                    throw e;
+                } finally {
+                    aiRunning.release();
                 }
             });
         }

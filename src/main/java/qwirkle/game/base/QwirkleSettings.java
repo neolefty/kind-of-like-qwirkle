@@ -49,6 +49,17 @@ public class QwirkleSettings {
         this(deckCount, QwirkleShape.DEFAULT_SHAPES, QwirkleColor.DEFAULT_COLORS, players);
     }
 
+    public QwirkleSettings(QwirkleAI... ais) {
+        this(convertToList(ais));
+    }
+
+    private static Collection<QwirklePlayer> convertToList(QwirkleAI[] ais) {
+        List<QwirklePlayer> result = new ArrayList<>();
+        for (QwirkleAI ai : ais)
+            result.add(new QwirklePlayer(ai));
+        return result;
+    }
+
     /** The number of copies of all the kinds of pieces to use in this game.
      *  Default 3 -- in a default game, there are three of each possible kind of piece. */
     public int getDeckCount() { return nDecks; }

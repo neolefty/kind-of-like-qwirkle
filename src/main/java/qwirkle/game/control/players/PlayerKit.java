@@ -51,16 +51,18 @@ public class PlayerKit {
     /** Find all possible plays on this board for this hand.
      * @param includeShorties if true, include plays that are suboptimal because they're short
      *                         (that is, their supersets are also present)
-     * @param w a stopwatch that tracks total elapsed time -- add comments using internal info */
+     * @param w a stopwatch that tracks total elapsed time -- add comments using internal info
+     * @param maxMillis the maximum length of time to take (approximate) if non-positive, no limit */
     public static Set<Set<QwirklePlacement>> findAllPossiblePlays
-        (QwirkleBoard board, List<QwirklePiece> hand, boolean includeShorties, Stopwatch w)
+        (QwirkleBoard board, List<QwirklePiece> hand, boolean includeShorties,
+         Stopwatch w, long maxMillis)
     {
         Set<Set<QwirklePlacement>> result = new HashSet<>();
         Set<Set<QwirklePlacement>> prunes = includeShorties
                 ? result : new HashSet<Set<QwirklePlacement>>();
         HashSet<QwirklePiece> toPlay = new HashSet<>(hand);
         HashSet<QwirklePlacement> played = new HashSet<>();
-        buildAllPossiblePlays(board, played, toPlay, result, prunes);
+        buildAllPossiblePlays(board, played, toPlay, result, prunes, w, maxMillis);
         w.mark("found " + result.size() + " plays" + (includeShorties ? "" : " (pruned " + prunes.size() + ")"));
         return result;
 //        long end = System.currentTimeMillis();
@@ -73,14 +75,15 @@ public class PlayerKit {
      *   Note: Be sure to balance modifications of collections that come from above,
      *   except for adding to <tt>plays</tt>. Note the use of HashSets -- they need to
      *   all be that exact type because we rely on HashSet.equals().
-     *   @param board make hypothetical plays on it
-     *   @param played a hypothetical play we're considering, which we'll add to
-     *   @param toPlay the pieces we have left that we can add to the play
-     *   @param plays the plays we've found and considered so far
-     *   @param prunes the branches we've already considered */
+     *  @param board make hypothetical plays on it
+     *  @param played a hypothetical play we're considering, which we'll add to
+     *  @param toPlay the pieces we have left that we can add to the play
+     *  @param plays the plays we've found and considered so far
+     *  @param prunes the branches we've already considered */
     private static void buildAllPossiblePlays
         (QwirkleBoard board, Set<QwirklePlacement> played, Set<QwirklePiece> toPlay,
-         Set<Set<QwirklePlacement>> plays, Set<Set<QwirklePlacement>> prunes)
+        Set<Set<QwirklePlacement>> plays, Set<Set<QwirklePlacement>> prunes,
+         Stopwatch w, long maxMillis)
     {
         // for each piece, find a place to add it to the current play
         boolean leaf = false;
@@ -90,20 +93,22 @@ public class PlayerKit {
             Collection<QwirklePlacement> places = board.getLegalPlacements(played, piece);
             if (!places.isEmpty())
                 leaf = true;
-            // recurse
-            for (QwirklePlacement place : places) {
-                // do
-                played.add(place);
-                toPlayScratch.remove(place.getPiece());
-                // descend
-                if (!prunes.contains(played)) { // relies on HashSet.equals()
-                    prunes.add(new HashSet<>(played));
-                    buildAllPossiblePlays(board, played, toPlayScratch, plays, prunes);
+            // keep going if we have time to spare
+            if (maxMillis < 0 || w.getElapsed() < maxMillis * 9 / 10)
+                // recurse
+                for (QwirklePlacement place : places) {
+                    // do
+                    played.add(place);
+                    toPlayScratch.remove(place.getPiece());
+                    // descend
+                    if (!prunes.contains(played)) { // relies on HashSet.equals()
+                        prunes.add(new HashSet<>(played));
+                        buildAllPossiblePlays(board, played, toPlayScratch, plays, prunes, w, maxMillis);
+                    }
+                     // undo
+                    toPlayScratch.add(place.getPiece());
+                    played.remove(place);
                 }
-                 // undo
-                toPlayScratch.add(place.getPiece());
-                played.remove(place);
-            }
         }
         // if we couldn't add any pieces to our current move, it's a leaf
         if (!leaf && !played.isEmpty()) {
@@ -116,17 +121,16 @@ public class PlayerKit {
 
     /** Find all moves and rank them, in reverse order, with the highest-scoring first.
      *  @return a multimap of score to move -- that is, a score can have multiple moves
+     *  @param maxMillis the approximate maximum number of milliseconds to use. Negative for no limit.
      *  @param includeEmptyPlay if true, include a 0-score empty move
      *                          (so that it's still there if there are no legal moves).
-     *  @param includeShorties if true, include plays that are suboptimal because they're short
-     *                         (that is, their supersets are also present) */
+     *  @param includeShorties if true, include plays that are suboptimal because they're short   */
     public static Multimap<Integer, Set<QwirklePlacement>> rankAllMoves
-            (QwirkleBoard board, List<QwirklePiece> hand, boolean includeEmptyPlay, boolean includeShorties)
+    (QwirkleBoard board, List<QwirklePiece> hand, Stopwatch w, long maxMillis, boolean includeEmptyPlay, boolean includeShorties)
     {
-        Stopwatch w = new Stopwatch();
-
         // all the possible moves, but without scores
-        Set<Set<QwirklePlacement>> plays = findAllPossiblePlays(board, hand, includeShorties, w);
+        Set<Set<QwirklePlacement>> plays
+                = findAllPossiblePlays(board, hand, includeShorties, w, maxMillis);
 
         // map of score to move -- highest score first
         //noinspection unchecked

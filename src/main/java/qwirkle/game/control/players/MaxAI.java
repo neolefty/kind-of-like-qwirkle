@@ -3,11 +3,20 @@ package qwirkle.game.control.players;
 import com.google.common.collect.Multimap;
 import qwirkle.game.base.*;
 import qwirkle.game.base.QwirkleAI;
+import qwirkle.util.Stopwatch;
 
 import java.util.*;
 
-/** Looks for the play with the best score. */
-public class MaxAI implements QwirkleAI {
+/** Looks for the play with the best score.
+ *  Possible improvements:
+ *  <ul>
+ *      <li>prefer to play duplicates</li>
+ *      <li>play more pieces</li>
+ *      <li>maximize commonalities among remaining pieces</li>
+ *      <li>think about board position strategically</li>
+ *      <li>Avoid leaving open 5's (sets can be completed by a single piece)</li>
+ *  </ul> */
+public class MaxAI extends TimeLimitAI {
     private final static String[] PREFIXES_1 = { "M", "H", "P", "St", "B", "Gr", "Sn", "C", "D", "Fl", "R", "McM" };
     private final static String[] PREFIXES_2 = { "m", "h", "p", "st", "b", "gr", "sn", "c", "d", "fl", "r" };
     private final static String[] SUFFIXES = { "uff", "uck", "ogg", "igg", "iff" };
@@ -26,9 +35,12 @@ public class MaxAI implements QwirkleAI {
 
     @Override
     public Collection<QwirklePlacement> play(QwirkleBoard board, List<QwirklePiece> hand) {
-        Multimap<Integer, Set<QwirklePlacement>> moves = PlayerKit.rankAllMoves(board, hand, true, false);
+        Stopwatch w = new Stopwatch();
+        Multimap<Integer, Set<QwirklePlacement>> moves
+                = PlayerKit.rankAllMoves(board, hand, w, getMaxMillis(), true, false);
         int bestScore = moves.keySet().iterator().next();
-        // TODO tie-break, e.g. prefer to play duplicates, play more pieces, leave with good other options
+        w.mark("finished: " + bestScore);
+        setLastMoveWatch(w);
         return moves.get(bestScore).iterator().next(); // randomly choose one of the best
     }
 
