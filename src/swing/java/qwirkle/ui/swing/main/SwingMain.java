@@ -35,8 +35,8 @@ public class SwingMain {
     public static final List<QwirkleColor> COLORS = QwirkleColor.DEFAULT_COLORS;
 //    public static final List<QwirkleShape> SHAPES = QwirkleShape.EIGHT_SHAPES;
     public static final List<QwirkleShape> SHAPES = QwirkleShape.DEFAULT_SHAPES;
-    public static final int DECKS = 1;
-//    public static final int DECKS = 3;
+//    public static final int DECKS = 1;
+    public static final int DECKS = 3;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

@@ -129,7 +129,8 @@ public class PlayerHandTracker {
                 List<QwirkleLocation> empties = new ArrayList<>();
                 for (QwirklePiece piece : draggedOut) {
                     QwirklePlacement empty = visible.remove(piece);
-                    empties.add(empty.getLocation());
+                    if (empty != null)
+                        empties.add(empty.getLocation());
                 }
 
                 return new UpdateHand.HandPlacements(visible, empties, handPlaces);
