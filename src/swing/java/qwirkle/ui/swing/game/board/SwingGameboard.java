@@ -63,7 +63,6 @@ public class SwingGameboard extends SwingGrid {
         super.setGrid(grid);
     }
 
-    // TODO only if no discards
     /** Highlight the hypothetical play. */
     @Override
     public SwingPiece createPiecePanel(int x, int y) {

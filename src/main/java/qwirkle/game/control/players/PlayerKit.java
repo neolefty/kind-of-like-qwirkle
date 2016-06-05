@@ -47,7 +47,6 @@ public class PlayerKit {
         }
     };
 
-    // TODO add limits such as time and result count
     /** Find all possible plays on this board for this hand.
      * @param includeShorties if true, include plays that are suboptimal because they're short
      *                         (that is, their supersets are also present)

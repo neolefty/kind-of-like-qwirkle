@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-// TODO test PlayerKit functions
 public class TestMain {
     public static void main(String[] args) throws InterruptedException {
         checkAssert();

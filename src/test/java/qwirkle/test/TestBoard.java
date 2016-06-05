@@ -14,7 +14,6 @@ import qwirkle.util.Stopwatch;
 
 import java.util.*;
 
-// TODO deal with the situation where no move whatsoever is possible -- a perfect 6 x 6 square, for example?
 /** Basic tests of the Qwirkle game board. */
 public class TestBoard {
     private static final Random r = new Random();

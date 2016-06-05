@@ -47,7 +47,6 @@ public class PlayerHandTracker {
         }
 
         @Subscribe public void getHandWhenDealt(DrawPieces event) {
-            // TODO shift old pieces up/left, make room for new ones
             if (event.getPlayer() == getPlayer()) {
                 pieces = event.getHand();
                 fireUpdate();

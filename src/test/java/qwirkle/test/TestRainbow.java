@@ -30,7 +30,6 @@ public class TestRainbow {
         System.out.println(" -- Completed rainbow test: " + w.getTotal());
     }
 
-    // TODO test with smaller numbers of colors, including 1-3
     private static void testRainbow(boolean print) {
         QwirkleSettings settings = new QwirkleSettings();
         Rainbow r = new Rainbow(settings.getColors());

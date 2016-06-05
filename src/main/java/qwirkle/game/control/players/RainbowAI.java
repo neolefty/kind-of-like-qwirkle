@@ -6,9 +6,13 @@ import qwirkle.util.Stopwatch;
 
 import java.util.*;
 
-// TODO make the rainbow deviation a cost, to be subtracted from the move's score?
-// TODO survey board for shape sequences and try to preserve them? Maybe a ranker that both Max and Rainbow can use (Coop player, Max disruptor, etc)
-/** Tries to harmonize with the rest of the board */
+// TODO a ranker that both Max and Rainbow can use (Coop player, Max disruptor, etc)
+/** Tries to harmonize with the rest of the board.
+ *  Possible additions:
+ *  <ul>
+ *      <li>make the rainbow deviation a cost, to be subtracted from the move's score</li>
+ *      <li>survey board for shape sequences and try to preserve them</li>
+ *  </ul>*/
 public class RainbowAI extends TimeLimitAI {
     private static final Random r = new Random();
     private static final String[] prefixes = { "Color", "Paint", "Rain" }, suffixes = { "ful", "ing", "er" };
