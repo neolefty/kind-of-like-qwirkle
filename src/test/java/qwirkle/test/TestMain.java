@@ -11,10 +11,8 @@ public class TestMain {
         checkAssert();
         Stopwatch w = new Stopwatch(false);
 
-        TestBoard.main(args); w.mark("board");
-        TestScripted.main(args); w.mark("scripted");
+        TestMainBrief.main(args, w);
         TestThreads.main(args); w.mark("threads");
-        TestRainbow.main(args); w.mark("rainbow");
         TestPerformance.main(args); w.mark("performance");
 
         System.out.println();
