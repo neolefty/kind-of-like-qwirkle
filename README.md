@@ -12,7 +12,7 @@ Originally written as a teaching aid for an AP computer science class.
 
     $ git clone https://github.com/neolefty/kind-of-like-qwirkle
     $ cd kind-of-like-qwirkle
-    $ gradle runSwing
+    $ gradle run
 
 #### ... Or in an IDE
 
@@ -21,6 +21,11 @@ Originally written as a teaching aid for an AP computer science class.
   * `src/swing/java/`
 2. Grab the dependency on guava 19 (it's referenced in build.gradle)
 3. Run the class `qwirkle.ui.swing.main.SwingMain`
+
+#### Tests
+
+* `gradle quick` 'quick tests (about 10 seconds on a modern computer)'
+* `gradle all` 'slow tests that take about a minute'
 
 ## In a classroom
 

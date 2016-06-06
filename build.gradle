@@ -1,19 +1,20 @@
 apply plugin: 'java'
-apply plugin: 'idea'
+// apply plugin: 'idea'
 
 def swingMainClass = 'qwirkle.ui.swing.main.SwingMain'
+def testAllClass = 'qwirkle.test.TestMain'
+def testQuickClass = 'qwirkle.test.TestMainBrief'
 
 sourceSets {
-  test { // automatically includes main
-    scanForTestClasses false
-    jvmArgs '-ea'
-  }
   swing {
     // compileClasspath += main.output
-	//    runtimeClasspath += main.output
+    // runtimeClasspath += main.output
+  }
+  test { // automatically includes main
+    compileClasspath += sourceSets.swing.output
   }
   main { // not necessary -- would be included anyway
-	runtimeClasspath += sourceSets.swing.output
+    runtimeClasspath += sourceSets.swing.output
   }
 }
 
@@ -23,7 +24,6 @@ repositories {
 
 dependencies {
   compile group: 'com.google.guava', name: 'guava', version: '19.0'
-  testCompile sourceSets.swing.output
   swingCompile sourceSets.main.output, 'com.google.guava:guava:19.0'
   //  run swingJar.output
   //  runClasspath += sourceSets.swing.output
@@ -42,3 +42,19 @@ task runSwing(type: JavaExec) {
   classpath = sourceSets.swing.runtimeClasspath
   main = swingMainClass
 }
+
+task runAllTests(type: JavaExec) {
+  classpath = sourceSets.test.runtimeClasspath
+  main = testAllClass
+  jvmArgs '-ea'
+}
+
+task runQuickTests(type: JavaExec) {
+  classpath = sourceSets.test.runtimeClasspath
+  main = testQuickClass
+  jvmArgs '-ea'
+}
+
+task run(dependsOn: runSwing)
+task quick(dependsOn: runQuickTests)
+task all(dependsOn: runAllTests)
